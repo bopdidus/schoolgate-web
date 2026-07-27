@@ -1,0 +1,162 @@
+@if (loading()) {
+  <app-skeleton-table />
+} @else {
+  @if (school(); as s) {
+    <app-page-header title="SCHOOLS.DETAIL">
+      @if (user$ | async; as user) {
+        @if (user.role === 'admin' || user.role === 'school_admin') {
+          <button actions mat-flat-button color="primary" [routerLink]="['/schools', s.id, 'edit']">
+            <mat-icon>edit</mat-icon>
+            {{ 'COMMON.EDIT' | translate }}
+          </button>
+        }
+      }
+    </app-page-header>
+
+    <mat-card appearance="outlined" class="page-card">
+      <mat-card-content>
+        <div class="form-grid">
+          <div>
+            <span class="text-muted">{{ 'SCHOOLS.NAME' | translate }}</span>
+            <p style="margin: 0; font-weight: 500">{{ s.name }}</p>
+          </div>
+          <div>
+            <span class="text-muted">{{ 'SCHOOLS.CITY' | translate }}</span>
+            <p style="margin: 0">{{ s.city }}</p>
+          </div>
+          <div>
+            <span class="text-muted">{{ 'SCHOOLS.ADDRESS' | translate }}</span>
+            <p style="margin: 0">{{ s.address }}</p>
+          </div>
+          <div>
+            <span class="text-muted">{{ 'SCHOOLS.PHONE' | translate }}</span>
+            <p style="margin: 0">{{ s.phone }}</p>
+          </div>
+          <div>
+            <span class="text-muted">{{ 'SCHOOLS.EMAIL' | translate }}</span>
+            <p style="margin: 0">{{ s.email }}</p>
+          </div>
+          <div>
+            <span class="text-muted">{{ 'SCHOOLS.ACADEMIC_YEAR' | translate }}</span>
+            <p style="margin: 0; font-weight: 500">{{ s.academicYear || '—' }}</p>
+          </div>
+          <div>
+            <span class="text-muted">{{ 'COMMON.STATUS' | translate }}</span>
+            <p style="margin: 0">
+              <mat-chip-set>
+                <mat-chip [class]="s.status | statusColor">{{ s.status }}</mat-chip>
+              </mat-chip-set>
+            </p>
+          </div>
+          <div class="span-2">
+            <span class="text-muted">{{ 'EDUCATION.SCHOOL_SYSTEM' | translate }}</span>
+            <p style="margin: 8px 0 0">
+              <mat-chip-set>
+                <mat-chip>{{ schoolSystemI18n[s.schoolSystem] | translate }}</mat-chip>
+              </mat-chip-set>
+            </p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card appearance="outlined" class="page-card">
+      <mat-card-header>
+        <mat-card-title>{{ 'SCHOOLS.CLASSES' | translate }} ({{ s.classes.length }})</mat-card-title>
+      </mat-card-header>
+      @if (user$ | async; as user) {
+        @if (canManageClasses(user.role)) {
+          <mat-card-actions align="end">
+            <button mat-stroked-button color="primary" [routerLink]="['/schools', s.id, 'classes', 'new']">
+              <mat-icon>add</mat-icon>
+              {{ 'SCHOOLS.ADD_CLASS' | translate }}
+            </button>
+          </mat-card-actions>
+        }
+      }
+      <mat-card-content>
+        @if (s.classes.length === 0) {
+          <p class="text-muted" style="font-style: italic">{{ 'SCHOOLS.NO_CLASSES' | translate }}</p>
+        }
+        @for (group of groupedClasses(s); track group.type + group.specialty) {
+          <div class="system-group">
+            <div class="flex-row">
+              <mat-chip [class]="group.type | educationTypeColor">{{ educationTypeBadge[group.type] }}</mat-chip>
+              <span class="section-label">{{ educationTypeI18n[group.type] | translate }}</span>
+              @if (group.specialty) {
+                <span class="text-muted">· {{ group.specialty }}</span>
+              }
+              <span class="text-muted">({{ group.classes.length }})</span>
+            </div>
+            @for (cls of group.classes; track trackById($index, cls)) {
+              <div class="class-block">
+                <div class="flex-row-between" style="margin-bottom: 16px">
+                  <h3 style="margin: 0; font-size: 16px; font-weight: 600">{{ cls.name }}</h3>
+                  @if (user$ | async; as user) {
+                    @if (canManageClasses(user.role) && cls.id) {
+                      <button mat-icon-button [routerLink]="['/schools', s.id, 'classes', cls.id, 'edit']" [attr.aria-label]="'COMMON.EDIT' | translate">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                    }
+                  }
+                </div>
+
+                <div class="form-grid cols-4">
+                  <div>
+                    <span class="text-muted">{{ 'SCHOOLS.TOTAL_SEATS' | translate }}</span>
+                    <div>{{ cls.totalSeats }}</div>
+                  </div>
+                  <div>
+                    <span class="text-muted">{{ 'SCHOOLS.PAYMENT_VALIDATION_DAYS' | translate }}</span>
+                    <div>{{ cls.paymentValidationDays }}d</div>
+                  </div>
+                  <div>
+                    <span class="text-muted">{{ 'EDUCATION.LEVEL' | translate }}</span>
+                    <div>{{ cls.levelLabel || cls.levelId }}</div>
+                  </div>
+                  <div>
+                    <span class="text-muted">{{ 'SCHOOLS.ENROLLMENT_FEE_ADVANCE' | translate }}</span>
+                    <div>{{ cls.advanceAllowed ? ('COMMON.YES' | translate) : ('COMMON.NO' | translate) }}</div>
+                  </div>
+                </div>
+
+                <div class="fee-block">
+                  <p class="text-muted" style="margin: 0 0 4px">{{ 'SCHOOLS.ENROLLMENT_FEE_SECTION' | translate }}</p>
+                  <div class="flex-wrap">
+                    <span>{{ 'PAYMENTS.AMOUNT' | translate }}: <strong>{{ cls.enrollmentFee.amount | xafCurrency }}</strong></span>
+                    <span>{{ 'SCHOOLS.DUE_DATE' | translate }}: {{ cls.enrollmentFee.dueDate | localeDate }}</span>
+                    @if (cls.advanceAllowed && cls.enrollmentFee.advancePercentage) {
+                      <span>{{ 'SCHOOLS.ADVANCE_PERCENTAGE' | translate }}: {{ cls.enrollmentFee.advancePercentage }}%</span>
+                    }
+                  </div>
+                </div>
+
+                @if (cls.installments.length > 0) {
+                  <p class="text-muted" style="margin-bottom: 8px">{{ 'SCHOOLS.INSTALLMENTS_SECTION' | translate }}</p>
+                  @for (inst of cls.installments; track inst.order) {
+                    <div class="installment-row">
+                      <span class="order-badge">{{ inst.order }}</span>
+                      <span>{{ inst.amount | xafCurrency }}</span>
+                      <span class="text-muted">{{ inst.dueDate | localeDate }}</span>
+                      @if (inst.advanceAllowed && inst.advancePercentage) {
+                        <span class="text-primary-color">{{ inst.advancePercentage }}% {{ 'SCHOOLS.ADVANCE_SHORT' | translate }}</span>
+                      }
+                    </div>
+                  }
+                } @else {
+                  <p class="text-muted" style="font-style: italic">{{ 'SCHOOLS.NO_INSTALLMENTS' | translate }}</p>
+                }
+              </div>
+            }
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card appearance="outlined" class="page-card">
+      <mat-card-content>
+        <app-school-enrollments-panel [schoolId]="s.id" />
+      </mat-card-content>
+    </mat-card>
+  }
+}

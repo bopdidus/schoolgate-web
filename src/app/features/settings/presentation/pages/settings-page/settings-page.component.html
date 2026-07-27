@@ -1,0 +1,65 @@
+<app-page-header title="SETTINGS.TITLE" />
+
+<div class="stats-grid">
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>{{ 'SETTINGS.LANGUAGE' | translate }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="flex-row">
+        <span>EN</span>
+        <mat-slide-toggle [checked]="isFrench" (change)="onLanguageToggle($event.checked)">
+          FR
+        </mat-slide-toggle>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>{{ 'SETTINGS.PROFILE' | translate }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="profileForm" class="page-stack">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'USERS.NAME' | translate }}</mat-label>
+          <input matInput formControlName="name" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'AUTH.EMAIL' | translate }}</mat-label>
+          <input matInput type="email" formControlName="email" />
+        </mat-form-field>
+        <button mat-flat-button color="primary" (click)="saveProfile()" [disabled]="profileForm.invalid">
+          {{ 'COMMON.SAVE' | translate }}
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card appearance="outlined" style="grid-column: 1 / -1">
+    <mat-card-header>
+      <mat-card-title>{{ 'SETTINGS.CHANGE_PASSWORD' | translate }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="passwordForm" class="form-grid cols-3">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'SETTINGS.CURRENT_PASSWORD' | translate }}</mat-label>
+          <input matInput type="password" formControlName="currentPassword" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'SETTINGS.NEW_PASSWORD' | translate }}</mat-label>
+          <input matInput type="password" formControlName="newPassword" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'SETTINGS.CONFIRM_PASSWORD' | translate }}</mat-label>
+          <input matInput type="password" formControlName="confirmPassword" />
+        </mat-form-field>
+        <div class="span-2">
+          <button mat-flat-button color="primary" (click)="changePassword()" [disabled]="passwordForm.invalid">
+            {{ 'SETTINGS.CHANGE_PASSWORD' | translate }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

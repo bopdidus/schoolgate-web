@@ -1,0 +1,75 @@
+@if (loading()) {
+  <app-skeleton-table />
+} @else {
+  @if (invoice(); as inv) {
+    <app-page-header title="INVOICES.DETAIL">
+      <div actions class="flex-row no-print">
+        <button mat-stroked-button routerLink="/enrollments">{{ 'COMMON.BACK' | translate }}</button>
+        <button mat-stroked-button (click)="verify()" [disabled]="verifying()">
+          <mat-icon>verified</mat-icon>
+          {{ 'INVOICES.VERIFY' | translate }}
+        </button>
+        <button mat-flat-button color="primary" (click)="print()">
+          <mat-icon>print</mat-icon>
+          {{ 'COMMON.PRINT' | translate }}
+        </button>
+      </div>
+    </app-page-header>
+
+    @if (verification(); as v) {
+      <mat-card appearance="outlined" class="page-card no-print" [class.alert-warning]="!v.valid">
+        <mat-card-content>
+          @if (v.valid) {
+            <span style="color: var(--color-success); font-weight: 500">✅ {{ 'INVOICES.VERIFIED' | translate }}</span>
+          } @else {
+            <span style="color: var(--color-danger); font-weight: 500">❌ {{ 'INVOICES.NOT_VERIFIED' | translate }}</span>
+          }
+          <p class="text-muted" style="margin: 8px 0 0">{{ v.message }}</p>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <mat-card appearance="outlined" class="invoice-card" style="max-width: 42rem; margin: 0 auto">
+      <mat-card-content>
+        <div class="text-center" style="margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--color-border)">
+          <mat-icon class="login-icon">school</mat-icon>
+          <h1 class="text-primary-color" style="margin: 12px 0 0; font-size: 24px">{{ inv.schoolName }}</h1>
+          <p class="text-muted" style="margin: 4px 0 0">{{ 'INVOICES.TITLE' | translate }}</p>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <span class="text-muted">{{ 'ENROLLMENTS.STUDENT' | translate }}</span>
+            <p style="margin: 0; font-weight: 500">{{ inv.studentName }}</p>
+          </div>
+          <div>
+            <span class="text-muted">{{ 'ENROLLMENTS.CLASS' | translate }}</span>
+            <p style="margin: 0">{{ inv.className }}</p>
+          </div>
+          <div>
+            <span class="text-muted">{{ 'PAYMENTS.AMOUNT' | translate }}</span>
+            <p style="margin: 0; font-size: 20px; font-weight: 600; color: var(--color-primary)">{{ inv.amount | xafCurrency }}</p>
+          </div>
+          @if (inv.installmentNumber) {
+            <div>
+              <span class="text-muted">{{ 'INVOICES.INSTALLMENT' | translate }}</span>
+              <p style="margin: 0">{{ inv.installmentNumber }}</p>
+            </div>
+          }
+          <div>
+            <span class="text-muted">{{ 'INVOICES.ISSUED_AT' | translate }}</span>
+            <p style="margin: 0">{{ inv.issuedAt | localeDate:'long' }}</p>
+          </div>
+          <div class="span-2">
+            <span class="text-muted">{{ 'INVOICES.UUID' | translate }}</span>
+            <p style="margin: 0; font-family: monospace; font-size: 12px; word-break: break-all">{{ inv.uuid }}</p>
+          </div>
+          <div class="span-2">
+            <span class="text-muted">{{ 'INVOICES.SIGNATURE_HASH' | translate }}</span>
+            <p style="margin: 0; font-family: monospace; font-size: 12px; word-break: break-all; background: #f9fafb; padding: 8px; border-radius: 8px">{{ inv.signatureHash }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+}

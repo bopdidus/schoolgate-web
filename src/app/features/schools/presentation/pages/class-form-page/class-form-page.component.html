@@ -1,0 +1,169 @@
+<app-page-header [title]="isEdit() ? 'SCHOOLS.EDIT_CLASS' : 'SCHOOLS.NEW_CLASS'" />
+
+@if (schoolName()) {
+  <p class="text-muted" style="margin: -12px 0 16px">{{ schoolName() }}</p>
+}
+
+@if (loading()) {
+  <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
+} @else {
+  <form [formGroup]="form" class="page-stack">
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>{{ 'SCHOOLS.CLASS_NAME' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-grid cols-4">
+          @if (isBilingual()) {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'EDUCATION.SYSTEM' | translate }}</mat-label>
+              <mat-select formControlName="system" (selectionChange)="onClassSystemChange()">
+                <mat-option value="francophone">{{ systemI18nKey('francophone') | translate }}</mat-option>
+                <mat-option value="anglophone">{{ systemI18nKey('anglophone') | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          }
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'EDUCATION.TYPE' | translate }}</mat-label>
+            <mat-select formControlName="educationType" (selectionChange)="onEducationTypeChange($event.value)">
+              @for (type of educationTypeOptions; track type) {
+                <mat-option [value]="type">{{ educationTypeI18n[type] | translate }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          @if (isSpecialtyRequired()) {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'EDUCATION.SPECIALTY' | translate }}</mat-label>
+              <mat-select formControlName="specialtyId" (selectionChange)="onSpecialtyChange($event.value)">
+                @for (specialty of availableSpecialties(form.controls.educationType.value); track specialty.id) {
+                  <mat-option [value]="specialty.id">{{ specialty.label }}</mat-option>
+                }
+                <mat-option value="other">{{ 'COMMON.OTHER' | translate }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            @if (form.controls.specialtyId.value === 'other') {
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'EDUCATION.SPECIALTY_OTHER' | translate }}</mat-label>
+                <input matInput formControlName="specialtyOther" />
+              </mat-form-field>
+            }
+          }
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'EDUCATION.LEVEL' | translate }}</mat-label>
+            <mat-select formControlName="levelId">
+              @for (level of levels(); track level.id) {
+                <mat-option [value]="level.id">{{ level.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'SCHOOLS.CLASS_NAME' | translate }}</mat-label>
+            <input matInput formControlName="name" [placeholder]="'SCHOOLS.CLASS_NAME_PLACEHOLDER' | translate" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'SCHOOLS.TOTAL_SEATS' | translate }}</mat-label>
+            <input matInput type="number" formControlName="totalSeats" min="1" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="span-2">
+            <mat-label>{{ 'SCHOOLS.PAYMENT_VALIDATION_DAYS' | translate }}</mat-label>
+            <input matInput type="number" formControlName="paymentValidationDays" [min]="1" [max]="maxValidationDays" />
+            <mat-hint>{{ 'SCHOOLS.PAYMENT_VALIDATION_DAYS_HINT' | translate: { max: maxValidationDays } }}</mat-hint>
+            @if (form.controls.paymentValidationDays.hasError('max')) {
+              <mat-error>{{ 'SCHOOLS.PAYMENT_VALIDATION_DAYS_RANGE' | translate: { max: maxValidationDays } }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div style="margin: 20px 0">
+          <mat-slide-toggle formControlName="advanceAllowed" (change)="onAdvanceToggle()">
+            {{ 'SCHOOLS.ENROLLMENT_FEE_ADVANCE' | translate }}
+          </mat-slide-toggle>
+        </div>
+
+        <mat-divider style="margin-bottom: 20px" />
+
+        <h4 style="margin: 0 0 12px; font-size: 16px; font-weight: 600">{{ 'SCHOOLS.ENROLLMENT_FEE_SECTION' | translate }}</h4>
+        <div formGroupName="enrollmentFee" class="form-grid cols-3">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'SCHOOLS.ENROLLMENT_FEE' | translate }}</mat-label>
+            <input matInput type="number" formControlName="amount" min="1" />
+            <span matTextSuffix>XAF</span>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'SCHOOLS.DUE_DATE' | translate }}</mat-label>
+            <input matInput [matDatepicker]="feePicker" formControlName="dueDate" />
+            <mat-datepicker-toggle matSuffix [for]="feePicker" />
+            <mat-datepicker #feePicker />
+          </mat-form-field>
+          @if (form.controls.advanceAllowed.value) {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'SCHOOLS.ADVANCE_PERCENTAGE' | translate }}</mat-label>
+              <input matInput type="number" formControlName="advancePercentage" min="1" max="100" />
+              <span matTextSuffix>%</span>
+            </mat-form-field>
+          }
+        </div>
+
+        <mat-divider style="margin: 20px 0" />
+
+        <div class="flex-row-between" style="margin-bottom: 12px">
+          <h4 style="margin: 0; font-size: 16px; font-weight: 600">{{ 'SCHOOLS.INSTALLMENTS_SECTION' | translate }}</h4>
+          <button mat-stroked-button type="button" (click)="addInstallment()" color="primary">
+            <mat-icon>add</mat-icon>
+            {{ 'SCHOOLS.ADD_PAYMENT' | translate }}
+          </button>
+        </div>
+
+        <div formArrayName="installments">
+          @if (installments.length === 0) {
+            <p class="text-muted" style="font-style: italic">{{ 'SCHOOLS.NO_INSTALLMENTS' | translate }}</p>
+          }
+          @for (inst of installments.controls; track trackByIndex(j); let j = $index) {
+            <div [formGroupName]="j" @rowAnim class="installment-row form-grid cols-4" style="align-items: start">
+              <div class="flex-row">
+                <span class="order-badge">{{ j + 1 }}</span>
+                <span class="text-muted">{{ 'SCHOOLS.INSTALLMENT_N' | translate: { n: j + 1 } }}</span>
+              </div>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'PAYMENTS.AMOUNT' | translate }}</mat-label>
+                <input matInput type="number" formControlName="amount" min="1" />
+                <span matTextSuffix>XAF</span>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SCHOOLS.DUE_DATE' | translate }}</mat-label>
+                <input matInput [matDatepicker]="instPicker" formControlName="dueDate" />
+                <mat-datepicker-toggle matSuffix [for]="instPicker" />
+                <mat-datepicker #instPicker />
+              </mat-form-field>
+              <div class="flex-row" style="flex-wrap: wrap; gap: 8px">
+                <mat-slide-toggle formControlName="advanceAllowed" (change)="onInstallmentAdvanceToggle(j)">
+                  {{ 'SCHOOLS.INSTALLMENT_ADVANCE' | translate }}
+                </mat-slide-toggle>
+                @if (inst.get('advanceAllowed')?.value) {
+                  <mat-form-field appearance="outline" style="flex: 1; min-width: 120px">
+                    <mat-label>{{ 'SCHOOLS.ADVANCE_PERCENTAGE' | translate }}</mat-label>
+                    <input matInput type="number" formControlName="advancePercentage" min="1" max="100" />
+                    <span matTextSuffix>%</span>
+                  </mat-form-field>
+                }
+                <button mat-icon-button type="button" color="warn"
+                  (click)="removeInstallment(j)"
+                  [attr.aria-label]="'Remove installment ' + (j + 1)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="form-sticky-actions">
+      <button mat-stroked-button type="button" [routerLink]="cancelLink()">{{ 'COMMON.CANCEL' | translate }}</button>
+      <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="saving()">
+        <mat-icon>save</mat-icon>
+        {{ 'COMMON.SAVE' | translate }}
+      </button>
+    </div>
+  </form>
+}

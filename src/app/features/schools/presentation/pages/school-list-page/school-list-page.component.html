@@ -1,0 +1,123 @@
+<app-page-header title="SCHOOLS.TITLE">
+  <button actions mat-flat-button color="primary" routerLink="/schools/new">
+    <mat-icon>add</mat-icon>
+    {{ 'SCHOOLS.NEW' | translate }}
+  </button>
+</app-page-header>
+
+<mat-card appearance="outlined" class="filter-card">
+  <mat-card-content>
+    <div class="flex-wrap">
+      <mat-form-field appearance="outline" style="flex: 1; min-width: 200px">
+        <mat-label>{{ 'COMMON.SEARCH' | translate }}</mat-label>
+        <input matInput (keyup.enter)="onSearch($any($event.target).value)" />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width: 192px">
+        <mat-label>{{ 'COMMON.STATUS' | translate }}</mat-label>
+        <mat-select (selectionChange)="onStatusChange($event.value)">
+          <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
+          <mat-option value="active">{{ 'SCHOOLS.ACTIVE' | translate }}</mat-option>
+          <mat-option value="inactive">{{ 'SCHOOLS.INACTIVE' | translate }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width: 200px">
+        <mat-label>{{ 'EDUCATION.SCHOOL_SYSTEM' | translate }}</mat-label>
+        <mat-select (selectionChange)="onSchoolSystemChange($event.value)">
+          <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
+          <mat-option value="francophone">{{ 'EDUCATION.FRANCOPHONE' | translate }}</mat-option>
+          <mat-option value="anglophone">{{ 'EDUCATION.ANGLOPHONE' | translate }}</mat-option>
+          <mat-option value="bilingual">{{ 'EDUCATION.BILINGUAL' | translate }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width: 200px">
+        <mat-label>{{ 'EDUCATION.TYPE' | translate }}</mat-label>
+        <mat-select (selectionChange)="onEducationTypeChange($event.value)">
+          <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
+          <mat-option value="general">{{ 'EDUCATION.TYPE_GENERAL' | translate }}</mat-option>
+          <mat-option value="technical">{{ 'EDUCATION.TYPE_TECHNICAL' | translate }}</mat-option>
+          <mat-option value="professional">{{ 'EDUCATION.TYPE_PROFESSIONAL' | translate }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="width: 200px">
+        <mat-label>{{ 'EDUCATION.SPECIALTY' | translate }}</mat-label>
+        <input matInput (keyup.enter)="onSpecialtyChange($any($event.target).value)" />
+      </mat-form-field>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (schools().length === 0) {
+  <app-empty-state
+    icon="school"
+    title="COMMON.NO_DATA"
+    actionLabel="SCHOOLS.NEW"
+    (actionClick)="router.navigate(['/schools/new'])"
+  />
+} @else {
+  <mat-card appearance="outlined" class="table-card">
+    <table mat-table [dataSource]="schools()" [trackBy]="trackById" class="mat-table-full-width table-zebra">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>{{ 'SCHOOLS.NAME' | translate }}</th>
+        <td mat-cell *matCellDef="let school">{{ school.name }}</td>
+      </ng-container>
+      <ng-container matColumnDef="city">
+        <th mat-header-cell *matHeaderCellDef>{{ 'SCHOOLS.CITY' | translate }}</th>
+        <td mat-cell *matCellDef="let school">{{ school.city }}</td>
+      </ng-container>
+      <ng-container matColumnDef="academicYear">
+        <th mat-header-cell *matHeaderCellDef>{{ 'SCHOOLS.ACADEMIC_YEAR' | translate }}</th>
+        <td mat-cell *matCellDef="let school">{{ school.academicYear || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="systems">
+        <th mat-header-cell *matHeaderCellDef>{{ 'EDUCATION.SYSTEMS' | translate }}</th>
+        <td mat-cell *matCellDef="let school">
+          <mat-chip-set>
+            <mat-chip>{{ schoolSystemBadgeLabel(school.schoolSystem) }}</mat-chip>
+            <mat-chip>{{ schoolSystemI18nKey(school.schoolSystem) | translate }}</mat-chip>
+          </mat-chip-set>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="classes">
+        <th mat-header-cell *matHeaderCellDef>{{ 'SCHOOLS.CLASSES' | translate }}</th>
+        <td mat-cell *matCellDef="let school">{{ school.totalClasses ?? school.classes.length }}</td>
+      </ng-container>
+      <ng-container matColumnDef="fillRate">
+        <th mat-header-cell *matHeaderCellDef>{{ 'SCHOOLS.FILL_RATE' | translate }}</th>
+        <td mat-cell *matCellDef="let school">{{ school.fillRate ?? 0 }}%</td>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
+        <td mat-cell *matCellDef="let school">
+          <mat-chip-set>
+            <mat-chip [class]="school.status | statusColor">
+              {{ ('STATUS.' + (school.status | uppercase)) | translate }}
+            </mat-chip>
+          </mat-chip-set>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
+        <td mat-cell *matCellDef="let school">
+          <button mat-icon-button [routerLink]="['/schools', school.id]" aria-label="View">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button [routerLink]="['/schools', school.id, 'edit']" aria-label="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+    <mat-paginator
+      [length]="total()"
+      [pageSize]="pageSize()"
+      [pageIndex]="page()"
+      [pageSizeOptions]="[5, 10, 25]"
+      (page)="onPageChange($event)"
+    />
+  </mat-card>
+}

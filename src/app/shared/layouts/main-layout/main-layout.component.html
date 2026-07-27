@@ -1,0 +1,155 @@
+<mat-drawer-container class="layout-container" #drawerContainer>
+  <mat-drawer
+    [mode]="'side'"
+    [opened]="true"
+    [class.collapsed]="collapsed()"
+    class="layout-sidenav"
+    (transitionend)="onSidenavTransitionEnd($event, drawerContainer)"
+  >
+    <div class="sidenav-inner">
+      <mat-toolbar class="sidenav-toolbar">
+        <mat-icon class="brand-icon">school</mat-icon>
+        @if (!collapsed()) {
+          <span class="brand-text">{{ 'APP.TITLE' | translate }}</span>
+        }
+      </mat-toolbar>
+
+      @if (user$ | async; as user) {
+        <mat-nav-list class="sidenav-nav-list" aria-label="Navigation principale">
+          @for (item of navItems; track item.label) {
+            @if (isNavVisible(item, user.role)) {
+              <a
+                mat-list-item
+                [routerLink]="resolveRoute(item, user)"
+                routerLinkActive
+                #rla="routerLinkActive"
+                [activated]="rla.isActive"
+                [matTooltip]="collapsed() ? (item.label | translate) : ''"
+                matTooltipPosition="right"
+              >
+                <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+                @if (!collapsed()) {
+                  <span matListItemTitle>{{ item.label | translate }}</span>
+                }
+              </a>
+            }
+          }
+        </mat-nav-list>
+      }
+
+      @if (!collapsed() && (user$ | async); as user) {
+        <div class="sidenav-footer">
+          <mat-divider />
+          <div class="sidenav-role-badge">
+            <mat-chip-set>
+              @switch (user.role) {
+                @case ('admin') {
+                  <mat-chip>Admin</mat-chip>
+                }
+                @case ('school_admin') {
+                  <mat-chip>{{ 'USERS.SCHOOL_ADMIN' | translate }}</mat-chip>
+                }
+                @case ('school_editor') {
+                  <mat-chip>{{ 'USERS.SCHOOL_EDITOR' | translate }}</mat-chip>
+                }
+              }
+            </mat-chip-set>
+          </div>
+        </div>
+      }
+    </div>
+  </mat-drawer>
+
+  <mat-drawer-content class="layout-content">
+    <mat-toolbar class="top-bar no-print">
+      <button mat-icon-button (click)="toggleSidebar()" aria-label="Toggle sidebar">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <span class="toolbar-spacer"></span>
+
+      <button mat-button (click)="toggleLanguage()" aria-label="Toggle language" class="lang-toggle">
+        {{ currentLang }}
+      </button>
+
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="notificationsMenu"
+        class="notifications-btn"
+        [attr.aria-label]="'NAV.NOTIFICATIONS' | translate"
+      >
+        <mat-icon
+          [matBadge]="notificationCount()"
+          [matBadgeHidden]="notificationCount() === 0"
+          matBadgeColor="warn"
+          matBadgeSize="small"
+          matBadgePosition="above after"
+        >notifications</mat-icon>
+      </button>
+      <mat-menu #notificationsMenu="matMenu" xPosition="before" class="notifications-menu">
+        <div mat-subheader>{{ 'NAV.NOTIFICATIONS' | translate }}</div>
+        @if (notifications().length === 0) {
+          <button mat-menu-item disabled>{{ 'NAV.NO_NOTIFICATIONS' | translate }}</button>
+        } @else {
+          @for (n of notifications(); track n.id) {
+            <button mat-menu-item (click)="openNotification(n)">
+              <mat-icon matMenuItemIcon>notifications_active</mat-icon>
+              <span>{{ n.title }} — {{ n.message }}</span>
+            </button>
+          }
+        }
+        <mat-divider />
+        <button mat-menu-item routerLink="/payments">
+          <mat-icon matMenuItemIcon>payments</mat-icon>
+          {{ 'NAV.PAYMENTS' | translate }}
+        </button>
+      </mat-menu>
+
+      @if (user$ | async; as user) {
+        <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+          <mat-icon>account_circle</mat-icon>
+          @if (!collapsed()) {
+            <span class="user-name">{{ user.name }}</span>
+          }
+        </button>
+        <mat-menu #userMenu="matMenu">
+          <div class="user-menu-email">{{ user.email }}</div>
+          <button mat-menu-item routerLink="/settings">
+            <mat-icon>settings</mat-icon>
+            {{ 'NAV.SETTINGS' | translate }}
+          </button>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            {{ 'NAV.LOGOUT' | translate }}
+          </button>
+        </mat-menu>
+      }
+    </mat-toolbar>
+
+    <main class="page-content page-enter">
+      <router-outlet />
+    </main>
+  </mat-drawer-content>
+</mat-drawer-container>
+
+<mat-toolbar class="bottom-nav no-print" aria-label="Navigation mobile">
+  @if (user$ | async; as user) {
+    <mat-nav-list class="bottom-nav-list">
+      @for (item of navItems.slice(0, 5); track item.label) {
+        @if (isNavVisible(item, user.role)) {
+          <a
+            mat-list-item
+            [routerLink]="resolveRoute(item, user)"
+            routerLinkActive
+            #bottomRla="routerLinkActive"
+            [activated]="bottomRla.isActive"
+            class="bottom-nav-item"
+          >
+            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+            <span matListItemTitle>{{ item.label | translate }}</span>
+          </a>
+        }
+      }
+    </mat-nav-list>
+  }
+</mat-toolbar>
