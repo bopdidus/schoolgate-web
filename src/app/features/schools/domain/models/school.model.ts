@@ -40,8 +40,6 @@ export interface SchoolClass {
    * installment via `ClassInstallment.advanceAllowed`.
    */
   advanceAllowed: boolean;
-  /** Days after mobile declaration for school to validate before auto-refund (admin-configured, 1–7). */
-  paymentValidationDays: number;
   enrollmentFee: ClassFee;
   installments: ClassInstallment[];
   enrolledCount?: number;
@@ -64,6 +62,12 @@ export interface School {
    * Read-only — derived by the backend, never edited in the form.
    */
   academicYear?: string;
+  /** Days the school has to answer a pending request before auto-rejection (1–30). */
+  reviewDeadlineDays?: number;
+  /** Days the parent has to pay after acceptance (1–90). */
+  paymentDeadlineDays?: number;
+  /** ISO date after which new enrollment requests are refused; null/undefined = always open. */
+  enrollmentDeadline?: string | null;
   classes: SchoolClass[];
   totalClasses?: number;
   fillRate?: number;
@@ -80,6 +84,9 @@ export interface CreateSchoolRequest {
   email: string;
   status: SchoolStatus;
   system: SchoolSystem;
+  reviewDeadlineDays?: number;
+  paymentDeadlineDays?: number;
+  enrollmentDeadline?: string | null;
 }
 
 /** School field update; include `classes` when replacing the class list. */

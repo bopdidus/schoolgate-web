@@ -9,12 +9,17 @@
  */
 import { MetaDto } from './meta';
 import { NotificationDto } from './notification';
+import { ApiCodeDto } from './apiCode';
 import { ErrorBodyDto } from './errorBody';
 
 
 export interface NotificationListEnvelopeDto { 
+    code?: ApiCodeDto;
     data?: Array<NotificationDto>;
     error?: ErrorBodyDto;
     meta?: MetaDto;
 }
+export namespace NotificationListEnvelopeDto {
+}
+
 

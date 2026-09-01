@@ -9,6 +9,7 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { catchError, concatMap, from, map, of, toArray } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -19,8 +20,16 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
+import { MatChipsModule } from '@angular/material/chips';
 import { TranslateModule } from '@ngx-translate/core';
 import { SchoolRepository } from '../../../infrastructure/school.repository';
+import {
+  ClassCsvImportService,
+  ClassCsvRowResult,
+} from '../../../application/class-csv-import.service';
 import { PageHeaderComponent } from '../../../../../shared/components/page-header/page-header.component';
 import { NotificationService } from '../../../../../core/notifications/notification.service';
 import { HasUnsavedChanges } from '../../../../../core/guards/unsaved-changes.guard';
@@ -32,11 +41,7 @@ import {
   EDUCATION_TYPES,
 } from '../../../../../shared/constants/education-system.constants';
 import {
-  DEFAULT_PAYMENT_VALIDATION_DAYS,
-  MAX_PAYMENT_VALIDATION_DAYS,
-  MIN_PAYMENT_VALIDATION_DAYS,
   validateFeesChronological,
-  validatePaymentValidationDays,
   toUtcMidnightIso,
 } from '../../../application/school-form.validation';
 import { RefLevel, RefRepository, RefSpecialty } from '../../../../../core/ref/ref.repository';
@@ -51,7 +56,6 @@ interface ClassRawValue {
   totalSeats: number;
   /** Enrollment-fee advance (class-level). */
   advanceAllowed: boolean;
-  paymentValidationDays: number;
   enrollmentFee: { amount: number; dueDate: string | Date; advancePercentage: number };
   installments: Array<{
     order: number;
@@ -78,6 +82,10 @@ interface ClassRawValue {
     MatNativeDateModule,
     MatDividerModule,
     MatCardModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatTableModule,
+    MatChipsModule,
     TranslateModule,
     PageHeaderComponent,
   ],
@@ -102,6 +110,7 @@ export class ClassFormPageComponent implements OnInit, HasUnsavedChanges {
   private readonly router = inject(Router);
   private readonly repository = inject(SchoolRepository);
   private readonly refRepository = inject(RefRepository);
+  private readonly csvImportService = inject(ClassCsvImportService);
   private readonly notification = inject(NotificationService);
   private readonly cdr = inject(ChangeDetectorRef);
 
@@ -111,13 +120,17 @@ export class ClassFormPageComponent implements OnInit, HasUnsavedChanges {
   readonly schoolId = signal<string | null>(null);
   readonly classId = signal<string | null>(null);
   readonly schoolName = signal('');
-  readonly maxValidationDays = MAX_PAYMENT_VALIDATION_DAYS;
   readonly educationTypeOptions = EDUCATION_TYPES;
   readonly educationTypeI18n = EDUCATION_TYPE_I18N;
   readonly educationSystemI18n = EDUCATION_SYSTEM_I18N;
   readonly specialties = signal<RefSpecialty[]>([]);
   readonly levels = signal<RefLevel[]>([]);
   readonly isBilingual = signal(false);
+
+  readonly csvRows = signal<ClassCsvRowResult[]>([]);
+  readonly csvParsing = signal(false);
+  readonly csvImporting = signal(false);
+  readonly csvSummary = signal<{ success: number; failed: number } | null>(null);
 
   private school: School | null = null;
   private formDirty = false;
@@ -196,14 +209,6 @@ export class ClassFormPageComponent implements OnInit, HasUnsavedChanges {
       name: ['', Validators.required],
       totalSeats: [0, [Validators.required, Validators.min(1)]],
       advanceAllowed: [false],
-      paymentValidationDays: [
-        DEFAULT_PAYMENT_VALIDATION_DAYS,
-        [
-          Validators.required,
-          Validators.min(MIN_PAYMENT_VALIDATION_DAYS),
-          Validators.max(MAX_PAYMENT_VALIDATION_DAYS),
-        ],
-      ],
       enrollmentFee: this.fb.nonNullable.group({
         amount: [0, [Validators.required, Validators.min(1)]],
         dueDate: ['', Validators.required],
@@ -320,12 +325,6 @@ export class ClassFormPageComponent implements OnInit, HasUnsavedChanges {
     }
 
     const raw = this.form.getRawValue() as ClassRawValue;
-    const daysErr = validatePaymentValidationDays(raw.paymentValidationDays);
-    if (daysErr) {
-      this.notification.error(`Validation window must be 1–${MAX_PAYMENT_VALIDATION_DAYS} days`);
-      return;
-    }
-
     const allFees = [raw.enrollmentFee, ...raw.installments];
     const orderErr = validateFeesChronological(
       allFees.map((f) => ({ amount: f.amount, dueDate: String(f.dueDate) })),
@@ -350,7 +349,6 @@ export class ClassFormPageComponent implements OnInit, HasUnsavedChanges {
       name: raw.name,
       totalSeats: raw.totalSeats,
       advanceAllowed: raw.advanceAllowed,
-      paymentValidationDays: raw.paymentValidationDays,
       enrollmentFee: {
         amount: raw.enrollmentFee.amount,
         dueDate: toUtcMidnightIso(raw.enrollmentFee.dueDate),
@@ -394,7 +392,6 @@ export class ClassFormPageComponent implements OnInit, HasUnsavedChanges {
       name: cls.name,
       totalSeats: cls.totalSeats,
       advanceAllowed: cls.advanceAllowed,
-      paymentValidationDays: cls.paymentValidationDays,
       enrollmentFee: {
         amount: cls.enrollmentFee.amount,
         dueDate: cls.enrollmentFee.dueDate,
@@ -430,6 +427,101 @@ export class ClassFormPageComponent implements OnInit, HasUnsavedChanges {
       return this.school?.schoolSystem === 'anglophone' ? 'anglophone' : 'francophone';
     }
     return this.form.controls.system.value;
+  }
+
+  get csvValidCount(): number {
+    return this.csvRows().filter((r) => r.errors.length === 0).length;
+  }
+
+  get csvInvalidCount(): number {
+    return this.csvRows().filter((r) => r.errors.length > 0).length;
+  }
+
+  downloadCsvTemplate(): void {
+    const csv = this.csvImportService.buildTemplate();
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'schoolgate-classes-template.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  onCsvFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file || !this.school) return;
+
+    this.csvParsing.set(true);
+    this.csvSummary.set(null);
+    this.csvRows.set([]);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = String(reader.result ?? '');
+      const rawRows = this.csvImportService.parse(text);
+      if (rawRows.length === 0) {
+        this.csvParsing.set(false);
+        this.notification.error('SCHOOLS.CSV.EMPTY');
+        this.cdr.markForCheck();
+        return;
+      }
+      this.csvImportService.buildRows(rawRows, this.school!, this.specialties()).subscribe({
+        next: (rows) => {
+          this.csvRows.set(rows);
+          this.csvParsing.set(false);
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.csvParsing.set(false);
+          this.notification.error('COMMON.ERROR');
+          this.cdr.markForCheck();
+        },
+      });
+    };
+    reader.onerror = () => {
+      this.csvParsing.set(false);
+      this.notification.error('COMMON.ERROR');
+    };
+    reader.readAsText(file);
+    input.value = '';
+  }
+
+  clearCsvImport(): void {
+    this.csvRows.set([]);
+    this.csvSummary.set(null);
+  }
+
+  importCsvRows(): void {
+    const schoolId = this.schoolId();
+    const validRows = this.csvRows().filter((r) => r.schoolClass);
+    if (!schoolId || validRows.length === 0) return;
+
+    this.csvImporting.set(true);
+    from(validRows)
+      .pipe(
+        concatMap((row) =>
+          this.repository.addClass(schoolId, row.schoolClass!).pipe(
+            map(() => ({ ok: true })),
+            catchError(() => of({ ok: false })),
+          ),
+        ),
+        toArray(),
+      )
+      .subscribe((results) => {
+        const success = results.filter((r) => r.ok).length;
+        const failed = results.length - success;
+        this.csvImporting.set(false);
+        this.csvSummary.set({ success, failed });
+        this.csvRows.set([]);
+        if (failed === 0) {
+          this.notification.success('SCHOOLS.CSV.IMPORT_SUCCESS');
+        } else {
+          this.notification.error('SCHOOLS.CSV.IMPORT_PARTIAL');
+        }
+        this.cdr.markForCheck();
+      });
   }
 
   private loadLevels(): void {

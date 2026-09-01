@@ -127,6 +127,9 @@ export class SchoolRepository {
       schoolSystem,
       // Backend-derived Cameroon academic year (Sept→Aug); never written by the form.
       academicYear: dto.academic_year || raw.academicYear || undefined,
+      reviewDeadlineDays: dto.review_deadline_days ?? undefined,
+      paymentDeadlineDays: dto.payment_deadline_days ?? undefined,
+      enrollmentDeadline: dto.enrollment_deadline ?? null,
       classes,
       totalClasses: classes.length || Number(raw.totalClasses ?? 0),
       fillRate: Number(raw.fillRate ?? 0),
@@ -156,7 +159,6 @@ export class SchoolRepository {
       totalSeats: seats,
       // Class-level advance = enrollment fee only.
       advanceAllowed: Boolean(c.advance_allowed),
-      paymentValidationDays: 5,
       enrollmentFee: {
         amount: fromCents(c.enrollment_fee_cents),
         dueDate: '',
@@ -210,6 +212,11 @@ export class SchoolRepository {
       email: data.email,
       status: data.status as SchoolRequestDto.StatusEnum,
       system: data.system as SchoolRequestDto.SystemEnum,
+      review_deadline_days: data.reviewDeadlineDays,
+      payment_deadline_days: data.paymentDeadlineDays,
+      enrollment_deadline: data.enrollmentDeadline
+        ? toUtcMidnightIso(data.enrollmentDeadline)
+        : null,
     };
   }
 

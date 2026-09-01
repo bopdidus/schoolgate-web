@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClient, HttpContext, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Store } from '@ngrx/store';
-import { of, throwError } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { tokenRefreshInterceptor } from './token-refresh.interceptor';
 import { AuthService } from '../auth/application/auth.service';
 import { TokenRefreshCoordinator } from '../auth/application/token-refresh-coordinator.service';
@@ -56,7 +56,11 @@ describe('tokenRefreshInterceptor', () => {
   });
 
   it('should trigger only ONE refresh call when several requests 401 concurrently (thundering herd)', () => {
-    authService.refreshToken.and.returnValue(of({ accessToken: 'new-token' }));
+    // A Subject keeps the refresh in flight while the three 401s land — a
+    // synchronous `of()` would complete (and reset the coordinator) between
+    // each flush, which is not how the real async refresh behaves.
+    const refresh$ = new Subject<{ accessToken: string }>();
+    authService.refreshToken.and.returnValue(refresh$.asObservable());
 
     http.get('/api/v1/schools').subscribe();
     http.get('/api/v1/payments').subscribe();
@@ -65,6 +69,9 @@ describe('tokenRefreshInterceptor', () => {
     httpMock.expectOne('/api/v1/schools').flush(null, { status: 401, statusText: 'Unauthorized' });
     httpMock.expectOne('/api/v1/payments').flush(null, { status: 401, statusText: 'Unauthorized' });
     httpMock.expectOne('/api/v1/invoices').flush(null, { status: 401, statusText: 'Unauthorized' });
+
+    refresh$.next({ accessToken: 'new-token' });
+    refresh$.complete();
 
     // All three retries go out, but the refresh endpoint itself was hit exactly once.
     httpMock.expectOne('/api/v1/schools').flush({});

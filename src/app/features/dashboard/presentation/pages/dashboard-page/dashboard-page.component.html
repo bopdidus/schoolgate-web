@@ -62,7 +62,7 @@
             @if (recentPayments().length === 0) {
               <p class="text-muted">{{ 'COMMON.NO_DATA' | translate }}</p>
             } @else {
-              <table mat-table [dataSource]="recentPayments()" [trackBy]="trackById" class="mat-table-full-width">
+              <table mat-table [dataSource]="recentPayments()" [trackBy]="trackById" class="mat-table-full-width table-zebra">
                 <ng-container matColumnDef="student">
                   <th mat-header-cell *matHeaderCellDef>{{ 'ENROLLMENTS.STUDENT' | translate }}</th>
                   <td mat-cell *matCellDef="let p">{{ p.studentName }}</td>
@@ -75,7 +75,7 @@
                   <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
                   <td mat-cell *matCellDef="let p">
                     <mat-chip-set>
-                      <mat-chip [class]="p.status | statusColor">{{ p.status }}</mat-chip>
+                      <mat-chip [class]="p.status | statusColor">{{ ('STATUS.' + p.status.toUpperCase()) | translate }}</mat-chip>
                     </mat-chip-set>
                   </td>
                 </ng-container>

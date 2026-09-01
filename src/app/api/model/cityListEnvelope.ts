@@ -8,13 +8,18 @@
  * Do not edit the class manually.
  */
 import { MetaDto } from './meta';
+import { ApiCodeDto } from './apiCode';
 import { CityRefDto } from './cityRef';
 import { ErrorBodyDto } from './errorBody';
 
 
 export interface CityListEnvelopeDto { 
+    code?: ApiCodeDto;
     data?: Array<CityRefDto>;
     error?: ErrorBodyDto;
     meta?: MetaDto;
 }
+export namespace CityListEnvelopeDto {
+}
+
 

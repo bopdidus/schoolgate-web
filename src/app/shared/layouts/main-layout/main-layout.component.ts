@@ -1,9 +1,20 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject, signal, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  computed,
+  OnInit,
+  OnDestroy,
+  ChangeDetectionStrategy,
+  DestroyRef,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatDrawerContainer, MatSidenavModule } from '@angular/material/sidenav';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { MatDrawerContainer, MatDrawerContent } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,6 +34,10 @@ import {
   HeaderNotificationsService,
 } from '../../../core/notifications/header-notifications.service';
 import { SessionTimeoutService } from '../../../core/auth/application/session-timeout.service';
+import { IconRailDrawerComponent } from '../../components/icon-rail-drawer/icon-rail-drawer.component';
+
+const MOBILE_QUERY = '(max-width: 768px)';
+const TABLET_QUERY = '(min-width: 769px) and (max-width: 1024px)';
 
 interface NavItem {
   label: string;
@@ -43,7 +58,9 @@ interface NavItem {
     RouterLink,
     RouterLinkActive,
     TranslateModule,
-    MatSidenavModule,
+    MatDrawerContainer,
+    MatDrawerContent,
+    IconRailDrawerComponent,
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
@@ -62,11 +79,20 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   private readonly store = inject(Store);
   private readonly headerNotifications = inject(HeaderNotificationsService);
   private readonly sessionTimeout = inject(SessionTimeoutService);
+  private readonly breakpointObserver = inject(BreakpointObserver);
+  private readonly destroyRef = inject(DestroyRef);
   readonly router = inject(Router);
   readonly languageService = inject(LanguageService);
 
   readonly user$ = this.store.select(selectUser);
+  /** Manual collapse requested through the toolbar toggle. */
   readonly collapsed = signal(false);
+  /** Phone layout: the drawer is dropped in favor of the bottom nav. */
+  readonly isMobile = signal(false);
+  /** Tablet widths automatically fall back to the icon rail. */
+  readonly autoRail = signal(false);
+  /** Effective rail state driving both the drawer and the icon-only rendering. */
+  readonly railActive = computed(() => this.collapsed() || this.autoRail());
   readonly notifications = signal<HeaderNotification[]>([]);
   readonly notificationCount = signal(0);
 
@@ -75,6 +101,13 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       this.notifications.set(items);
       this.notificationCount.set(unreadCount);
     });
+    this.breakpointObserver
+      .observe([MOBILE_QUERY, TABLET_QUERY])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((state) => {
+        this.isMobile.set(state.breakpoints[MOBILE_QUERY]);
+        this.autoRail.set(state.breakpoints[TABLET_QUERY]);
+      });
     // This layout only wraps authenticated routes (see `app.routes.ts`), so
     // starting/stopping the idle watcher here naturally excludes `/login` and
     // other public routes from the timeout without any extra route checks.
@@ -110,10 +143,17 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       roles: ['school_admin', 'school_editor'],
     },
     {
+      label: 'NAV.CLASSES',
+      icon: 'class',
+      route: null,
+      routeFn: (user) => `/schools/${user.schoolId}`,
+      roles: ['school_admin'],
+    },
+    {
       label: 'NAV.ENROLLMENTS',
       icon: 'groups',
       route: '/enrollments',
-      roles: ['school_admin', 'school_editor'],
+      roles: ['admin', 'school_admin', 'school_editor'],
     },
     {
       label: 'NAV.PAYMENTS',
@@ -148,18 +188,6 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     this.collapsed.update((v) => !v);
   }
 
-  /**
-   * The drawer width change is a pure CSS transition (see `.layout-sidenav` in the stylesheet),
-   * so Angular Material's own margin calculation for `mat-drawer-content` — which only runs on
-   * change-detection cycles — captures a stale mid-transition width. Without this, a gap/overlap
-   * remains between the collapsed drawer and the toolbar once the animation settles.
-   */
-  onSidenavTransitionEnd(event: TransitionEvent, drawerContainer: MatDrawerContainer): void {
-    if (event.propertyName === 'width') {
-      drawerContainer.updateContentMargins();
-    }
-  }
-
   logout(): void {
     this.store.dispatch(AuthActions.logout());
   }
@@ -177,6 +205,11 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   }
 
   openNotification(notification: HeaderNotification): void {
+    this.headerNotifications.markAsRead(notification.id);
     void this.router.navigateByUrl(notification.route);
+  }
+
+  markAllNotificationsRead(): void {
+    this.headerNotifications.markAllAsRead();
   }
 }

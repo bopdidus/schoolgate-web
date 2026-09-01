@@ -18,6 +18,8 @@ export interface Payment {
   rejectionReason?: string;
   validatedAt?: string;
   validatedBy?: string;
+  payerMsisdn?: string;
+  externalReference?: string;
 }
 
 export interface PaymentFilters {

@@ -44,7 +44,7 @@
             <span class="text-muted">{{ 'COMMON.STATUS' | translate }}</span>
             <p style="margin: 0">
               <mat-chip-set>
-                <mat-chip [class]="s.status | statusColor">{{ s.status }}</mat-chip>
+                <mat-chip [class]="s.status | statusColor">{{ ('STATUS.' + s.status.toUpperCase()) | translate }}</mat-chip>
               </mat-chip-set>
             </p>
           </div>
@@ -105,10 +105,6 @@
                   <div>
                     <span class="text-muted">{{ 'SCHOOLS.TOTAL_SEATS' | translate }}</span>
                     <div>{{ cls.totalSeats }}</div>
-                  </div>
-                  <div>
-                    <span class="text-muted">{{ 'SCHOOLS.PAYMENT_VALIDATION_DAYS' | translate }}</span>
-                    <div>{{ cls.paymentValidationDays }}d</div>
                   </div>
                   <div>
                     <span class="text-muted">{{ 'EDUCATION.LEVEL' | translate }}</span>

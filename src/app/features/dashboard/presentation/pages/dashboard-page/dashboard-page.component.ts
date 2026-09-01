@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { Store } from '@ngrx/store';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
@@ -56,6 +56,7 @@ export class DashboardPageComponent implements OnInit {
   private readonly dashboardRepo = inject(DashboardRepository);
   private readonly paymentRepo = inject(PaymentRepository);
   private readonly notification = inject(NotificationService);
+  private readonly translate = inject(TranslateService);
   private readonly store = inject(Store);
 
   readonly user$ = this.store.select(selectUser);
@@ -76,6 +77,9 @@ export class DashboardPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDashboard();
+    this.translate.onLangChange.subscribe(() =>
+      this.applyChartData({ classPaymentStats: this.classStats() }),
+    );
   }
 
   loadDashboard(): void {
@@ -99,8 +103,16 @@ export class DashboardPageComponent implements OnInit {
     this.barChartData = {
       labels: classData.map((d) => d.className),
       datasets: [
-        { label: 'Validated', data: classData.map((d) => d.validated), backgroundColor: '#2ECC71' },
-        { label: 'Pending', data: classData.map((d) => d.pending), backgroundColor: '#3498DB' },
+        {
+          label: this.translate.instant('STATUS.VALIDATED'),
+          data: classData.map((d) => d.validated),
+          backgroundColor: '#4f46e5',
+        },
+        {
+          label: this.translate.instant('STATUS.PENDING'),
+          data: classData.map((d) => d.pending),
+          backgroundColor: '#a5b4fc',
+        },
       ],
     };
   }
@@ -108,7 +120,7 @@ export class DashboardPageComponent implements OnInit {
   validatePayment(payment: Payment): void {
     this.paymentRepo.validate({ payment_ids: [payment.id] }).subscribe({
       next: () => {
-        this.notification.success('Payment validated');
+        this.notification.success('PAYMENTS.VALIDATED_OK');
         this.loadDashboard();
       },
     });
@@ -117,7 +129,7 @@ export class DashboardPageComponent implements OnInit {
   rejectPayment(payment: Payment): void {
     this.paymentRepo.reject({ payment_ids: [payment.id] }).subscribe({
       next: () => {
-        this.notification.success('Payment rejected');
+        this.notification.success('PAYMENTS.REJECTED_OK');
         this.loadDashboard();
       },
     });

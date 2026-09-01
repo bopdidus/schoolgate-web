@@ -13,6 +13,5 @@ export interface CreateEnrollmentRequestDto {
     school_class_id: number;
     academic_year?: string;
     is_returning_student?: boolean;
-    documents?: Array<string>;
 }
 

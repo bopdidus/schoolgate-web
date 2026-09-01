@@ -10,6 +10,7 @@ import { UserRepository } from '../../../infrastructure/user.repository';
 import { User } from '../../../../../core/auth/models/auth.model';
 import { PageHeaderComponent } from '../../../../../shared/components/page-header/page-header.component';
 import { SkeletonTableComponent } from '../../../../../shared/components/skeleton-table/skeleton-table.component';
+import { EmptyStateComponent } from '../../../../../shared/components/empty-state/empty-state.component';
 import { NotificationService } from '../../../../../core/notifications/notification.service';
 
 @Component({
@@ -24,6 +25,7 @@ import { NotificationService } from '../../../../../core/notifications/notificat
     TranslateModule,
     PageHeaderComponent,
     SkeletonTableComponent,
+    EmptyStateComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './user-list-page.component.html',
@@ -35,7 +37,7 @@ export class UserListPageComponent implements OnInit {
 
   readonly loading = signal(true);
   readonly users = signal<User[]>([]);
-  readonly displayedColumns = ['name', 'email', 'role', 'school', 'active', 'actions'];
+  readonly displayedColumns = ['name', 'email', 'role', 'school', 'active'];
 
   ngOnInit(): void {
     this.load();
@@ -66,7 +68,7 @@ export class UserListPageComponent implements OnInit {
   toggleActive(user: User): void {
     this.repository.toggleActive(user.id, !user.isActive).subscribe({
       next: () => {
-        this.notification.success('User updated');
+        this.notification.success('USERS.UPDATED_OK');
         this.load();
       },
     });

@@ -8,12 +8,17 @@
  * Do not edit the class manually.
  */
 import { MetaDto } from './meta';
+import { ApiCodeDto } from './apiCode';
 import { ErrorBodyDto } from './errorBody';
 
 
 export interface EnvelopeDto { 
+    code?: ApiCodeDto;
     data?: any | null;
     error?: ErrorBodyDto;
     meta?: MetaDto;
 }
+export namespace EnvelopeDto {
+}
+
 

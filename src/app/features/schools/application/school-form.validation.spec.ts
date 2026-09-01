@@ -1,19 +1,19 @@
-import {
-  validateDeadlinesChronological,
-  validatePaymentValidationDays,
-} from './school-form.validation';
+import { validateFeesChronological } from './school-form.validation';
 
 describe('school-form.validation', () => {
-  it('rejects payment validation days above max', () => {
-    expect(validatePaymentValidationDays(30)).toBe('SCHOOLS.PAYMENT_VALIDATION_DAYS_RANGE');
-    expect(validatePaymentValidationDays(7)).toBeNull();
-  });
-
-  it('rejects non-chronological deadlines', () => {
-    const result = validateDeadlinesChronological([
-      { type: 'enrollment', deadlineDate: '2026-12-01' },
-      { type: 'installment', installmentNumber: 1, deadlineDate: '2026-11-01' },
+  it('rejects non-chronological due dates', () => {
+    const result = validateFeesChronological([
+      { amount: 100, dueDate: '2026-12-01' },
+      { amount: 100, dueDate: '2026-11-01' },
     ]);
     expect(result).toBe('SCHOOLS.DEADLINES_ORDER');
+  });
+
+  it('accepts chronological due dates', () => {
+    const result = validateFeesChronological([
+      { amount: 100, dueDate: '2026-10-01' },
+      { amount: 100, dueDate: '2026-11-01' },
+    ]);
+    expect(result).toBeNull();
   });
 });

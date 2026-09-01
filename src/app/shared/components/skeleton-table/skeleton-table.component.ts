@@ -8,7 +8,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
   imports: [MatCardModule, MatProgressBarModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <mat-card appearance="outlined">
+    <mat-card appearance="outlined" class="page-card skeleton-card">
       <mat-progress-bar mode="indeterminate" />
       <mat-card-content>
         <div class="skeleton-rows">
@@ -22,6 +22,15 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
         </div>
       </mat-card-content>
     </mat-card>
+  `,
+  styles: `
+    .skeleton-card {
+      overflow: hidden;
+    }
+
+    .skeleton-card .mat-mdc-card-content {
+      padding: 8px var(--spacing-card) var(--spacing-card) !important;
+    }
   `,
 })
 export class SkeletonTableComponent {

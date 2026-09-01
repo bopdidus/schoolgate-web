@@ -1,5 +1,13 @@
 import { EnrollmentStatus, EducationSystem, EducationType } from '../../../../shared/models/common.model';
 
+export interface EnrollmentDocument {
+  id: string;
+  filename: string;
+  contentType?: string;
+  sizeBytes?: number;
+  createdAt?: string;
+}
+
 export interface Enrollment {
   id: string;
   studentName: string;
@@ -24,6 +32,11 @@ export interface Enrollment {
   /** True when the enrollment fee payment has been validated by school staff. */
   paymentValidated: boolean;
   rejectionReason?: string;
+  /** Uploaded supporting documents (populated on GET /enrollments/{id}). */
+  documents?: EnrollmentDocument[];
+  /** Staff user id who accepted/rejected the enrollment. */
+  reviewedByUserId?: number;
+  reviewedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -35,6 +48,8 @@ export interface EnrollmentFilters {
   educationType?: EducationType | '';
   specialtyId?: string;
   paymentValidated?: boolean;
+  /** Student lookup: exact matricule or partial name. */
+  matricule?: string;
   dateFrom?: string;
   dateTo?: string;
   page?: number;

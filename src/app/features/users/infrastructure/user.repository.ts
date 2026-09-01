@@ -6,7 +6,7 @@ import {
   UserDto,
 } from '../../../api';
 import { PaginatedResponse, UserRole } from '../../../shared/models/common.model';
-import { unwrapData } from '../../../core/api/openapi-helpers';
+import { pageToOffset, toPaginated, unwrapData } from '../../../core/api/openapi-helpers';
 import { User } from '../../../core/auth/models/auth.model';
 
 export interface CreateUserRequest {
@@ -21,14 +21,28 @@ export interface CreateUserRequest {
 export class UserRepository {
   private readonly authApi = inject(OpenApiAuthService);
 
-  /** User listing is not part of the OpenAPI contract. */
   getAll(page = 1, pageSize = 10): Observable<PaginatedResponse<User>> {
-    return of({ data: [], total: 0, page, page_size: pageSize });
+    const { limit, offset } = pageToOffset(page, pageSize);
+    return this.authApi.authSchoolUsersGet(undefined, limit, offset).pipe(
+      map((envelope) => {
+        const rows = unwrapData(envelope) ?? [];
+        return toPaginated(
+          rows.map((d) => this.mapUser(d)),
+          envelope.meta,
+          page,
+          pageSize,
+        );
+      }),
+    );
   }
 
   create(data: CreateUserRequest): Observable<User> {
     if (data.role === 'admin') {
       return throwError(() => new Error('Admin users cannot be created via this API'));
+    }
+    const schoolId = Number(data.schoolId);
+    if (!data.schoolId || Number.isNaN(schoolId) || schoolId < 1) {
+      return throwError(() => new Error('A school must be selected for school staff accounts'));
     }
     const [firstName, ...rest] = data.name.trim().split(/\s+/);
     const body: CreateSchoolUserRequestDto = {
@@ -37,6 +51,7 @@ export class UserRepository {
       first_name: firstName || data.name,
       last_name: rest.join(' ') || firstName || data.name,
       role: data.role as CreateSchoolUserRequestDto.RoleEnum,
+      school_id: schoolId,
     };
     return this.authApi.authSchoolUsersPost(body).pipe(
       map((envelope) => this.mapUser(unwrapData(envelope))),
@@ -65,6 +80,7 @@ export class UserRepository {
       email: String(dto.email ?? ''),
       name,
       role: (dto.role as UserRole) ?? 'school_editor',
+      schoolId: dto.school_id != null ? String(dto.school_id) : undefined,
       isActive: true,
       createdAt: '',
     };

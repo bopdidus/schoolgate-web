@@ -22,6 +22,10 @@ import { ACTIONABLE_ENROLLMENT_STATUSES, UserRole, EducationSystem } from '../..
 import { EDUCATION_SYSTEM_I18N } from '../../../../../shared/constants/education-system.constants';
 import { RejectReasonDialogComponent } from '../../../../enrollments/presentation/components/reject-reason-dialog/reject-reason-dialog.component';
 import { EnrollmentDetailDialogComponent } from '../../../../enrollments/presentation/components/enrollment-detail-dialog/enrollment-detail-dialog.component';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogResult,
+} from '../../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-school-enrollments-panel',
@@ -80,8 +84,8 @@ export class SchoolEnrollmentsPanelComponent implements OnInit {
   canActOnEnrollment(e: Enrollment): boolean {
     const role = this.userRole();
     if (!role) return false;
-    const isSchoolUser = role === 'school_admin' || role === 'school_editor';
-    return isSchoolUser && (ACTIONABLE_ENROLLMENT_STATUSES as string[]).includes(e.status);
+    const canDecide = ['admin', 'school_admin', 'school_editor'].includes(role);
+    return canDecide && (ACTIONABLE_ENROLLMENT_STATUSES as string[]).includes(e.status);
   }
 
   load(): void {
@@ -112,26 +116,46 @@ export class SchoolEnrollmentsPanelComponent implements OnInit {
   }
 
   openDetail(enrollment: Enrollment): void {
-    this.dialog.open(EnrollmentDetailDialogComponent, {
-      width: '520px',
-      data: enrollment,
-    });
+    this.dialog
+      .open(EnrollmentDetailDialogComponent, {
+        width: '520px',
+        data: { id: enrollment.id, enrollment },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result?.accepted || result?.rejected) {
+          this.load();
+        }
+      });
   }
 
   accept(e: Enrollment, event: Event): void {
     event.stopPropagation();
-    this.actionLoading.set(e.id);
-    this.repository.accept(e.id).subscribe({
-      next: () => {
-        this.actionLoading.set(null);
-        this.notification.success('ENROLLMENTS.ACCEPTED_OK');
-        this.load();
-      },
-      error: () => {
-        this.actionLoading.set(null);
-        this.notification.error('COMMON.ERROR');
-      },
-    });
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: 'COMMON.CONFIRM',
+          message: 'ENROLLMENTS.ACCEPT_CONFIRM',
+          confirmLabel: 'ENROLLMENTS.ACCEPT',
+        },
+        width: '400px',
+      })
+      .afterClosed()
+      .subscribe((result: ConfirmDialogResult | undefined) => {
+        if (!result?.confirmed) return;
+        this.actionLoading.set(e.id);
+        this.repository.accept(e.id).subscribe({
+          next: () => {
+            this.actionLoading.set(null);
+            this.notification.success('ENROLLMENTS.ACCEPTED_OK');
+            this.load();
+          },
+          error: () => {
+            this.actionLoading.set(null);
+            this.notification.error('COMMON.ERROR');
+          },
+        });
+      });
   }
 
   openRejectDialog(e: Enrollment, event: Event): void {

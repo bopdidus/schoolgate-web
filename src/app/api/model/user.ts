@@ -16,6 +16,10 @@ export interface UserDto {
     last_name?: string;
     phone?: string;
     role?: UserDto.RoleEnum;
+    /**
+     * Present only for school_admin/school_editor (multi-staff scoping)
+     */
+    school_id?: number;
 }
 export namespace UserDto {
     export const RoleEnum = {

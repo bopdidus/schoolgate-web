@@ -39,8 +39,9 @@ export interface RejectReasonDialogData {
           <textarea matInput formControlName="reason" rows="4"
             [placeholder]="'ENROLLMENTS.REJECT_REASON_PLACEHOLDER' | translate">
           </textarea>
+          <mat-hint>{{ 'ENROLLMENTS.REJECT_REASON_MIN_LENGTH' | translate }}</mat-hint>
           @if (form.controls.reason.invalid && form.controls.reason.touched) {
-            <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+            <mat-error>{{ 'ENROLLMENTS.REJECT_REASON_MIN_LENGTH' | translate }}</mat-error>
           }
         </mat-form-field>
       </form>
@@ -61,8 +62,9 @@ export class RejectReasonDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<RejectReasonDialogComponent>);
   readonly data = inject<RejectReasonDialogData>(MAT_DIALOG_DATA);
 
+  // Mirrors the API contract: rejection_reason requires at least 10 characters.
   readonly form = this.fb.nonNullable.group({
-    reason: ['', [Validators.required, Validators.minLength(5)]],
+    reason: ['', [Validators.required, Validators.minLength(10)]],
   });
 
   confirm(): void {

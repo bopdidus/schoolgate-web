@@ -75,8 +75,10 @@
         <th mat-header-cell *matHeaderCellDef>{{ 'EDUCATION.SYSTEMS' | translate }}</th>
         <td mat-cell *matCellDef="let school">
           <mat-chip-set>
-            <mat-chip>{{ schoolSystemBadgeLabel(school.schoolSystem) }}</mat-chip>
-            <mat-chip>{{ schoolSystemI18nKey(school.schoolSystem) | translate }}</mat-chip>
+            <mat-chip class="chip-small">
+              <mat-icon class="chip-leading-icon">translate</mat-icon>
+              {{ schoolSystemI18nKey(school.schoolSystem) | translate }}
+            </mat-chip>
           </mat-chip-set>
         </td>
       </ng-container>

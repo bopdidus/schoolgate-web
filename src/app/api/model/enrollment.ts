@@ -8,12 +8,15 @@
  * Do not edit the class manually.
  */
 import { SchoolClassDto } from './schoolClass';
+import { PersonDto } from './person';
+import { DocumentDto } from './document';
 import { SchoolDto } from './school';
 
 
 export interface EnrollmentDto { 
     id?: number;
     parent_id?: number;
+    person_id?: number;
     school_class_id?: number;
     academic_year?: string;
     status?: string;
@@ -21,8 +24,27 @@ export interface EnrollmentDto {
     requires_documents?: boolean;
     payment_validated?: boolean;
     rejection_reason?: string;
+    /**
+     * Set for automatic rejections (e.g. ENROLLMENT_REVIEW_TIMEOUT); clients localize it
+     */
+    rejection_reason_code?: string | null;
+    /**
+     * Deadline for the school to answer the pending request
+     */
+    review_due_at?: string | null;
+    /**
+     * Deadline for the parent to pay once accepted
+     */
+    payment_due_at?: string | null;
+    reviewed_by_user_id?: number;
+    reviewed_at?: string;
     created_at?: string;
+    person?: PersonDto;
     school_class?: SchoolClassDto;
     school?: SchoolDto;
+    /**
+     * Only populated on GET /enrollments/{id}
+     */
+    documents?: Array<DocumentDto>;
 }
 

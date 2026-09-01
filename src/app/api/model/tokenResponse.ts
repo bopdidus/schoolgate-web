@@ -12,5 +12,9 @@
 export interface TokenResponseDto { 
     access_token?: string;
     expires_in?: number;
+    /**
+     * Present only when request includes X-Client-Type native.
+     */
+    refresh_token?: string;
 }
 

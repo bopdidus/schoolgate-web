@@ -1,166 +1,104 @@
 <app-page-header title="PAYMENTS.TITLE" />
 
-@if (isAdminView()) {
-  <p class="text-muted page-section">{{ 'PAYMENTS.COMMISSION_BY_SCHOOL' | translate }}</p>
+<mat-card appearance="outlined" class="filter-card">
+  <mat-card-content>
+    <mat-form-field appearance="outline" style="width: 192px">
+      <mat-label>{{ 'COMMON.STATUS' | translate }}</mat-label>
+      <mat-select (selectionChange)="statusFilter.set($event.value); load()">
+        <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
+        <mat-option value="declared">{{ 'STATUS.DECLARED' | translate }}</mat-option>
+        <mat-option value="validated">{{ 'STATUS.VALIDATED' | translate }}</mat-option>
+        <mat-option value="rejected">{{ 'STATUS.REJECTED' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" style="width: 220px">
+      <mat-label>{{ 'EDUCATION.TYPE' | translate }}</mat-label>
+      <mat-select (selectionChange)="onEducationTypeChange($event.value)">
+        <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
+        <mat-option value="general">{{ 'EDUCATION.TYPE_GENERAL' | translate }}</mat-option>
+        <mat-option value="technical">{{ 'EDUCATION.TYPE_TECHNICAL' | translate }}</mat-option>
+        <mat-option value="professional">{{ 'EDUCATION.TYPE_PROFESSIONAL' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" style="width: 220px">
+      <mat-label>{{ 'EDUCATION.SPECIALTY' | translate }}</mat-label>
+      <input matInput (keyup.enter)="onSpecialtyChange($any($event.target).value)" />
+    </mat-form-field>
+  </mat-card-content>
+</mat-card>
 
-  @if (loading()) {
-    <app-skeleton-table />
-  } @else if (commissionSummaries().length === 0) {
-    <app-empty-state icon="payments" title="COMMON.NO_DATA" />
-  } @else {
-    <mat-card appearance="outlined" class="table-card">
-      <table mat-table [dataSource]="commissionSummaries()" [trackBy]="trackBySchoolId" class="mat-table-full-width table-zebra">
-        <ng-container matColumnDef="school">
-          <th mat-header-cell *matHeaderCellDef>{{ 'ENROLLMENTS.SCHOOL' | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{ row.schoolName }}</td>
-        </ng-container>
-        <ng-container matColumnDef="city">
-          <th mat-header-cell *matHeaderCellDef>{{ 'SCHOOLS.CITY' | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{ row.city }}</td>
-        </ng-container>
-        <ng-container matColumnDef="commissionCount">
-          <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENTS.COMMISSION_COUNT' | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{ row.commissionCount }}</td>
-        </ng-container>
-        <ng-container matColumnDef="totalCommission">
-          <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENTS.TOTAL_COMMISSION' | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{ row.totalCommissionAmount | xafCurrency }}</td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
-          <td mat-cell *matCellDef="let row">
-            <a mat-icon-button color="primary" [routerLink]="['/schools', row.schoolId]" [attr.aria-label]="'COMMON.VIEW' | translate">
-              <mat-icon>visibility</mat-icon>
-            </a>
-            <a mat-icon-button [routerLink]="['/schools', row.schoolId, 'edit']" [attr.aria-label]="'COMMON.EDIT' | translate">
-              <mat-icon>edit</mat-icon>
-            </a>
-          </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="commissionColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: commissionColumns"></tr>
-      </table>
-    </mat-card>
-  }
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (payments().length === 0) {
+  <app-empty-state icon="payments" title="COMMON.NO_DATA" />
 } @else {
-  <mat-card appearance="outlined" class="filter-card">
-    <mat-card-content>
-      <mat-form-field appearance="outline" style="width: 192px">
-        <mat-label>{{ 'COMMON.STATUS' | translate }}</mat-label>
-        <mat-select (selectionChange)="statusFilter.set($event.value); load()">
-          <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
-          <mat-option value="declared">{{ 'STATUS.DECLARED' | translate }}</mat-option>
-          <mat-option value="validated">{{ 'STATUS.VALIDATED' | translate }}</mat-option>
-          <mat-option value="rejected">{{ 'STATUS.REJECTED' | translate }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="outline" style="width: 220px">
-        <mat-label>{{ 'EDUCATION.TYPE' | translate }}</mat-label>
-        <mat-select (selectionChange)="onEducationTypeChange($event.value)">
-          <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
-          <mat-option value="general">{{ 'EDUCATION.TYPE_GENERAL' | translate }}</mat-option>
-          <mat-option value="technical">{{ 'EDUCATION.TYPE_TECHNICAL' | translate }}</mat-option>
-          <mat-option value="professional">{{ 'EDUCATION.TYPE_PROFESSIONAL' | translate }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="outline" style="width: 220px">
-        <mat-label>{{ 'EDUCATION.SPECIALTY' | translate }}</mat-label>
-        <input matInput (keyup.enter)="onSpecialtyChange($any($event.target).value)" />
-      </mat-form-field>
-    </mat-card-content>
-  </mat-card>
-
-  @if (loading()) {
-    <app-skeleton-table />
-  } @else if (payments().length === 0) {
-    <app-empty-state icon="payments" title="COMMON.NO_DATA" />
-  } @else {
-    <mat-card appearance="outlined" class="table-card">
-      <table mat-table [dataSource]="payments()" [trackBy]="trackById" class="mat-table-full-width table-zebra">
-        <ng-container matColumnDef="select">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let p">
-            @if (p.status === 'declared' && canValidatePayments()) {
-              <mat-checkbox
-                [checked]="selectedIds().has(p.id)"
-                (change)="toggleSelect(p.id)"
-              />
-            }
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENTS.TYPE' | translate }}</th>
-          <td mat-cell *matCellDef="let p">
-            @if (p.type === 'enrollment_fee') {
-              {{ 'PAYMENTS.ENROLLMENT_FEE' | translate }}
-            } @else {
-              {{ 'PAYMENTS.TUITION_INSTALLMENT' | translate }} {{ p.installmentNumber }}
-            }
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="amount">
-          <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENTS.AMOUNT' | translate }}</th>
-          <td mat-cell *matCellDef="let p">{{ p.amount | xafCurrency }}</td>
-        </ng-container>
-        <ng-container matColumnDef="educationType">
-          <th mat-header-cell *matHeaderCellDef>{{ 'EDUCATION.TYPE' | translate }}</th>
-          <td mat-cell *matCellDef="let p">{{ educationTypeI18nKey(p.classEducationType) | translate }}</td>
-        </ng-container>
-        <ng-container matColumnDef="specialty">
-          <th mat-header-cell *matHeaderCellDef>{{ 'EDUCATION.SPECIALTY' | translate }}</th>
-          <td mat-cell *matCellDef="let p">{{ p.classSpecialtyLabel || '-' }}</td>
-        </ng-container>
-        <ng-container matColumnDef="student">
-          <th mat-header-cell *matHeaderCellDef>{{ 'ENROLLMENTS.STUDENT' | translate }}</th>
-          <td mat-cell *matCellDef="let p">{{ p.studentName }}</td>
-        </ng-container>
-        <ng-container matColumnDef="declaredAt">
-          <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENTS.DECLARED_AT' | translate }}</th>
-          <td mat-cell *matCellDef="let p">{{ p.declaredAt | localeDate }}</td>
-        </ng-container>
-        <ng-container matColumnDef="deadline">
-          <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENTS.DEADLINE' | translate }}</th>
-          <td mat-cell *matCellDef="let p">
-            @if (p.status === 'declared') {
-              <mat-chip-set>
-                <mat-chip [class]="isExpiringSoon(p.deadline) ? 'status-chip status-urgent' : 'status-chip status-soon'">
-                  @if (getHoursRemaining(p.deadline) < 24) {
-                    {{ getHoursRemaining(p.deadline) | number:'1.0-0' }}h
-                  } @else {
-                    {{ (getHoursRemaining(p.deadline) / 24) | number:'1.0-0' }}d
-                  }
-                </mat-chip>
-              </mat-chip-set>
-            } @else {
-              {{ p.deadline | localeDate }}
-            }
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
-          <td mat-cell *matCellDef="let p">
+  <mat-card appearance="outlined" class="table-card">
+    <table mat-table [dataSource]="payments()" [trackBy]="trackById" class="mat-table-full-width table-zebra">
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENTS.TYPE' | translate }}</th>
+        <td mat-cell *matCellDef="let p">
+          @if (p.type === 'enrollment_fee') {
+            {{ 'PAYMENTS.ENROLLMENT_FEE' | translate }}
+          } @else {
+            {{ 'PAYMENTS.TUITION_INSTALLMENT' | translate }} {{ p.installmentNumber }}
+          }
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENTS.AMOUNT' | translate }}</th>
+        <td mat-cell *matCellDef="let p">{{ p.amount | xafCurrency }}</td>
+      </ng-container>
+      <ng-container matColumnDef="educationType">
+        <th mat-header-cell *matHeaderCellDef>{{ 'EDUCATION.TYPE' | translate }}</th>
+        <td mat-cell *matCellDef="let p">{{ educationTypeI18nKey(p.classEducationType) | translate }}</td>
+      </ng-container>
+      <ng-container matColumnDef="specialty">
+        <th mat-header-cell *matHeaderCellDef>{{ 'EDUCATION.SPECIALTY' | translate }}</th>
+        <td mat-cell *matCellDef="let p">{{ p.classSpecialtyLabel || '-' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="school">
+        <th mat-header-cell *matHeaderCellDef>{{ 'ENROLLMENTS.SCHOOL' | translate }}</th>
+        <td mat-cell *matCellDef="let p">{{ p.schoolName || '-' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="student">
+        <th mat-header-cell *matHeaderCellDef>{{ 'ENROLLMENTS.STUDENT' | translate }}</th>
+        <td mat-cell *matCellDef="let p">{{ p.studentName || '-' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="declaredAt">
+        <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENTS.DECLARED_AT' | translate }}</th>
+        <td mat-cell *matCellDef="let p">{{ p.declaredAt | localeDate }}</td>
+      </ng-container>
+      <ng-container matColumnDef="deadline">
+        <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENTS.DEADLINE' | translate }}</th>
+        <td mat-cell *matCellDef="let p">
+          @if (p.status === 'declared') {
             <mat-chip-set>
-              <mat-chip [class]="p.status | statusColor">{{ p.status }}</mat-chip>
+              <mat-chip [class]="isExpiringSoon(p.deadline) ? 'status-chip status-urgent' : 'status-chip status-soon'">
+                @if (getHoursRemaining(p.deadline) < 24) {
+                  {{ getHoursRemaining(p.deadline) | number:'1.0-0' }}h
+                } @else {
+                  {{ (getHoursRemaining(p.deadline) / 24) | number:'1.0-0' }}d
+                }
+              </mat-chip>
             </mat-chip-set>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
-          <td mat-cell *matCellDef="let p">
-            @if (p.status === 'declared' && canValidatePayments()) {
-              <button mat-icon-button color="primary" (click)="validatePayment(p)" aria-label="Validate">
-                <mat-icon>check_circle</mat-icon>
-              </button>
-              <button mat-icon-button color="warn" (click)="rejectPayment(p)" aria-label="Reject">
-                <mat-icon>cancel</mat-icon>
-              </button>
-            }
-          </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-      </table>
-      <mat-paginator [length]="total()" [pageSize]="pageSize()" [pageIndex]="page()" (page)="onPageChange($event)" />
-    </mat-card>
-  }
+          } @else {
+            {{ p.deadline | localeDate }}
+          }
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
+        <td mat-cell *matCellDef="let p">
+          <mat-chip-set>
+            <mat-chip [class]="p.status | statusColor" [matTooltip]="p.status === 'rejected' ? p.rejectionReason : ''">
+              {{ ('STATUS.' + p.status.toUpperCase()) | translate }}
+            </mat-chip>
+          </mat-chip-set>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+    <mat-paginator [length]="total()" [pageSize]="pageSize()" [pageIndex]="page()" (page)="onPageChange($event)" />
+  </mat-card>
 }

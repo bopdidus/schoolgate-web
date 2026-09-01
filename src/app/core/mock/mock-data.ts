@@ -68,7 +68,6 @@ export const MOCK_SCHOOLS: School[] = [
         name: '6ème A',
         totalSeats: 40,
         advanceAllowed: true,
-        paymentValidationDays: 5,
         enrolledCount: 32,
         fillRate: 80,
         enrollmentFee: {
@@ -92,7 +91,6 @@ export const MOCK_SCHOOLS: School[] = [
         name: '5ème B',
         totalSeats: 35,
         advanceAllowed: false,
-        paymentValidationDays: 7,
         enrolledCount: 26,
         fillRate: 74,
         enrollmentFee: {
@@ -114,7 +112,6 @@ export const MOCK_SCHOOLS: School[] = [
         name: 'Form 1 A',
         totalSeats: 38,
         advanceAllowed: true,
-        paymentValidationDays: 5,
         enrolledCount: 28,
         fillRate: 74,
         enrollmentFee: {
@@ -155,7 +152,6 @@ export const MOCK_SCHOOLS: School[] = [
         name: '4ème C',
         totalSeats: 30,
         advanceAllowed: false,
-        paymentValidationDays: 5,
         enrolledCount: 20,
         fillRate: 67,
         enrollmentFee: {

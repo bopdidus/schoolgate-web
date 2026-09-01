@@ -27,7 +27,7 @@
         <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
         <td mat-cell *matCellDef="let i">
           <mat-chip-set>
-            <mat-chip [class]="i.status | statusColor">{{ i.status }}</mat-chip>
+            <mat-chip [class]="i.status | statusColor">{{ ('STATUS.' + i.status.toUpperCase()) | translate }}</mat-chip>
           </mat-chip-set>
         </td>
       </ng-container>

@@ -16,26 +16,42 @@ import { TranslateModule } from '@ngx-translate/core';
         }
       </div>
       <span class="toolbar-spacer"></span>
-      <ng-content select="[actions]"></ng-content>
+      <div class="page-header-actions">
+        <ng-content select="[actions]"></ng-content>
+      </div>
     </mat-toolbar>
   `,
   styles: `
     .page-header-toolbar {
       background: transparent;
-      padding: 0 0 24px;
+      padding: 0 0 var(--spacing-section);
       height: auto;
       min-height: unset;
+      gap: 16px;
     }
+
     .page-header-text h1 {
       margin: 0;
-      font-size: 24px;
-      font-weight: 600;
+      font-size: 26px;
+      font-weight: 700;
       line-height: 1.3;
+      letter-spacing: -0.025em;
+      color: var(--color-text);
     }
+
     .page-header-text p {
-      margin: 4px 0 0;
+      margin: 6px 0 0;
       font-size: 14px;
+      line-height: 1.6;
       color: var(--color-muted);
+      max-width: 42rem;
+    }
+
+    .page-header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
     }
   `,
 })

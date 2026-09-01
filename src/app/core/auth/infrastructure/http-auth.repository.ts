@@ -45,8 +45,9 @@ export class HttpAuthRepository implements AuthRepository {
       email: credentials.email,
       password: credentials.password,
     };
+    // xClientType stays undefined: web relies on the HttpOnly cookie transport.
     return this.authApi
-      .authLoginPost(body, 'body', false, { context: this.skipRefreshContext })
+      .authLoginPost(body, undefined, 'body', false, { context: this.skipRefreshContext })
       .pipe(
         map((envelope) => {
           const data = unwrapData(envelope);
@@ -67,7 +68,7 @@ export class HttpAuthRepository implements AuthRepository {
    */
   refreshToken(): Observable<AuthTokens> {
     return this.authApi
-      .authRefreshPost(HTTPONLY_COOKIE_SENTINEL, 'body', false, {
+      .authRefreshPost(HTTPONLY_COOKIE_SENTINEL, undefined, undefined, 'body', false, {
         context: this.skipRefreshContext,
       })
       .pipe(
@@ -102,7 +103,7 @@ export class HttpAuthRepository implements AuthRepository {
    */
   logout(): Observable<void> {
     return this.authApi
-      .authLogoutPost(HTTPONLY_COOKIE_SENTINEL, 'body', false, {
+      .authLogoutPost(HTTPONLY_COOKIE_SENTINEL, undefined, undefined, 'body', false, {
         context: this.skipRefreshContext,
       })
       .pipe(map(() => undefined));
@@ -129,6 +130,7 @@ export class HttpAuthRepository implements AuthRepository {
       email: String(dto.email ?? ''),
       name: explicitName || composedName,
       role: (dto.role as User['role']) ?? 'school_editor',
+      schoolId: dto.school_id != null ? String(dto.school_id) : undefined,
       isActive: true,
       createdAt: '',
     };

@@ -9,12 +9,17 @@
  */
 import { MetaDto } from './meta';
 import { SchoolClassDto } from './schoolClass';
+import { ApiCodeDto } from './apiCode';
 import { ErrorBodyDto } from './errorBody';
 
 
 export interface SchoolsIdSchoolClassesPost201ResponseDto { 
+    code?: ApiCodeDto;
     data?: SchoolClassDto;
     error?: ErrorBodyDto;
     meta?: MetaDto;
 }
+export namespace SchoolsIdSchoolClassesPost201ResponseDto {
+}
+
 

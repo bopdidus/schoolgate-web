@@ -39,15 +39,19 @@ describe('HttpAuthRepository', () => {
 
     repository.refreshToken().subscribe();
 
+    // New client signature: (refreshToken, xClientType?, body?, observe, reportProgress, options).
+    // xClientType stays undefined on web: the HttpOnly cookie carries the token.
     expect(authRefreshPostSpy).toHaveBeenCalledWith(
       jasmine.any(String),
+      undefined,
+      undefined,
       'body',
       false,
       jasmine.objectContaining({
         context: jasmine.any(HttpContext),
       }),
     );
-    const options = authRefreshPostSpy.calls.mostRecent().args[3] as { context: HttpContext };
+    const options = authRefreshPostSpy.calls.mostRecent().args[5] as { context: HttpContext };
     expect(options.context.get(SKIP_AUTH_REFRESH)).toBe(true);
   });
 
@@ -67,13 +71,15 @@ describe('HttpAuthRepository', () => {
 
     expect(authLogoutPostSpy).toHaveBeenCalledWith(
       jasmine.any(String),
+      undefined,
+      undefined,
       'body',
       false,
       jasmine.objectContaining({
         context: jasmine.any(HttpContext),
       }),
     );
-    const options = authLogoutPostSpy.calls.mostRecent().args[3] as { context: HttpContext };
+    const options = authLogoutPostSpy.calls.mostRecent().args[5] as { context: HttpContext };
     // Logout must never itself trigger the 401 refresh-retry flow.
     expect(options.context.get(SKIP_AUTH_REFRESH)).toBe(true);
   });

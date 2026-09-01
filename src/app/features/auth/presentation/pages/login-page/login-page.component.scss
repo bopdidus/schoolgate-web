@@ -1,11 +1,49 @@
 .login-card {
   width: 100%;
   max-width: 28rem;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-border) !important;
+  background: #ffffff;
+  transition: var(--transition-interactive);
 }
 
-.login-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
-  color: var(--color-primary);
+.login-card .mat-mdc-card-content {
+  padding: 36px 32px !important;
+}
+
+.login-brand {
+  margin-bottom: 36px;
+}
+
+.login-brand h1 {
+  margin: 18px 0 0;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  color: var(--color-text);
+}
+
+.login-brand p {
+  margin: 8px 0 0;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+.login-error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.login-submit {
+  width: 100%;
+  min-height: 44px;
+  transition: var(--transition-interactive);
+}
+
+.forgot-password-btn {
+  font-size: 13px;
 }

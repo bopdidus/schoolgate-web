@@ -25,6 +25,9 @@ export interface SchoolDto {
      * Current academic year derived from the school calendar (Sep–Aug)
      */
     academic_year?: string;
+    review_deadline_days?: number;
+    payment_deadline_days?: number;
+    enrollment_deadline?: string | null;
     school_classes?: Array<SchoolClassDto>;
 }
 

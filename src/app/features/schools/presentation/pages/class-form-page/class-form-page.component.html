@@ -5,8 +5,96 @@
 }
 
 @if (loading()) {
-  <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
+  <div class="loading-center">
+    <mat-spinner diameter="48" />
+  </div>
 } @else {
+  @if (!isEdit()) {
+    <mat-card appearance="outlined" class="page-stack" style="margin-bottom: 20px">
+      <mat-card-header>
+        <mat-card-title>{{ 'SCHOOLS.CSV.TITLE' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="text-muted">{{ 'SCHOOLS.CSV.HINT' | translate }}</p>
+        <div class="flex-row" style="gap: 12px; flex-wrap: wrap; margin-bottom: 12px">
+          <button mat-stroked-button type="button" (click)="downloadCsvTemplate()">
+            <mat-icon>download</mat-icon>
+            {{ 'SCHOOLS.CSV.DOWNLOAD_TEMPLATE' | translate }}
+          </button>
+          <button mat-stroked-button type="button" (click)="csvFileInput.click()" [disabled]="csvParsing() || csvImporting()">
+            <mat-icon>upload_file</mat-icon>
+            {{ 'SCHOOLS.CSV.CHOOSE_FILE' | translate }}
+          </button>
+          <input #csvFileInput type="file" accept=".csv,text/csv" hidden (change)="onCsvFileSelected($event)" />
+        </div>
+
+        @if (csvParsing()) {
+          <mat-progress-bar mode="indeterminate" />
+        }
+
+        @if (csvSummary(); as summary) {
+          <p [style.color]="summary.failed > 0 ? 'var(--color-danger)' : 'var(--color-success)'">
+            {{ 'SCHOOLS.CSV.SUMMARY' | translate: { success: summary.success, failed: summary.failed } }}
+          </p>
+        }
+
+        @if (csvRows().length > 0) {
+          <p style="margin-top: 12px">
+            {{ 'SCHOOLS.CSV.PREVIEW_COUNT' | translate: { valid: csvValidCount, invalid: csvInvalidCount } }}
+          </p>
+          <table mat-table [dataSource]="csvRows()" class="mat-table-full-width table-zebra">
+            <ng-container matColumnDef="row">
+              <th mat-header-cell *matHeaderCellDef>#</th>
+              <td mat-cell *matCellDef="let r">{{ r.index }}</td>
+            </ng-container>
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>{{ 'SCHOOLS.CLASS_NAME' | translate }}</th>
+              <td mat-cell *matCellDef="let r">{{ r.raw['name'] }}</td>
+            </ng-container>
+            <ng-container matColumnDef="level">
+              <th mat-header-cell *matHeaderCellDef>{{ 'EDUCATION.LEVEL' | translate }}</th>
+              <td mat-cell *matCellDef="let r">{{ r.raw['level'] }}</td>
+            </ng-container>
+            <ng-container matColumnDef="seats">
+              <th mat-header-cell *matHeaderCellDef>{{ 'SCHOOLS.TOTAL_SEATS' | translate }}</th>
+              <td mat-cell *matCellDef="let r">{{ r.raw['total_seats'] }}</td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
+              <td mat-cell *matCellDef="let r">
+                <mat-chip-set>
+                  @if (r.errors.length === 0) {
+                    <mat-chip class="status-chip status-validated">{{ 'SCHOOLS.CSV.VALID' | translate }}</mat-chip>
+                  } @else {
+                    <mat-chip class="status-chip status-rejected">{{ r.errors[0] | translate }}</mat-chip>
+                  }
+                </mat-chip-set>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="['row', 'name', 'level', 'seats', 'status']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['row', 'name', 'level', 'seats', 'status']"></tr>
+          </table>
+
+          <div class="flex-row" style="gap: 12px; margin-top: 16px">
+            <button mat-stroked-button type="button" (click)="clearCsvImport()" [disabled]="csvImporting()">
+              {{ 'COMMON.CANCEL' | translate }}
+            </button>
+            <button mat-flat-button color="primary" type="button" (click)="importCsvRows()"
+              [disabled]="csvImporting() || csvValidCount === 0">
+              <mat-icon>publish</mat-icon>
+              {{ 'SCHOOLS.CSV.IMPORT_N' | translate: { n: csvValidCount } }}
+            </button>
+          </div>
+          @if (csvImporting()) {
+            <mat-progress-bar mode="indeterminate" style="margin-top: 12px" />
+          }
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-divider style="margin-bottom: 20px" />
+  }
+
   <form [formGroup]="form" class="page-stack">
     <mat-card appearance="outlined">
       <mat-card-header>
@@ -63,14 +151,6 @@
           <mat-form-field appearance="outline">
             <mat-label>{{ 'SCHOOLS.TOTAL_SEATS' | translate }}</mat-label>
             <input matInput type="number" formControlName="totalSeats" min="1" />
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="span-2">
-            <mat-label>{{ 'SCHOOLS.PAYMENT_VALIDATION_DAYS' | translate }}</mat-label>
-            <input matInput type="number" formControlName="paymentValidationDays" [min]="1" [max]="maxValidationDays" />
-            <mat-hint>{{ 'SCHOOLS.PAYMENT_VALIDATION_DAYS_HINT' | translate: { max: maxValidationDays } }}</mat-hint>
-            @if (form.controls.paymentValidationDays.hasError('max')) {
-              <mat-error>{{ 'SCHOOLS.PAYMENT_VALIDATION_DAYS_RANGE' | translate: { max: maxValidationDays } }}</mat-error>
-            }
           </mat-form-field>
         </div>
 

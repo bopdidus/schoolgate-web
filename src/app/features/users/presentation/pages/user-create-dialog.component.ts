@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -57,6 +58,9 @@ import { UserRole } from '../../../../shared/models/common.model';
                 <mat-option [value]="school.id">{{ school.name }}</mat-option>
               }
             </mat-select>
+            @if (form.controls.schoolId.hasError('required')) {
+              <mat-error>{{ 'USERS.SCHOOL_REQUIRED' | translate }}</mat-error>
+            }
           </mat-form-field>
         }
       </form>
@@ -92,6 +96,21 @@ export class UserCreateDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.schoolRepo.getAll({ pageSize: 100 }).subscribe((r) => this.schools.set(r.data));
+    this.form.controls.role.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.syncSchoolIdValidators());
+    this.syncSchoolIdValidators();
+  }
+
+  private syncSchoolIdValidators(): void {
+    const control = this.form.controls.schoolId;
+    if (this.isSchoolRole) {
+      control.setValidators(Validators.required);
+    } else {
+      control.clearValidators();
+      control.setValue('');
+    }
+    control.updateValueAndValidity();
   }
 
   create(): void {

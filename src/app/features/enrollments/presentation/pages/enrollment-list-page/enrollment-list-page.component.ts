@@ -10,6 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
 import { EnrollmentRepository } from '../../../infrastructure/enrollment.repository';
@@ -25,6 +26,10 @@ import { ACTIONABLE_ENROLLMENT_STATUSES, UserRole, EducationSystem } from '../..
 import { EDUCATION_SYSTEM_I18N, EDUCATION_TYPE_I18N } from '../../../../../shared/constants/education-system.constants';
 import { RejectReasonDialogComponent } from '../../components/reject-reason-dialog/reject-reason-dialog.component';
 import { EnrollmentDetailDialogComponent } from '../../components/enrollment-detail-dialog/enrollment-detail-dialog.component';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogResult,
+} from '../../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-enrollment-list-page',
@@ -40,6 +45,7 @@ import { EnrollmentDetailDialogComponent } from '../../components/enrollment-det
     MatDialogModule,
     MatTooltipModule,
     MatFormFieldModule,
+    MatInputModule,
     MatSelectModule,
     TranslateModule,
     PageHeaderComponent,
@@ -107,13 +113,27 @@ export class EnrollmentListPageComponent implements OnInit {
       })
       .subscribe({
         next: (r) => {
-          const rows = isEnrolledTab
+          let rows = isEnrolledTab
             ? r.data
             : r.data.filter((e) =>
                 (ACTIONABLE_ENROLLMENT_STATUSES as string[]).includes(e.status),
               );
+          const educationType = this.educationTypeFilter();
+          if (educationType) {
+            const normalized =
+              educationType === 'professional' ? 'vocational' : educationType;
+            rows = rows.filter((e) => e.classEducationType === normalized);
+          }
+          const specialty = this.specialtyFilter().trim().toLowerCase();
+          if (specialty) {
+            rows = rows.filter((e) =>
+              (e.classSpecialtyLabel ?? '').toLowerCase().includes(specialty),
+            );
+          }
           this.enrollments.set(rows);
-          this.total.set(isEnrolledTab ? r.total : rows.length);
+          this.total.set(
+            isEnrolledTab && !educationType && !specialty ? r.total : rows.length,
+          );
           this.loading.set(false);
         },
         error: () => this.loading.set(false),
@@ -121,26 +141,46 @@ export class EnrollmentListPageComponent implements OnInit {
   }
 
   openDetail(enrollment: Enrollment): void {
-    this.dialog.open(EnrollmentDetailDialogComponent, {
-      width: '520px',
-      data: enrollment,
-    });
+    this.dialog
+      .open(EnrollmentDetailDialogComponent, {
+        width: '520px',
+        data: { id: enrollment.id, enrollment },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result?.accepted || result?.rejected) {
+          this.load();
+        }
+      });
   }
 
   accept(e: Enrollment, event: Event): void {
     event.stopPropagation();
-    this.actionLoading.set(e.id);
-    this.repository.accept(e.id).subscribe({
-      next: () => {
-        this.actionLoading.set(null);
-        this.notification.success('ENROLLMENTS.ACCEPTED_OK');
-        this.load();
-      },
-      error: () => {
-        this.actionLoading.set(null);
-        this.notification.error('COMMON.ERROR');
-      },
-    });
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: {
+          title: 'COMMON.CONFIRM',
+          message: 'ENROLLMENTS.ACCEPT_CONFIRM',
+          confirmLabel: 'ENROLLMENTS.ACCEPT',
+        },
+        width: '400px',
+      })
+      .afterClosed()
+      .subscribe((result: ConfirmDialogResult | undefined) => {
+        if (!result?.confirmed) return;
+        this.actionLoading.set(e.id);
+        this.repository.accept(e.id).subscribe({
+          next: () => {
+            this.actionLoading.set(null);
+            this.notification.success('ENROLLMENTS.ACCEPTED_OK');
+            this.load();
+          },
+          error: () => {
+            this.actionLoading.set(null);
+            this.notification.error('COMMON.ERROR');
+          },
+        });
+      });
   }
 
   openRejectDialog(e: Enrollment, event: Event): void {

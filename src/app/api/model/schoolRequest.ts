@@ -17,6 +17,18 @@ export interface SchoolRequestDto {
     email?: string;
     status?: SchoolRequestDto.StatusEnum;
     system?: SchoolRequestDto.SystemEnum;
+    /**
+     * Days the school has to answer a pending request before auto-rejection
+     */
+    review_deadline_days?: number;
+    /**
+     * Days the parent has to pay after acceptance
+     */
+    payment_deadline_days?: number;
+    /**
+     * Date after which new enrollment requests are refused (null = always open)
+     */
+    enrollment_deadline?: string | null;
 }
 export namespace SchoolRequestDto {
     export const StatusEnum = {

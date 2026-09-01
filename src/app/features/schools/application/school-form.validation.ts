@@ -1,16 +1,4 @@
-import {
-  DEFAULT_PAYMENT_VALIDATION_DAYS,
-  MAX_PAYMENT_VALIDATION_DAYS,
-  MIN_PAYMENT_VALIDATION_DAYS,
-} from '../../../shared/constants/payment.constants';
 import { ClassFee } from '../domain/models/school.model';
-
-export function validatePaymentValidationDays(days: number): string | null {
-  if (days < MIN_PAYMENT_VALIDATION_DAYS || days > MAX_PAYMENT_VALIDATION_DAYS) {
-    return 'SCHOOLS.PAYMENT_VALIDATION_DAYS_RANGE';
-  }
-  return null;
-}
 
 export function validateFeesChronological(fees: ClassFee[]): string | null {
   const dates = fees
@@ -51,5 +39,3 @@ export function toUtcMidnightIso(value: string | Date | null | undefined): strin
   if (Number.isNaN(parsed.getTime())) return '';
   return toUtcMidnightIso(parsed);
 }
-
-export { DEFAULT_PAYMENT_VALIDATION_DAYS, MAX_PAYMENT_VALIDATION_DAYS, MIN_PAYMENT_VALIDATION_DAYS };

@@ -8,7 +8,7 @@
       <app-empty-state icon="groups" title="ENROLLMENTS.NO_ENROLLED" />
     } @else {
       <mat-card appearance="outlined" class="table-card">
-        <table mat-table [dataSource]="enrollments()" [trackBy]="trackById" class="mat-table-full-width">
+        <table mat-table [dataSource]="enrollments()" [trackBy]="trackById" class="mat-table-full-width table-zebra">
           <ng-container matColumnDef="student">
             <th mat-header-cell *matHeaderCellDef>{{ 'ENROLLMENTS.STUDENT' | translate }}</th>
             <td mat-cell *matCellDef="let e">
@@ -33,7 +33,7 @@
             <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
             <td mat-cell *matCellDef="let e">
               <mat-chip-set>
-                <mat-chip [class]="e.status | statusColor">{{ e.status }}</mat-chip>
+                <mat-chip [class]="e.status | statusColor">{{ ('STATUS.' + e.status.toUpperCase()) | translate }}</mat-chip>
               </mat-chip-set>
             </td>
           </ng-container>
@@ -75,7 +75,7 @@
       <app-empty-state icon="pending_actions" title="ENROLLMENTS.NO_REQUESTS" />
     } @else {
       <mat-card appearance="outlined" class="table-card">
-        <table mat-table [dataSource]="enrollments()" [trackBy]="trackById" class="mat-table-full-width">
+        <table mat-table [dataSource]="enrollments()" [trackBy]="trackById" class="mat-table-full-width table-zebra">
           <ng-container matColumnDef="student">
             <th mat-header-cell *matHeaderCellDef>{{ 'ENROLLMENTS.STUDENT' | translate }}</th>
             <td mat-cell *matCellDef="let e">{{ e.studentName }}</td>
@@ -93,7 +93,7 @@
             <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
             <td mat-cell *matCellDef="let e">
               <mat-chip-set>
-                <mat-chip [class]="e.status | statusColor">{{ e.status }}</mat-chip>
+                <mat-chip [class]="e.status | statusColor">{{ ('STATUS.' + e.status.toUpperCase()) | translate }}</mat-chip>
               </mat-chip-set>
             </td>
           </ng-container>

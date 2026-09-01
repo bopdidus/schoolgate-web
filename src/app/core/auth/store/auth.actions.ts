@@ -6,7 +6,8 @@ export const AuthActions = createActionGroup({
   events: {
     Init: emptyProps(),
     'Init Success': props<{ user: User }>(),
-    'Init Failure': props<{ error: string }>(),
+    /** `error` is null when there is simply no session to restore (expected on /login). */
+    'Init Failure': props<{ error: string | null }>(),
     Login: props<{ credentials: LoginCredentials; returnUrl?: string }>(),
     'Login Success': props<{ user: User; returnUrl?: string }>(),
     'Login Failure': props<{ error: string }>(),

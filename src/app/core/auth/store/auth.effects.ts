@@ -58,22 +58,22 @@ export class AuthEffects {
         ),
       ),
       // The cookie-based refresh itself failed (missing/expired/revoked) — there is
-      // no session to restore, full stop.
-      catchError(() => of(AuthActions.initFailure({ error: 'Not authenticated' }))),
+      // no session to restore. That is the normal guest state, not a login-form error.
+      catchError(() => of(AuthActions.initFailure({ error: null }))),
     );
   }
 
   /**
    * Only purge tokens when the session is known-invalid. Clearing on every init
    * failure was wiping a valid login on each page reload whenever `/auth/me`
-   * failed for a non-auth reason.
+   * failed for a non-auth reason. A null error means "no session" (guest).
    */
   initFailure$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(AuthActions.initFailure),
         tap(({ error }) => {
-          if (error === 'Session expired' || error === 'Not authenticated') {
+          if (error === null || error === 'Session expired') {
             this.authService.clearSession();
           }
         }),

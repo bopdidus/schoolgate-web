@@ -21,6 +21,8 @@ import { CreateEnrollmentRequestDto } from '../model/createEnrollmentRequest';
 // @ts-ignore
 import { EnrollmentListEnvelopeDto } from '../model/enrollmentListEnvelope';
 // @ts-ignore
+import { EnrollmentsIdDocumentsPost201ResponseDto } from '../model/enrollmentsIdDocumentsPost201Response';
+// @ts-ignore
 import { EnrollmentsIdGet200ResponseDto } from '../model/enrollmentsIdGet200Response';
 // @ts-ignore
 import { RejectEnrollmentRequestDto } from '../model/rejectEnrollmentRequest';
@@ -47,16 +49,17 @@ export class EnrollmentsService extends BaseService {
      * @endpoint get /enrollments
      * @param schoolId 
      * @param paymentValidated 
+     * @param matricule Filters by student matricule (exact) or name (partial, case-insensitive). Parents remain scoped to their own children.
      * @param limit 
      * @param offset 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<EnrollmentListEnvelopeDto>;
-    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<EnrollmentListEnvelopeDto>>;
-    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<EnrollmentListEnvelopeDto>>;
-    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<EnrollmentListEnvelopeDto>;
+    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<EnrollmentListEnvelopeDto>>;
+    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<EnrollmentListEnvelopeDto>>;
+    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -73,6 +76,15 @@ export class EnrollmentsService extends BaseService {
             localVarQueryParameters,
             'payment_validated',
             <any>paymentValidated,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'matricule',
+            <any>matricule,
             QueryParamStyle.Form,
             true,
         );
@@ -142,7 +154,7 @@ export class EnrollmentsService extends BaseService {
 
     /**
      * Accept enrollment
-     * Roles &#x60;admin&#x60;, &#x60;school_admin&#x60;
+     * Roles &#x60;admin&#x60;, &#x60;school_admin&#x60;, &#x60;school_editor&#x60;. Triggers payment_requested notification to parent.
      * @endpoint post /enrollments/{id}/accept
      * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -201,7 +213,153 @@ export class EnrollmentsService extends BaseService {
     }
 
     /**
-     * Get enrollment detail (parent)
+     * Download an enrollment document
+     * Parent (owner) or school staff of the enrollment\&#39;s school.
+     * @endpoint get /enrollments/{id}/documents/{docId}
+     * @param id 
+     * @param docId 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public enrollmentsIdDocumentsDocIdGet(id: number, docId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'image/jpeg' | 'image/png', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
+    public enrollmentsIdDocumentsDocIdGet(id: number, docId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'image/jpeg' | 'image/png', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
+    public enrollmentsIdDocumentsDocIdGet(id: number, docId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'image/jpeg' | 'image/png', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
+    public enrollmentsIdDocumentsDocIdGet(id: number, docId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'image/jpeg' | 'image/png', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling enrollmentsIdDocumentsDocIdGet.');
+        }
+        if (docId === null || docId === undefined) {
+            throw new Error('Required parameter docId was null or undefined when calling enrollmentsIdDocumentsDocIdGet.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/pdf',
+            'image/jpeg',
+            'image/png'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let localVarPath = `/enrollments/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/documents/${this.configuration.encodeParam({name: "docId", value: docId, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: "blob",
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Upload enrollment supporting documents (parent, owner only)
+     * Multipart upload. Field name &#x60;files&#x60; (repeatable). Accepted types: &#x60;application/pdf&#x60;, &#x60;image/jpeg&#x60;, &#x60;image/png&#x60;. Max 10 MB per file. 
+     * @endpoint post /enrollments/{id}/documents
+     * @param id 
+     * @param files 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public enrollmentsIdDocumentsPost(id: number, files?: Array<Blob>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<EnrollmentsIdDocumentsPost201ResponseDto>;
+    public enrollmentsIdDocumentsPost(id: number, files?: Array<Blob>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<EnrollmentsIdDocumentsPost201ResponseDto>>;
+    public enrollmentsIdDocumentsPost(id: number, files?: Array<Blob>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<EnrollmentsIdDocumentsPost201ResponseDto>>;
+    public enrollmentsIdDocumentsPost(id: number, files?: Array<Blob>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling enrollmentsIdDocumentsPost.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'multipart/form-data'
+        ];
+
+        const canConsumeForm = this.canConsumeForm(consumes);
+
+        let localVarFormParams: { append(param: string, value: any): any; };
+        let localVarUseForm = false;
+        let localVarConvertFormParamsToString = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
+        localVarUseForm = canConsumeForm;
+        if (localVarUseForm) {
+            localVarFormParams = new FormData();
+        } else {
+            localVarFormParams = new HttpParams({encoder: this.encoder});
+        }
+
+        if (files) {
+            if (localVarUseForm) {
+                files.forEach((element) => {
+                    localVarFormParams = localVarFormParams.append('files', <any>element) as any || localVarFormParams;
+            })
+            } else {
+                localVarFormParams = localVarFormParams.append('files', [...files].join(COLLECTION_FORMATS['csv'])) as any || localVarFormParams;
+            }
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/enrollments/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/documents`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<EnrollmentsIdDocumentsPost201ResponseDto>('post', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Get enrollment detail (parent or school staff)
+     * Parent (owner) or admin/school_admin/school_editor of the school.
      * @endpoint get /enrollments/{id}
      * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -261,7 +419,7 @@ export class EnrollmentsService extends BaseService {
 
     /**
      * Reject enrollment
-     * Roles &#x60;admin&#x60;, &#x60;school_admin&#x60;. Returns 422 if reason missing or shorter than 10 chars.
+     * Roles &#x60;admin&#x60;, &#x60;school_admin&#x60;, &#x60;school_editor&#x60;. Returns 422 if reason missing or shorter than 10 chars.
      * @endpoint post /enrollments/{id}/reject
      * @param id 
      * @param rejectEnrollmentRequestDto 

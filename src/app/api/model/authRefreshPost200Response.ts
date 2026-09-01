@@ -8,13 +8,18 @@
  * Do not edit the class manually.
  */
 import { MetaDto } from './meta';
+import { ApiCodeDto } from './apiCode';
 import { TokenResponseDto } from './tokenResponse';
 import { ErrorBodyDto } from './errorBody';
 
 
 export interface AuthRefreshPost200ResponseDto { 
+    code?: ApiCodeDto;
     data?: TokenResponseDto;
     error?: ErrorBodyDto;
     meta?: MetaDto;
 }
+export namespace AuthRefreshPost200ResponseDto {
+}
+
 

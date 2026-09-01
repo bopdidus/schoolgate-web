@@ -50,6 +50,40 @@
     </mat-card-content>
   </mat-card>
 
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>{{ 'SCHOOLS.DEADLINES_TITLE' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'SCHOOLS.DEADLINES_HINT' | translate }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'SCHOOLS.REVIEW_DEADLINE_DAYS' | translate }}</mat-label>
+          <input matInput type="number" min="1" max="30" formControlName="reviewDeadlineDays" />
+          <mat-hint>{{ 'SCHOOLS.REVIEW_DEADLINE_HINT' | translate }}</mat-hint>
+          @if (form.controls.reviewDeadlineDays.invalid && form.controls.reviewDeadlineDays.touched) {
+            <mat-error>{{ 'SCHOOLS.DEADLINE_RANGE_1_30' | translate }}</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'SCHOOLS.PAYMENT_DEADLINE_DAYS' | translate }}</mat-label>
+          <input matInput type="number" min="1" max="90" formControlName="paymentDeadlineDays" />
+          <mat-hint>{{ 'SCHOOLS.PAYMENT_DEADLINE_HINT' | translate }}</mat-hint>
+          @if (form.controls.paymentDeadlineDays.invalid && form.controls.paymentDeadlineDays.touched) {
+            <mat-error>{{ 'SCHOOLS.DEADLINE_RANGE_1_90' | translate }}</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'SCHOOLS.ENROLLMENT_DEADLINE' | translate }}</mat-label>
+          <input matInput [matDatepicker]="deadlinePicker" formControlName="enrollmentDeadline" />
+          <mat-datepicker-toggle matIconSuffix [for]="deadlinePicker" />
+          <mat-datepicker #deadlinePicker />
+          <mat-hint>{{ 'SCHOOLS.ENROLLMENT_DEADLINE_HINT' | translate }}</mat-hint>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
   <div class="form-sticky-actions">
     <button mat-stroked-button type="button" routerLink="/schools">{{ 'COMMON.CANCEL' | translate }}</button>
     <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="saving()">

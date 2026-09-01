@@ -8,6 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { SchoolRepository } from '../../../infrastructure/school.repository';
 import { PageHeaderComponent } from '../../../../../shared/components/page-header/page-header.component';
@@ -34,6 +36,8 @@ import { CityAutocompleteComponent } from '../../../../../shared/components/city
     MatIconModule,
     MatDividerModule,
     MatCardModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     TranslateModule,
     PageHeaderComponent,
     CityAutocompleteComponent,
@@ -65,6 +69,10 @@ export class SchoolFormPageComponent implements OnInit, HasUnsavedChanges {
     email: ['', [Validators.required, Validators.email]],
     status: ['active' as 'active' | 'inactive', Validators.required],
     system: ['francophone' as SchoolSystem, Validators.required],
+    // Two distinct delays: answering a request vs paying after acceptance.
+    reviewDeadlineDays: [7, [Validators.required, Validators.min(1), Validators.max(30)]],
+    paymentDeadlineDays: [7, [Validators.required, Validators.min(1), Validators.max(90)]],
+    enrollmentDeadline: [null as Date | null],
   });
 
   ngOnInit(): void {
@@ -104,6 +112,9 @@ export class SchoolFormPageComponent implements OnInit, HasUnsavedChanges {
       email: raw.email,
       status: raw.status,
       system: raw.system,
+      reviewDeadlineDays: raw.reviewDeadlineDays,
+      paymentDeadlineDays: raw.paymentDeadlineDays,
+      enrollmentDeadline: raw.enrollmentDeadline ? raw.enrollmentDeadline.toISOString() : null,
     };
 
     const op = this.isEdit()
@@ -136,6 +147,9 @@ export class SchoolFormPageComponent implements OnInit, HasUnsavedChanges {
       email: school.email,
       status: school.status,
       system: school.schoolSystem,
+      reviewDeadlineDays: school.reviewDeadlineDays ?? 7,
+      paymentDeadlineDays: school.paymentDeadlineDays ?? 7,
+      enrollmentDeadline: school.enrollmentDeadline ? new Date(school.enrollmentDeadline) : null,
     });
     this.formDirty = false;
   }

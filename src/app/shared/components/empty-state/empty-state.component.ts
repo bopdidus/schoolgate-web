@@ -12,7 +12,9 @@ import { TranslateModule } from '@ngx-translate/core';
   template: `
     <mat-card appearance="outlined" class="empty-state-card">
       <mat-card-content>
-        <mat-icon class="empty-icon">{{ icon }}</mat-icon>
+        <span class="empty-icon-circle">
+          <mat-icon class="empty-icon">{{ icon }}</mat-icon>
+        </span>
         <h3>{{ title | translate }}</h3>
         @if (description) {
           <p>{{ description | translate }}</p>
@@ -30,25 +32,48 @@ import { TranslateModule } from '@ngx-translate/core';
   styles: `
     .empty-state-card {
       text-align: center;
-      padding: 24px 16px;
+      padding: 40px 28px;
+      transition: var(--transition-interactive);
     }
+
+    mat-card-actions {
+      justify-content: center;
+      padding-bottom: 8px;
+    }
+
+    .empty-icon-circle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 88px;
+      height: 88px;
+      border-radius: 24px;
+      background-color: var(--mat-sys-primary-container);
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-card);
+    }
+
     .empty-icon {
-      font-size: 48px;
-      width: 48px;
-      height: 48px;
-      color: var(--color-primary);
-      margin-bottom: 16px;
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: var(--mat-sys-on-primary-container);
     }
+
     h3 {
-      margin: 0 0 8px;
-      font-size: 20px;
-      font-weight: 600;
+      margin: 0 0 10px;
+      font-size: 18px;
+      font-weight: 650;
+      line-height: 1.3;
+      color: var(--color-text);
     }
+
     p {
-      margin: 0 0 16px;
+      margin: 0 0 20px;
       color: var(--color-muted);
       max-width: 28rem;
       margin-inline: auto;
+      line-height: 1.65;
     }
   `,
 })

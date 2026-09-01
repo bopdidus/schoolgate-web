@@ -27,7 +27,11 @@ import { CreateSchoolUserRequestDto } from '../model/createSchoolUserRequest';
 // @ts-ignore
 import { LoginRequestDto } from '../model/loginRequest';
 // @ts-ignore
+import { RefreshRequestDto } from '../model/refreshRequest';
+// @ts-ignore
 import { RegisterRequestDto } from '../model/registerRequest';
+// @ts-ignore
+import { UserListEnvelopeDto } from '../model/userListEnvelope';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -49,19 +53,23 @@ export class AuthService extends BaseService {
      * Login
      * @endpoint post /auth/login
      * @param loginRequestDto 
+     * @param xClientType Set to &#x60;native&#x60; for mobile apps so login/register/refresh include &#x60;tokens.refresh_token&#x60; in JSON for secure-storage persistence. 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public authLoginPost(loginRequestDto: LoginRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AuthTokensEnvelopeDto>;
-    public authLoginPost(loginRequestDto: LoginRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AuthTokensEnvelopeDto>>;
-    public authLoginPost(loginRequestDto: LoginRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AuthTokensEnvelopeDto>>;
-    public authLoginPost(loginRequestDto: LoginRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public authLoginPost(loginRequestDto: LoginRequestDto, xClientType?: 'native', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AuthTokensEnvelopeDto>;
+    public authLoginPost(loginRequestDto: LoginRequestDto, xClientType?: 'native', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AuthTokensEnvelopeDto>>;
+    public authLoginPost(loginRequestDto: LoginRequestDto, xClientType?: 'native', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AuthTokensEnvelopeDto>>;
+    public authLoginPost(loginRequestDto: LoginRequestDto, xClientType?: 'native', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (loginRequestDto === null || loginRequestDto === undefined) {
             throw new Error('Required parameter loginRequestDto was null or undefined when calling authLoginPost.');
         }
 
         let localVarHeaders = this.defaultHeaders;
+        if (xClientType !== undefined && xClientType !== null) {
+            localVarHeaders = localVarHeaders.set('X-Client-Type', String(xClientType));
+        }
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
             'application/json'
@@ -114,20 +122,22 @@ export class AuthService extends BaseService {
     /**
      * Revoke current refresh-token session
      * @endpoint post /auth/logout
-     * @param refreshToken Opaque single-use refresh token set as HttpOnly, Secure and SameSite.
+     * @param refreshToken Opaque single-use refresh token set as HttpOnly, Secure and SameSite (browsers).
+     * @param xClientType Set to &#x60;native&#x60; for mobile apps so login/register/refresh include &#x60;tokens.refresh_token&#x60; in JSON for secure-storage persistence. 
+     * @param refreshRequestDto 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public authLogoutPost(refreshToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public authLogoutPost(refreshToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public authLogoutPost(refreshToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public authLogoutPost(refreshToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (refreshToken === null || refreshToken === undefined) {
-            throw new Error('Required parameter refreshToken was null or undefined when calling authLogoutPost.');
-        }
+    public authLogoutPost(refreshToken?: string, xClientType?: 'native', refreshRequestDto?: RefreshRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public authLogoutPost(refreshToken?: string, xClientType?: 'native', refreshRequestDto?: RefreshRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public authLogoutPost(refreshToken?: string, xClientType?: 'native', refreshRequestDto?: RefreshRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public authLogoutPost(refreshToken?: string, xClientType?: 'native', refreshRequestDto?: RefreshRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
+        if (xClientType !== undefined && xClientType !== null) {
+            localVarHeaders = localVarHeaders.set('X-Client-Type', String(xClientType));
+        }
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
         ]);
@@ -139,6 +149,15 @@ export class AuthService extends BaseService {
 
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
@@ -156,6 +175,7 @@ export class AuthService extends BaseService {
         return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                body: refreshRequestDto,
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
@@ -168,22 +188,24 @@ export class AuthService extends BaseService {
 
     /**
      * Refresh access token
-     * Rotates the single-use refresh token carried only by the HttpOnly cookie.
+     * Rotates the single-use refresh token from the HttpOnly cookie (browsers) or JSON body &#x60;refresh_token&#x60; (native apps with &#x60;X-Client-Type: native&#x60;). 
      * @endpoint post /auth/refresh
-     * @param refreshToken Opaque single-use refresh token set as HttpOnly, Secure and SameSite.
+     * @param refreshToken Opaque single-use refresh token set as HttpOnly, Secure and SameSite (browsers).
+     * @param xClientType Set to &#x60;native&#x60; for mobile apps so login/register/refresh include &#x60;tokens.refresh_token&#x60; in JSON for secure-storage persistence. 
+     * @param refreshRequestDto 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public authRefreshPost(refreshToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AuthRefreshPost200ResponseDto>;
-    public authRefreshPost(refreshToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AuthRefreshPost200ResponseDto>>;
-    public authRefreshPost(refreshToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AuthRefreshPost200ResponseDto>>;
-    public authRefreshPost(refreshToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (refreshToken === null || refreshToken === undefined) {
-            throw new Error('Required parameter refreshToken was null or undefined when calling authRefreshPost.');
-        }
+    public authRefreshPost(refreshToken?: string, xClientType?: 'native', refreshRequestDto?: RefreshRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AuthRefreshPost200ResponseDto>;
+    public authRefreshPost(refreshToken?: string, xClientType?: 'native', refreshRequestDto?: RefreshRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AuthRefreshPost200ResponseDto>>;
+    public authRefreshPost(refreshToken?: string, xClientType?: 'native', refreshRequestDto?: RefreshRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AuthRefreshPost200ResponseDto>>;
+    public authRefreshPost(refreshToken?: string, xClientType?: 'native', refreshRequestDto?: RefreshRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
+        if (xClientType !== undefined && xClientType !== null) {
+            localVarHeaders = localVarHeaders.set('X-Client-Type', String(xClientType));
+        }
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
             'application/json'
@@ -196,6 +218,15 @@ export class AuthService extends BaseService {
 
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
@@ -213,6 +244,7 @@ export class AuthService extends BaseService {
         return this.httpClient.request<AuthRefreshPost200ResponseDto>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                body: refreshRequestDto,
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
@@ -333,6 +365,94 @@ export class AuthService extends BaseService {
         return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * List school staff users (admin only)
+     * @endpoint get /auth/school-users
+     * @param schoolId 
+     * @param limit 
+     * @param offset 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public authSchoolUsersGet(schoolId?: number, limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<UserListEnvelopeDto>;
+    public authSchoolUsersGet(schoolId?: number, limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<UserListEnvelopeDto>>;
+    public authSchoolUsersGet(schoolId?: number, limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<UserListEnvelopeDto>>;
+    public authSchoolUsersGet(schoolId?: number, limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'school_id',
+            <any>schoolId,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'limit',
+            <any>limit,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'offset',
+            <any>offset,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/auth/school-users`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<UserListEnvelopeDto>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                params: localVarQueryParameters.toHttpParams(),
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,

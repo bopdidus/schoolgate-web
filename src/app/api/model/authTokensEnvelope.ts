@@ -8,13 +8,18 @@
  * Do not edit the class manually.
  */
 import { MetaDto } from './meta';
+import { ApiCodeDto } from './apiCode';
 import { AuthTokensEnvelopeAllOfDataDto } from './authTokensEnvelopeAllOfData';
 import { ErrorBodyDto } from './errorBody';
 
 
 export interface AuthTokensEnvelopeDto { 
+    code?: ApiCodeDto;
     data?: AuthTokensEnvelopeAllOfDataDto;
     error?: ErrorBodyDto;
     meta?: MetaDto;
 }
+export namespace AuthTokensEnvelopeDto {
+}
+
 

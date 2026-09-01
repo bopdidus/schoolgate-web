@@ -2,90 +2,108 @@
 
 @include mat.core();
 
-$primary-palette: (
-  50: #e6f3f4,
-  100: #b3dcde,
-  200: #80c5c8,
-  300: #4daeb2,
-  400: #26999e,
-  500: #006d77,
-  600: #005e66,
-  700: #004f55,
-  800: #004044,
-  900: #003133,
-  contrast: (
-    50: rgba(black, 0.87),
-    100: rgba(black, 0.87),
-    200: rgba(black, 0.87),
-    300: rgba(black, 0.87),
-    400: white,
-    500: white,
-    600: white,
-    700: white,
-    800: white,
-    900: white,
-  ),
-);
+// ── Material 3 theme — soft premium indigo on slate ───────────────────────
+html {
+  color-scheme: light;
 
-$accent-palette: (
-  50: #fdf0eb,
-  100: #f9d4c8,
-  200: #f5b8a5,
-  300: #f09c82,
-  400: #ec8667,
-  500: #e29578,
-  600: #c9785a,
-  700: #a85b3c,
-  800: #873e1e,
-  900: #662100,
-  contrast: (
-    50: rgba(black, 0.87),
-    100: rgba(black, 0.87),
-    200: rgba(black, 0.87),
-    300: rgba(black, 0.87),
-    400: rgba(black, 0.87),
-    500: rgba(black, 0.87),
-    600: white,
-    700: white,
-    800: white,
-    900: white,
-  ),
-);
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$violet-palette,
+    ),
+    typography: Inter,
+    density: 0,
+  ));
 
-$primary: mat.m2-define-palette($primary-palette, 500);
-$accent: mat.m2-define-palette($accent-palette, 500);
-$warn: mat.m2-define-palette(mat.$m2-red-palette);
+  @include mat.theme-overrides((
+    primary: #4f46e5,
+    on-primary: #ffffff,
+    primary-container: #e0e7ff,
+    on-primary-container: #1e1b4b,
+    primary-fixed: #e0e7ff,
+    primary-fixed-dim: #c7d2fe,
+    on-primary-fixed: #1e1b4b,
+    on-primary-fixed-variant: #3730a3,
+    tertiary: #7c3aed,
+    on-tertiary: #ffffff,
+    tertiary-container: #ede9fe,
+    on-tertiary-container: #4c1d95,
+    tertiary-fixed: #ede9fe,
+    tertiary-fixed-dim: #ddd6fe,
+    on-tertiary-fixed: #4c1d95,
+    on-tertiary-fixed-variant: #6d28d9,
+    surface: #f8fafc,
+    on-surface: #0f172a,
+    on-surface-variant: #475569,
+    surface-container-lowest: #ffffff,
+    surface-container-low: #ffffff,
+    surface-container: #ffffff,
+    surface-container-high: #f1f5f9,
+    surface-container-highest: #e2e8f0,
+    outline: #cbd5e1,
+    outline-variant: #f1f5f9,
+  ));
 
-$theme: mat.m2-define-light-theme((
-  color: (
-    primary: $primary,
-    accent: $accent,
-    warn: $warn,
-  ),
-  typography: mat.m2-define-typography-config(
-    $font-family: 'Inter, Roboto, "Helvetica Neue", sans-serif',
-  ),
-  density: 0,
-));
+  @include mat.card-overrides((
+    outlined-container-shape: 16px,
+    elevated-container-shape: 16px,
+    outlined-outline-color: #f1f5f9,
+  ));
 
-@include mat.all-component-themes($theme);
+  @include mat.button-overrides((
+    filled-container-shape: 12px,
+    outlined-container-shape: 12px,
+    protected-container-shape: 12px,
+    text-container-shape: 12px,
+    tonal-container-shape: 12px,
+  ));
 
+  @include mat.fab-overrides((
+    container-shape: 16px,
+  ));
+
+  @include mat.form-field-overrides((
+    outlined-container-shape: 12px,
+  ));
+
+  @include mat.dialog-overrides((
+    container-shape: 20px,
+  ));
+}
+
+// Compat aliases used across feature templates.
 :root {
-  --color-primary: #006d77;
-  --color-accent: #e29578;
-  --color-accent-dark: #c9785a;
-  --color-background: #f8f9fa;
-  --color-surface: #ffffff;
-  --color-success: #2ecc71;
-  --color-warning: #f39c12;
-  --color-danger: #e74c3c;
-  --color-info: #3498db;
-  --color-muted: #6b7280;
-  --color-border: #e5e7eb;
-  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --radius-card: 12px;
-  --spacing-card: 24px;
-  --spacing-section: 24px;
+  --color-primary: var(--mat-sys-primary);
+  --color-primary-container: var(--mat-sys-primary-container);
+  --color-on-primary-container: var(--mat-sys-on-primary-container);
+  --color-accent: #818cf8;
+  --color-accent-dark: var(--mat-sys-tertiary);
+  --color-background: var(--mat-sys-surface);
+  --color-surface: var(--mat-sys-surface-container-low);
+  --color-text: var(--mat-sys-on-surface);
+  --color-text-body: var(--mat-sys-on-surface-variant);
+  --color-success: #047857;
+  --color-success-bg: #ecfdf5;
+  --color-warning: #b45309;
+  --color-warning-bg: #fffbeb;
+  --color-danger: #b91c1c;
+  --color-danger-bg: #fef2f2;
+  --color-info: #0369a1;
+  --color-info-bg: #f0f9ff;
+  --color-accent-strong: #6d28d9;
+  --color-accent-strong-bg: #f5f3ff;
+  --color-neutral: #475569;
+  --color-neutral-bg: #f1f5f9;
+  --color-muted: #64748b;
+  --color-border: var(--mat-sys-outline-variant);
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.04);
+  --shadow-card-hover: 0 2px 4px rgba(15, 23, 42, 0.05), 0 8px 20px rgba(15, 23, 42, 0.06);
+  --radius-card: 16px;
+  --radius-control: 12px;
+  --spacing-card: 28px;
+  --spacing-section: 28px;
+  --transition-interactive: all 200ms ease;
 }
 
 *,
@@ -100,18 +118,30 @@ body {
   margin: 0;
   font-family: Inter, Roboto, 'Helvetica Neue', sans-serif;
   font-size: 14px;
+  line-height: 1.6;
   background-color: var(--color-background);
-  color: rgba(0, 0, 0, 0.87);
+  color: var(--color-text-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-text);
+  line-height: 1.3;
+  letter-spacing: -0.015em;
 }
 
 .page-enter {
-  animation: fadeInUp 0.3s ease-out;
+  animation: fadeInUp 0.35s ease-out;
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -119,7 +149,22 @@ body {
   }
 }
 
-/* ── Layout utilities (semantic, not Tailwind) ─────────────────────────── */
+/* Soft interactive affordance for Material clickables */
+a[mat-list-item],
+a[mat-button],
+a[mat-flat-button],
+a[mat-stroked-button],
+button[mat-button],
+button[mat-flat-button],
+button[mat-stroked-button],
+button[mat-icon-button],
+button[mat-fab],
+button[mat-mini-fab],
+.mat-mdc-row {
+  transition: var(--transition-interactive);
+}
+
+/* ── Layout utilities ────────────────────────────────────────────────────── */
 
 .page-section {
   margin-bottom: var(--spacing-section);
@@ -151,7 +196,7 @@ body {
 .form-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: 20px;
 
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
@@ -191,7 +236,7 @@ body {
 .flex-wrap {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
 }
 
@@ -209,8 +254,36 @@ body {
 
 /* ── Material card helpers ───────────────────────────────────────────────── */
 
+mat-card.page-card,
+mat-card.filter-card,
+mat-card.stat-card,
+mat-card.table-card,
+mat-card.login-card,
+mat-card.empty-state-card {
+  background: #ffffff;
+  border-color: var(--color-border) !important;
+  box-shadow: var(--shadow-card);
+  transition: var(--transition-interactive);
+}
+
+mat-card.page-card,
+mat-card.filter-card,
+mat-card.stat-card {
+  &:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
 mat-card.page-card {
   margin-bottom: var(--spacing-section);
+
+  .mat-mdc-card-content {
+    padding: var(--spacing-card) !important;
+  }
+
+  .mat-mdc-card-header {
+    padding: var(--spacing-card) var(--spacing-card) 0;
+  }
 }
 
 mat-card.table-card {
@@ -224,24 +297,31 @@ mat-card.table-card {
 
 mat-card.filter-card {
   margin-bottom: var(--spacing-section);
+
+  .mat-mdc-card-content {
+    padding: 20px var(--spacing-card) !important;
+  }
 }
 
 mat-card.stat-card {
-  mat-card-content {
-    padding-top: 8px;
+  .mat-mdc-card-content {
+    padding: var(--spacing-card) !important;
   }
 
   .stat-label {
     margin: 0;
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
     color: var(--color-muted);
   }
 
   .stat-value {
-    margin: 8px 0 0;
+    margin: 10px 0 0;
     font-size: 32px;
     font-weight: 700;
     line-height: 1.2;
+    letter-spacing: -0.02em;
     color: var(--color-primary);
   }
 
@@ -250,7 +330,7 @@ mat-card.stat-card {
   }
 
   .stat-value.accent {
-    color: var(--color-accent);
+    color: var(--color-accent-dark);
   }
 }
 
@@ -261,11 +341,61 @@ mat-card.stat-card {
 }
 
 .table-zebra .mat-mdc-row:nth-child(even) {
-  background-color: #f9fafb;
+  background-color: #f8fafc;
 }
 
 .table-zebra .mat-mdc-row:hover {
-  background-color: rgba(0, 109, 119, 0.06);
+  background-color: rgba(79, 70, 229, 0.05);
+}
+
+.mat-mdc-header-cell {
+  color: var(--color-muted) !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  letter-spacing: 0.02em;
+}
+
+.mat-mdc-cell {
+  color: var(--color-text-body);
+}
+
+/* ── Sidenav ─────────────────────────────────────────────────────────────── */
+
+.sidenav-nav-list {
+  @include mat.list-overrides((
+    active-indicator-color: var(--mat-sys-primary-container),
+    active-indicator-shape: 12px,
+  ));
+
+  a[mat-list-item] {
+    margin: 4px 10px;
+    border-radius: 12px;
+
+    &:hover {
+      background-color: rgba(79, 70, 229, 0.04);
+    }
+
+    &.mdc-list-item--activated {
+      .mdc-list-item__primary-text,
+      .mdc-list-item__start {
+        color: var(--mat-sys-on-primary-container);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+.sidenav-role-badge mat-chip {
+  --mdc-chip-elevated-container-color: var(--mat-sys-primary-container);
+  --mdc-chip-label-text-color: var(--mat-sys-on-primary-container);
+}
+
+.app-icon-rail-drawer {
+  overflow-x: hidden;
+
+  .mat-drawer-inner-container {
+    overflow-x: hidden;
+  }
 }
 
 /* ── Status chips ────────────────────────────────────────────────────────── */
@@ -278,7 +408,7 @@ mat-chip.status-chip {
 
 .status-declared,
 mat-chip.status-declared {
-  background-color: rgba(52, 152, 219, 0.15) !important;
+  background-color: var(--color-info-bg) !important;
   color: var(--color-info) !important;
 }
 
@@ -288,13 +418,13 @@ mat-chip.status-declared {
 mat-chip.status-validated,
 mat-chip.status-active,
 mat-chip.status-issued {
-  background-color: rgba(46, 204, 113, 0.15) !important;
+  background-color: var(--color-success-bg) !important;
   color: var(--color-success) !important;
 }
 
 .status-rejected,
 mat-chip.status-rejected {
-  background-color: rgba(231, 76, 60, 0.15) !important;
+  background-color: var(--color-danger-bg) !important;
   color: var(--color-danger) !important;
 }
 
@@ -302,14 +432,14 @@ mat-chip.status-rejected {
 .status-refund_pending,
 mat-chip.status-pending,
 mat-chip.status-refund_pending {
-  background-color: rgba(243, 156, 18, 0.15) !important;
+  background-color: var(--color-warning-bg) !important;
   color: var(--color-warning) !important;
 }
 
 .status-pending_documents,
 mat-chip.status-pending_documents {
-  background-color: rgba(226, 149, 120, 0.2) !important;
-  color: var(--color-accent-dark) !important;
+  background-color: var(--color-accent-strong-bg) !important;
+  color: var(--color-accent-strong) !important;
 }
 
 .status-refunded,
@@ -320,14 +450,14 @@ mat-chip.status-refunded,
 mat-chip.status-cancelled,
 mat-chip.status-inactive,
 mat-chip.status-void {
-  background-color: #e5e7eb !important;
-  color: var(--color-muted) !important;
+  background-color: var(--color-neutral-bg) !important;
+  color: var(--color-neutral) !important;
 }
 
 .status-default,
 mat-chip.status-default {
-  background-color: #f3f4f6 !important;
-  color: #374151 !important;
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
 }
 
 /* ── Education type chips ────────────────────────────────────────────────── */
@@ -342,35 +472,35 @@ mat-chip.edu-type-chip {
 
 .edu-type-general,
 mat-chip.edu-type-general {
-  background-color: rgba(0, 109, 119, 0.15) !important;
+  background-color: rgba(79, 70, 229, 0.12) !important;
   color: var(--color-primary) !important;
 }
 
 .edu-type-technical,
 mat-chip.edu-type-technical {
-  background-color: rgba(52, 152, 219, 0.15) !important;
+  background-color: var(--color-info-bg) !important;
   color: var(--color-info) !important;
 }
 
 .edu-type-professional,
 mat-chip.edu-type-professional {
-  background-color: rgba(226, 149, 120, 0.2) !important;
-  color: var(--color-accent-dark) !important;
+  background-color: var(--color-accent-strong-bg) !important;
+  color: var(--color-accent-strong) !important;
 }
 
 .edu-type-default,
 mat-chip.edu-type-default {
-  background-color: #f3f4f6 !important;
-  color: #374151 !important;
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
 }
 
 .status-urgent {
-  background-color: rgba(231, 76, 60, 0.15);
+  background-color: var(--color-danger-bg);
   color: var(--color-danger);
 }
 
 .status-soon {
-  background-color: rgba(52, 152, 219, 0.15);
+  background-color: var(--color-info-bg);
   color: var(--color-info);
 }
 
@@ -380,10 +510,11 @@ mat-chip.edu-type-default {
   --mdc-snackbar-container-color: #ffffff;
 
   .mdc-snackbar__surface {
-    border-radius: 10px !important;
-    box-shadow: var(--shadow-card) !important;
+    border-radius: 14px !important;
+    box-shadow: var(--shadow-card-hover) !important;
     padding: 0 !important;
     overflow: hidden;
+    border: 1px solid var(--color-border);
   }
 
   .mat-mdc-snack-bar-label {
@@ -396,7 +527,7 @@ mat-chip.edu-type-default {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 6px 10px 16px;
+  padding: 12px 8px 12px 16px;
   min-width: 260px;
 }
 
@@ -409,7 +540,8 @@ mat-chip.edu-type-default {
   flex: 1;
   font-size: 14px;
   font-weight: 500;
-  color: #1f2937;
+  color: var(--color-text);
+  line-height: 1.5;
 }
 
 .app-snackbar__close {
@@ -469,21 +601,21 @@ mat-chip.edu-type-default {
 
 .alert-warning {
   border-left: 4px solid var(--color-warning);
-  background-color: rgba(243, 156, 18, 0.08);
+  background-color: var(--color-warning-bg);
 }
 
-/* ── Loading ─────────────────────────────────────────────────────────────── */
+/* ── Loading / skeletons ─────────────────────────────────────────────────── */
 
 .loading-center {
   display: flex;
   justify-content: center;
-  padding: 48px;
+  padding: 64px;
 }
 
 .skeleton-rows .skeleton-row {
   display: flex;
   gap: 16px;
-  padding: 16px 0;
+  padding: 18px 0;
   border-bottom: 1px solid var(--color-border);
 
   &:last-child {
@@ -492,10 +624,10 @@ mat-chip.edu-type-default {
 }
 
 .skeleton-bar {
-  height: 16px;
+  height: 14px;
   flex: 1;
-  border-radius: 4px;
-  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  border-radius: 8px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -522,36 +654,48 @@ mat-chip.edu-type-default {
   min-height: 24px !important;
 }
 
+.chip-leading-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
 .demo-panel {
-  margin-top: 16px;
-  padding: 16px;
-  border-radius: 8px;
-  background-color: rgba(0, 109, 119, 0.08);
+  margin-top: 8px;
+  padding: 20px;
+  border-radius: var(--radius-control);
+  background-color: rgba(79, 70, 229, 0.06);
+  border: 1px solid rgba(79, 70, 229, 0.1);
   font-size: 12px;
   color: var(--color-muted);
   text-align: left;
+  line-height: 1.6;
 
   p {
     margin: 0;
   }
 
   p + p {
-    margin-top: 4px;
+    margin-top: 6px;
   }
 
   .demo-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 12px;
+    margin-top: 14px;
   }
 }
 
 .class-block {
   border: 1px solid var(--color-border);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: var(--radius-card);
+  padding: 24px;
   margin-bottom: 20px;
+  background: #ffffff;
+  box-shadow: var(--shadow-card);
 
   &:last-child {
     margin-bottom: 0;
@@ -559,9 +703,9 @@ mat-chip.edu-type-default {
 }
 
 .fee-block {
-  background-color: #f9fafb;
-  border-radius: 8px;
-  padding: 12px;
+  background-color: #f8fafc;
+  border-radius: var(--radius-control);
+  padding: 16px;
   margin-bottom: 12px;
 }
 
@@ -570,9 +714,9 @@ mat-chip.edu-type-default {
   flex-wrap: wrap;
   gap: 16px;
   align-items: center;
-  background-color: #f9fafb;
-  border-radius: 8px;
-  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-radius: var(--radius-control);
+  padding: 12px 14px;
   margin-bottom: 8px;
 }
 
@@ -592,6 +736,7 @@ mat-chip.edu-type-default {
 .section-label {
   font-weight: 600;
   font-size: 15px;
+  color: var(--color-text);
 }
 
 .system-group {
@@ -604,6 +749,24 @@ mat-chip.edu-type-default {
 
 .toolbar-spacer {
   flex: 1;
+}
+
+.brand-icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background-color: var(--mat-sys-primary-container);
+  box-shadow: var(--shadow-card);
+
+  mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    color: var(--mat-sys-on-primary-container);
+  }
 }
 
 @media print {

@@ -13,6 +13,7 @@ import {
 } from '../../../core/api/openapi-helpers';
 import {
   Enrollment,
+  EnrollmentDocument,
   EnrollmentFilters,
   RejectEnrollmentRequest,
 } from '../domain/models/enrollment.model';
@@ -29,6 +30,7 @@ export class EnrollmentRepository {
       .enrollmentsGet(
         filters.schoolId ? +filters.schoolId : undefined,
         filters.paymentValidated,
+        filters.matricule || undefined,
         limit,
         offset,
       )
@@ -45,10 +47,15 @@ export class EnrollmentRepository {
       );
   }
 
+  /** Full enrollment detail including uploaded documents and review audit fields. */
   getById(id: string): Observable<Enrollment> {
     return this.enrollmentsApi.enrollmentsIdGet(+id).pipe(
       map((envelope) => this.mapEnrollment(unwrapData(envelope))),
     );
+  }
+
+  downloadDocument(enrollmentId: string, documentId: string): Observable<Blob> {
+    return this.enrollmentsApi.enrollmentsIdDocumentsDocIdGet(+enrollmentId, +documentId);
   }
 
   accept(id: string): Observable<Enrollment> {
@@ -77,9 +84,14 @@ export class EnrollmentRepository {
     const systemRaw = schoolClass?.effective_system ?? schoolClass?.pedagogic_system;
     const educationTypeRaw = schoolClass?.education_type;
 
+    const personName = [dto.person?.first_name, dto.person?.last_name]
+      .filter((part) => part != null && String(part).trim() !== '')
+      .join(' ')
+      .trim();
+
     return {
       id: String(dto.id ?? ''),
-      studentName: '',
+      studentName: personName,
       schoolId: String(school?.id ?? schoolClass?.school_id ?? ''),
       schoolName: String(school?.name ?? ''),
       classId: String(dto.school_class_id ?? schoolClass?.id ?? ''),
@@ -107,8 +119,27 @@ export class EnrollmentRepository {
       documentsReceived: !Boolean(dto.requires_documents),
       paymentValidated: Boolean(dto.payment_validated),
       rejectionReason: dto.rejection_reason ?? undefined,
+      documents: (dto.documents ?? []).map((d) => this.mapDocument(d)),
+      reviewedByUserId: dto.reviewed_by_user_id ?? undefined,
+      reviewedAt: dto.reviewed_at ?? undefined,
       createdAt: String(dto.created_at ?? ''),
       updatedAt: String(dto.created_at ?? ''),
+    };
+  }
+
+  private mapDocument(dto: {
+    id?: number;
+    filename?: string;
+    content_type?: string;
+    size_bytes?: number;
+    created_at?: string;
+  }): EnrollmentDocument {
+    return {
+      id: String(dto.id ?? ''),
+      filename: String(dto.filename ?? ''),
+      contentType: dto.content_type ?? undefined,
+      sizeBytes: dto.size_bytes ?? undefined,
+      createdAt: dto.created_at ?? undefined,
     };
   }
 }

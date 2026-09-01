@@ -7,10 +7,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ApiCodeDto } from './apiCode';
 
 
 export interface ErrorBodyDto { 
-    code?: string;
+    code?: ApiCodeDto;
     message?: string;
 }
+export namespace ErrorBodyDto {
+}
+
 

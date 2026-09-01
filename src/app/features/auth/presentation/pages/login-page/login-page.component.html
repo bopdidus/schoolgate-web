@@ -1,9 +1,11 @@
 <mat-card appearance="outlined" class="login-card">
   <mat-card-content>
-    <div class="text-center" style="margin-bottom: 32px">
-      <mat-icon class="login-icon">school</mat-icon>
-      <h1 class="text-primary-color" style="margin: 16px 0 0; font-size: 24px; font-weight: 600">{{ 'APP.TITLE' | translate }}</h1>
-      <p class="text-muted" style="margin-top: 8px">{{ 'AUTH.WELCOME' | translate }}</p>
+    <div class="text-center login-brand">
+      <span class="brand-icon-circle">
+        <mat-icon>school</mat-icon>
+      </span>
+      <h1>{{ 'APP.TITLE' | translate }}</h1>
+      <p>{{ 'AUTH.WELCOME' | translate }}</p>
     </div>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="page-stack">
@@ -35,16 +37,18 @@
       </mat-form-field>
 
       @if (error$ | async; as error) {
-        <p style="margin: 0; color: var(--color-danger); font-size: 12px">{{ error | translate }}</p>
+        <p class="login-error">{{ error | translate }}</p>
       }
 
-      <button mat-flat-button color="primary" type="submit" style="width: 100%" [disabled]="loading$ | async">
+      <button mat-flat-button color="primary" type="submit" class="login-submit" [disabled]="loading$ | async">
         {{ 'AUTH.LOGIN' | translate }}
       </button>
 
-      <a class="text-center text-primary-color" style="font-size: 12px; cursor: pointer; text-decoration: none">
-        {{ 'AUTH.FORGOT_PASSWORD' | translate }}
-      </a>
+      <div class="text-center">
+        <button mat-button color="primary" type="button" class="forgot-password-btn">
+          {{ 'AUTH.FORGOT_PASSWORD' | translate }}
+        </button>
+      </div>
 
       @if (useMockApi) {
         <div class="demo-panel">

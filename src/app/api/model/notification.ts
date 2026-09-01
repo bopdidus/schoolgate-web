@@ -12,8 +12,16 @@
 export interface NotificationDto { 
     id?: number;
     type?: string;
+    /**
+     * Notification code resolved against the client localization catalog
+     */
+    code?: string;
     title?: string;
     body?: string;
+    /**
+     * Contextual payload (enrollment_id, school_id, review_due_at, payment_due_at, matricule, rejection_reason) used by clients to compose localized text and deep-links
+     */
+    data?: { [key: string]: any; };
     read?: boolean;
     created_at?: string;
 }

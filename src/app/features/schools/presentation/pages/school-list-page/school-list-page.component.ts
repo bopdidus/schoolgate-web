@@ -19,7 +19,6 @@ import { EmptyStateComponent } from '../../../../../shared/components/empty-stat
 import { StatusColorPipe } from '../../../../../shared/pipes/status-color.pipe';
 import {
   EDUCATION_TYPE_I18N,
-  SCHOOL_SYSTEM_BADGE,
   SCHOOL_SYSTEM_I18N,
 } from '../../../../../shared/constants/education-system.constants';
 
@@ -63,7 +62,6 @@ export class SchoolListPageComponent implements OnInit {
   readonly specialtyFilter = signal('');
 
   readonly schoolSystemI18n = SCHOOL_SYSTEM_I18N;
-  readonly schoolSystemBadge = SCHOOL_SYSTEM_BADGE;
   readonly educationTypeI18n = EDUCATION_TYPE_I18N;
   readonly displayedColumns = ['name', 'city', 'academicYear', 'systems', 'classes', 'fillRate', 'status', 'actions'];
 
@@ -135,9 +133,5 @@ export class SchoolListPageComponent implements OnInit {
 
   schoolSystemI18nKey(system: School['schoolSystem']): string {
     return this.schoolSystemI18n[system];
-  }
-
-  schoolSystemBadgeLabel(system: School['schoolSystem']): string {
-    return this.schoolSystemBadge[system];
   }
 }

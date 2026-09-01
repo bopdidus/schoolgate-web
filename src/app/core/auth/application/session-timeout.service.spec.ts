@@ -72,23 +72,31 @@ describe('SessionTimeoutService', () => {
     expect(dialog.open).toHaveBeenCalledTimes(1);
   }));
 
-  it('should refresh the session (not log out) when the user chooses to stay signed in', () => {
+  it('should refresh the session (not log out) when the user chooses to stay signed in', fakeAsync(() => {
     tokenRefresh.refresh.and.returnValue(of({ accessToken: 'new' }));
     service.start();
+    // The warning dialog (and its afterClosed subscription) only exists once
+    // the idle timeout has elapsed.
+    tick(IDLE_TIMEOUT_MS + 1);
 
     afterClosed$.next('extend');
+    tick();
 
     expect(tokenRefresh.refresh).toHaveBeenCalled();
     expect(store.dispatch).not.toHaveBeenCalledWith(AuthActions.logout());
-  });
+    service.stop();
+  }));
 
-  it('should log the user out when the warning resolves to "logout"', () => {
+  it('should log the user out when the warning resolves to "logout"', fakeAsync(() => {
     service.start();
+    tick(IDLE_TIMEOUT_MS + 1);
 
     afterClosed$.next('logout');
+    tick();
 
     expect(store.dispatch).toHaveBeenCalledWith(AuthActions.logout());
-  });
+    service.stop();
+  }));
 
   it('should stop watching and close any open dialog on stop()', fakeAsync(() => {
     service.start();

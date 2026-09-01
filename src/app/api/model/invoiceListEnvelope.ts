@@ -9,12 +9,17 @@
  */
 import { MetaDto } from './meta';
 import { InvoiceDto } from './invoice';
+import { ApiCodeDto } from './apiCode';
 import { ErrorBodyDto } from './errorBody';
 
 
 export interface InvoiceListEnvelopeDto { 
+    code?: ApiCodeDto;
     data?: Array<InvoiceDto>;
     error?: ErrorBodyDto;
     meta?: MetaDto;
 }
+export namespace InvoiceListEnvelopeDto {
+}
+
 

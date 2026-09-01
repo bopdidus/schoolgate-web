@@ -2,6 +2,7 @@ api.base.service.ts
 api/api.ts
 api/auth.service.ts
 api/dashboard.service.ts
+api/devices.service.ts
 api/enrollments.service.ts
 api/invoices.service.ts
 api/notifications.service.ts
@@ -11,6 +12,7 @@ api/schools.service.ts
 configuration.ts
 encoder.ts
 index.ts
+model/apiCode.ts
 model/authRefreshPost200Response.ts
 model/authSchoolUsersPost201Response.ts
 model/authTokensEnvelope.ts
@@ -24,8 +26,10 @@ model/createSchoolUserRequest.ts
 model/dashboardSummary.ts
 model/dashboardSummarySchoolClassesInner.ts
 model/declarePaymentRequest.ts
+model/document.ts
 model/enrollment.ts
 model/enrollmentListEnvelope.ts
+model/enrollmentsIdDocumentsPost201Response.ts
 model/enrollmentsIdGet200Response.ts
 model/enrollmentsIdPaymentsGet200Response.ts
 model/envelope.ts
@@ -45,6 +49,9 @@ model/notification.ts
 model/notificationListEnvelope.ts
 model/payment.ts
 model/paymentListEnvelope.ts
+model/person.ts
+model/refreshRequest.ts
+model/registerDeviceRequest.ts
 model/registerRequest.ts
 model/rejectEnrollmentRequest.ts
 model/school.ts
@@ -62,6 +69,7 @@ model/specialtyRef.ts
 model/specialtyRefListEnvelope.ts
 model/tokenResponse.ts
 model/user.ts
+model/userListEnvelope.ts
 param.ts
 provide-api.ts
 query.params.ts
