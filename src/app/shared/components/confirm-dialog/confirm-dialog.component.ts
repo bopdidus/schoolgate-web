@@ -32,26 +32,8 @@ export interface ConfirmDialogResult {
     TranslateModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <h2 mat-dialog-title>{{ data.title | translate }}</h2>
-    <mat-dialog-content>
-      <p>{{ data.message | translate }}</p>
-      @if (data.showReason) {
-        <mat-form-field appearance="outline" style="width: 100%">
-          <mat-label>{{ (data.reasonLabel ?? 'PAYMENTS.REJECTION_REASON') | translate }}</mat-label>
-          <textarea matInput [(ngModel)]="reason" rows="3"></textarea>
-        </mat-form-field>
-      }
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="cancel()">
-        {{ (data.cancelLabel ?? 'COMMON.CANCEL') | translate }}
-      </button>
-      <button mat-flat-button color="primary" (click)="confirm()">
-        {{ (data.confirmLabel ?? 'COMMON.CONFIRM') | translate }}
-      </button>
-    </mat-dialog-actions>
-  `,
+  templateUrl: './confirm-dialog.component.html',
+  styleUrl: './confirm-dialog.component.scss',
 })
 export class ConfirmDialogComponent {
   reason = '';

@@ -3,7 +3,7 @@
 Base URL: `/api/v1`  
 Auth: `Authorization: Bearer <access_token>`
 
-The frontend maps snake_case DTOs to camelCase domain models in each feature's `infrastructure/` layer.
+The frontend maps snake_case DTOs to camelCase domain models in each menu's `<menu>.service.ts`.
 
 ---
 

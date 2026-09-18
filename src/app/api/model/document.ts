@@ -14,6 +14,16 @@ export interface DocumentDto {
     filename?: string;
     content_type?: string;
     size_bytes?: number;
+    document_type_id?: number | null;
+    purpose?: DocumentDto.PurposeEnum;
     created_at?: string;
 }
+export namespace DocumentDto {
+    export const PurposeEnum = {
+        Enrollment: 'enrollment',
+        TuitionPayment: 'tuition_payment'
+    } as const;
+    export type PurposeEnum = typeof PurposeEnum[keyof typeof PurposeEnum];
+}
+
 

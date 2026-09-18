@@ -1,0 +1,16 @@
+<section class="not-found">
+  <p class="not-found__code">404</p>
+  <h1>{{ 'COMMON.NOT_FOUND_TITLE' | translate }}</h1>
+  <p class="not-found__text">{{ 'COMMON.NOT_FOUND_DESCRIPTION' | translate }}</p>
+
+  <div class="not-found__actions">
+    <button mat-flat-button type="button" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      {{ 'COMMON.BACK' | translate }}
+    </button>
+    <a mat-stroked-button routerLink="/dashboard">
+      <mat-icon>dashboard</mat-icon>
+      {{ 'NAV.DASHBOARD' | translate }}
+    </a>
+  </div>
+</section>

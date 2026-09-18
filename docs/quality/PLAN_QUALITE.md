@@ -15,9 +15,9 @@ Application front-office **SchoolGateWeb** (Angular 17) pour la gestion des insc
 
 | Activité | Livrable | Emplacement |
 |----------|----------|-------------|
-| Conception UI | Composants Material | `src/app/shared/`, `src/app/features/` |
+| Conception UI | Composants Material | `src/app/shared/`, `src/app/<menu>/` |
 | Logique métier | Services, validators | `*/application/`, `*.validation.ts` |
-| État global | NgRx store | `src/app/core/auth/store/` |
+| État global | NgRx store | `src/app/core/store/` |
 | Internationalisation | Clés i18n | `src/assets/i18n/` |
 
 ### 2.3 Processus de vérification (→ IEEE 1012)

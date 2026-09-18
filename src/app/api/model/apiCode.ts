@@ -30,6 +30,7 @@ export const ApiCodeDto = {
     InvalidStatus: 'INVALID_STATUS',
     AcademicYearClosed: 'ACADEMIC_YEAR_CLOSED',
     EnrollmentWindowClosed: 'ENROLLMENT_WINDOW_CLOSED',
+    MissingDocuments: 'MISSING_DOCUMENTS',
     RateLimited: 'RATE_LIMITED',
     HttpsRequired: 'HTTPS_REQUIRED',
     ServiceUnavailable: 'SERVICE_UNAVAILABLE',
@@ -42,7 +43,12 @@ export const ApiCodeDto = {
     PaymentRequested: 'PAYMENT_REQUESTED',
     PaymentValidated: 'PAYMENT_VALIDATED',
     PaymentRejected: 'PAYMENT_REJECTED',
-    PaymentFailed: 'PAYMENT_FAILED'
+    PaymentFailed: 'PAYMENT_FAILED',
+    PasswordResetRequestAccepted: 'PASSWORD_RESET_REQUEST_ACCEPTED',
+    PasswordResetRequested: 'PASSWORD_RESET_REQUESTED',
+    PasswordResetCodeSent: 'PASSWORD_RESET_CODE_SENT',
+    PasswordResetConfirmed: 'PASSWORD_RESET_CONFIRMED',
+    InvalidResetCode: 'INVALID_RESET_CODE'
 } as const;
 export type ApiCodeDto = typeof ApiCodeDto[keyof typeof ApiCodeDto];
 

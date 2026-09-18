@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="SchoolGate">
+  <rect width="32" height="32" rx="7" fill="#0B6E64" />
+  <!-- The gate: an arch standing on two posts, read as both a doorway and a
+       school entrance. The amber lintel is the brand's second colour. -->
+  <path
+    d="M8 25V14.5a8 8 0 0 1 16 0V25"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="3"
+    stroke-linecap="round"
+  />
+  <path d="M7 19.5h18" fill="none" stroke="#F5B547" stroke-width="3" stroke-linecap="round" />
+</svg>

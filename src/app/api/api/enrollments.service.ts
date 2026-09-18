@@ -19,6 +19,8 @@ import { OpenApiHttpParams, QueryParamStyle } from '../query.params';
 // @ts-ignore
 import { CreateEnrollmentRequestDto } from '../model/createEnrollmentRequest';
 // @ts-ignore
+import { DocumentChecklistEnvelopeDto } from '../model/documentChecklistEnvelope';
+// @ts-ignore
 import { EnrollmentListEnvelopeDto } from '../model/enrollmentListEnvelope';
 // @ts-ignore
 import { EnrollmentsIdDocumentsPost201ResponseDto } from '../model/enrollmentsIdDocumentsPost201Response';
@@ -50,16 +52,17 @@ export class EnrollmentsService extends BaseService {
      * @param schoolId 
      * @param paymentValidated 
      * @param matricule Filters by student matricule (exact) or name (partial, case-insensitive). Parents remain scoped to their own children.
+     * @param isReturningStudent Filters by returning (true) vs. new (false) student.
      * @param limit 
      * @param offset 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<EnrollmentListEnvelopeDto>;
-    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<EnrollmentListEnvelopeDto>>;
-    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<EnrollmentListEnvelopeDto>>;
-    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, isReturningStudent?: boolean, limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<EnrollmentListEnvelopeDto>;
+    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, isReturningStudent?: boolean, limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<EnrollmentListEnvelopeDto>>;
+    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, isReturningStudent?: boolean, limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<EnrollmentListEnvelopeDto>>;
+    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, isReturningStudent?: boolean, limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -85,6 +88,15 @@ export class EnrollmentsService extends BaseService {
             localVarQueryParameters,
             'matricule',
             <any>matricule,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'is_returning_student',
+            <any>isReturningStudent,
             QueryParamStyle.Form,
             true,
         );
@@ -213,6 +225,66 @@ export class EnrollmentsService extends BaseService {
     }
 
     /**
+     * Document completeness checklist for an enrollment
+     * Parent (owner) or school staff of the enrollment\&#39;s school.
+     * @endpoint get /enrollments/{id}/documents/checklist
+     * @param id 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public enrollmentsIdDocumentsChecklistGet(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<DocumentChecklistEnvelopeDto>;
+    public enrollmentsIdDocumentsChecklistGet(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<DocumentChecklistEnvelopeDto>>;
+    public enrollmentsIdDocumentsChecklistGet(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<DocumentChecklistEnvelopeDto>>;
+    public enrollmentsIdDocumentsChecklistGet(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling enrollmentsIdDocumentsChecklistGet.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/enrollments/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/documents/checklist`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<DocumentChecklistEnvelopeDto>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * Download an enrollment document
      * Parent (owner) or school staff of the enrollment\&#39;s school.
      * @endpoint get /enrollments/{id}/documents/{docId}
@@ -269,18 +341,19 @@ export class EnrollmentsService extends BaseService {
 
     /**
      * Upload enrollment supporting documents (parent, owner only)
-     * Multipart upload. Field name &#x60;files&#x60; (repeatable). Accepted types: &#x60;application/pdf&#x60;, &#x60;image/jpeg&#x60;, &#x60;image/png&#x60;. Max 10 MB per file. 
+     * Multipart upload. Field name &#x60;files&#x60; (repeatable). Accepted types: &#x60;application/pdf&#x60;, &#x60;image/jpeg&#x60;, &#x60;image/png&#x60;. Max 10 MB per file. Optional field &#x60;document_type_id&#x60; tags every file in this call as satisfying that required document (pick the type before uploading). 
      * @endpoint post /enrollments/{id}/documents
      * @param id 
      * @param files 
+     * @param documentTypeId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public enrollmentsIdDocumentsPost(id: number, files?: Array<Blob>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<EnrollmentsIdDocumentsPost201ResponseDto>;
-    public enrollmentsIdDocumentsPost(id: number, files?: Array<Blob>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<EnrollmentsIdDocumentsPost201ResponseDto>>;
-    public enrollmentsIdDocumentsPost(id: number, files?: Array<Blob>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<EnrollmentsIdDocumentsPost201ResponseDto>>;
-    public enrollmentsIdDocumentsPost(id: number, files?: Array<Blob>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public enrollmentsIdDocumentsPost(id: number, files?: Array<Blob>, documentTypeId?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<EnrollmentsIdDocumentsPost201ResponseDto>;
+    public enrollmentsIdDocumentsPost(id: number, files?: Array<Blob>, documentTypeId?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<EnrollmentsIdDocumentsPost201ResponseDto>>;
+    public enrollmentsIdDocumentsPost(id: number, files?: Array<Blob>, documentTypeId?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<EnrollmentsIdDocumentsPost201ResponseDto>>;
+    public enrollmentsIdDocumentsPost(id: number, files?: Array<Blob>, documentTypeId?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling enrollmentsIdDocumentsPost.');
         }
@@ -328,6 +401,9 @@ export class EnrollmentsService extends BaseService {
             } else {
                 localVarFormParams = localVarFormParams.append('files', [...files].join(COLLECTION_FORMATS['csv'])) as any || localVarFormParams;
             }
+        }
+        if (documentTypeId !== undefined) {
+            localVarFormParams = localVarFormParams.append('document_type_id', <any>documentTypeId) as any || localVarFormParams;
         }
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';

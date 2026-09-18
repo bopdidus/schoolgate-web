@@ -23,8 +23,8 @@ import {
   buildSchoolCommissionSummary,
   buildSchoolDashboard,
 } from './mock-data';
-import { User } from '../auth/models/auth.model';
-import { School } from '../../features/schools/domain/models/school.model';
+import { User } from '../models/auth.model';
+import { School } from '../../schools/school.model';
 
 const MOCK_DELAY_MS = 300;
 
@@ -173,6 +173,12 @@ function handleMock(req: HttpRequest<unknown>): HttpResponse<unknown> | null {
           status: (body['status'] as School['status']) ?? 'active',
           schoolSystem: system,
           academicYear: '2025-2026',
+          matriculeVerification: {
+            allowDirectPaymentForReturningStudents: false,
+            mode: 'none',
+            apiKeySet: false,
+            rosterUploaded: false,
+          },
           classes: [],
           totalClasses: 0,
           fillRate: 0,
@@ -220,6 +226,10 @@ function handleMock(req: HttpRequest<unknown>): HttpResponse<unknown> | null {
       const paymentValidated = params.get('payment_validated');
       if (paymentValidated === 'true') {
         items = items.filter((e) => e.paymentValidated);
+      }
+      const isReturningStudent = params.get('is_returning_student');
+      if (isReturningStudent !== null) {
+        items = items.filter((e) => e.isExistingStudent === (isReturningStudent === 'true'));
       }
       return json(paginate(items, params));
     }

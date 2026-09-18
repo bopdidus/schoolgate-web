@@ -22,23 +22,8 @@ export type SessionTimeoutDialogResult = 'extend' | 'logout';
   standalone: true,
   imports: [MatDialogModule, MatButtonModule, MatIconModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <h2 mat-dialog-title>
-      <mat-icon aria-hidden="true">warning_amber</mat-icon>
-      {{ 'AUTH.SESSION_TIMEOUT.TITLE' | translate }}
-    </h2>
-    <mat-dialog-content>
-      <p>{{ 'AUTH.SESSION_TIMEOUT.MESSAGE' | translate: { seconds: remainingSeconds() } }}</p>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="logout()">
-        {{ 'AUTH.SESSION_TIMEOUT.LOGOUT' | translate }}
-      </button>
-      <button mat-flat-button color="primary" (click)="extend()">
-        {{ 'AUTH.SESSION_TIMEOUT.STAY_SIGNED_IN' | translate }}
-      </button>
-    </mat-dialog-actions>
-  `,
+  templateUrl: './session-timeout-dialog.component.html',
+  styleUrl: './session-timeout-dialog.component.scss',
 })
 export class SessionTimeoutDialogComponent implements OnDestroy {
   readonly remainingSeconds = signal(Math.ceil(this.data.countdownMs / 1000));

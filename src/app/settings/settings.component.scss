@@ -1,0 +1,25 @@
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-section);
+}
+
+@media (min-width: 768px) {
+  .settings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .settings-grid__wide {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Segmented control: every option visible at once, current one obvious. */
+.choice-group {
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.choice-group .mat-button-toggle {
+  flex: 1 1 auto;
+}

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { TokenExpiryService } from './core/auth/application/token-expiry.service';
+import { TokenExpiryService } from './core/services/token-expiry.service';
 
 describe('AppComponent', () => {
   beforeEach(async () => {

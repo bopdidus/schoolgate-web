@@ -1,0 +1,67 @@
+<mat-card-header>
+  <mat-card-title>{{ 'SCHOOLS.DOCUMENT_REQUIREMENTS_TITLE' | translate }}</mat-card-title>
+</mat-card-header>
+
+<mat-card-content>
+  @if (loading()) {
+    <app-skeleton-table />
+  } @else if (canManage()) {
+    <p class="text-muted">{{ 'SCHOOLS.DOCUMENT_REQUIREMENTS_HINT' | translate }}</p>
+
+    <div class="detail-list">
+      <div class="detail-list__item">
+        <span class="detail-list__label">{{ 'SCHOOLS.DOCUMENT_REQUIREMENTS_ENROLLMENT' | translate }}</span>
+        @for (type of documentTypes(); track trackByTypeId($index, type)) {
+          <mat-checkbox
+            [checked]="isChecked('enrollment', type.id)"
+            (change)="toggle('enrollment', type.id)"
+          >
+            {{ type.label }}
+          </mat-checkbox>
+        }
+      </div>
+      <div class="detail-list__item">
+        <span class="detail-list__label">{{ 'SCHOOLS.DOCUMENT_REQUIREMENTS_PAYMENT' | translate }}</span>
+        @for (type of documentTypes(); track trackByTypeId($index, type)) {
+          <mat-checkbox
+            [checked]="isChecked('tuition_payment', type.id)"
+            (change)="toggle('tuition_payment', type.id)"
+          >
+            {{ type.label }}
+          </mat-checkbox>
+        }
+      </div>
+    </div>
+  } @else {
+    @if (!hasAnyRequirement()) {
+      <p class="text-muted is-italic">{{ 'SCHOOLS.DOCUMENT_REQUIREMENTS_NONE' | translate }}</p>
+    } @else {
+      <div class="detail-list">
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'SCHOOLS.DOCUMENT_REQUIREMENTS_ENROLLMENT' | translate }}</span>
+          <mat-chip-set>
+            @for (id of enrollmentSelection(); track id) {
+              <mat-chip>{{ labelFor(id) }}</mat-chip>
+            }
+          </mat-chip-set>
+        </div>
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'SCHOOLS.DOCUMENT_REQUIREMENTS_PAYMENT' | translate }}</span>
+          <mat-chip-set>
+            @for (id of paymentSelection(); track id) {
+              <mat-chip>{{ labelFor(id) }}</mat-chip>
+            }
+          </mat-chip-set>
+        </div>
+      </div>
+    }
+  }
+</mat-card-content>
+
+@if (!loading() && canManage()) {
+  <mat-card-actions align="end">
+    <button mat-flat-button color="primary" [disabled]="saving()" (click)="save()">
+      {{ 'COMMON.SAVE' | translate }}
+    </button>
+  </mat-card-actions>
+}

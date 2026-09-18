@@ -22,6 +22,14 @@ export interface EnrollmentDto {
     status?: string;
     is_returning_student?: boolean;
     requires_documents?: boolean;
+    /**
+     * The matricule claimed at application time, if any.
+     */
+    claimed_matricule?: string | null;
+    /**
+     * Result of the third-party check against claimed_matricule; null when no check was attempted (bypass off, or no third party configured for the school).
+     */
+    matricule_verification_status?: EnrollmentDto.MatriculeVerificationStatusEnum | null;
     payment_validated?: boolean;
     rejection_reason?: string;
     /**
@@ -47,4 +55,13 @@ export interface EnrollmentDto {
      */
     documents?: Array<DocumentDto>;
 }
+export namespace EnrollmentDto {
+    export const MatriculeVerificationStatusEnum = {
+        Confirmed: 'confirmed',
+        Denied: 'denied',
+        Unavailable: 'unavailable'
+    } as const;
+    export type MatriculeVerificationStatusEnum = typeof MatriculeVerificationStatusEnum[keyof typeof MatriculeVerificationStatusEnum];
+}
+
 

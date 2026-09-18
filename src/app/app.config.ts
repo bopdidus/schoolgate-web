@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, APP_INITIALIZER } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideAppInitializer, inject } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -10,32 +10,21 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient } from '@angular/common/http';
 
 import { routes } from './app.routes';
-import { authReducer } from './core/auth/store/auth.reducer';
-import { AuthEffects } from './core/auth/store/auth.effects';
+import { authReducer } from './core/store/auth.reducer';
+import { AuthEffects } from './core/store/auth.effects';
 import { authTokenInterceptor } from './core/interceptors/auth-token.interceptor';
 import { tokenRefreshInterceptor } from './core/interceptors/token-refresh.interceptor';
 import { httpErrorNotificationInterceptor } from './core/interceptors/http-error-notification.interceptor';
 import { initMockSession, mockApiInterceptor } from './core/mock/mock-api.interceptor';
 import { environment } from '../environments/environment';
 import { provideApi } from './api';
-import { TokenStorage } from './core/auth/token-storage/token-storage.interface';
-import { InMemoryTokenStorage } from './core/auth/token-storage/in-memory-token-storage.service';
-import { LanguageService } from './core/i18n/language.service';
+import { TokenStorage } from './core/services/token-storage';
+import { InMemoryTokenStorage } from './core/services/in-memory-token-storage.service';
+import { LanguageService } from './core/services/language.service';
+import { ThemeService } from './core/services/theme.service';
 
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
-}
-
-function initLanguage(languageService: LanguageService): () => void {
-  return () => languageService.init();
-}
-
-function initApp(): () => void {
-  return () => {
-    if (environment.useMockApi) {
-      initMockSession();
-    }
-  };
 }
 
 export const appConfig: ApplicationConfig = {
@@ -74,16 +63,13 @@ export const appConfig: ApplicationConfig = {
         },
       }),
     ),
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initApp,
-      multi: true,
-    },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initLanguage,
-      deps: [LanguageService],
-      multi: true,
-    },
+    provideAppInitializer(() => {
+      if (environment.useMockApi) {
+        initMockSession();
+      }
+    }),
+    provideAppInitializer(() => inject(LanguageService).init()),
+    // Applied before the first paint so the correct theme is never flashed.
+    provideAppInitializer(() => inject(ThemeService).init()),
   ],
 };

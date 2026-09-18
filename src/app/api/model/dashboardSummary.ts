@@ -7,6 +7,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { DashboardSummaryEnrollmentTrendInnerDto } from './dashboardSummaryEnrollmentTrendInner';
+import { DashboardSummaryRecentPaymentsInnerDto } from './dashboardSummaryRecentPaymentsInner';
 import { DashboardSummarySchoolClassesInnerDto } from './dashboardSummarySchoolClassesInner';
 
 
@@ -16,5 +18,13 @@ export interface DashboardSummaryDto {
     validated_payments_count?: number;
     aggregate_filled_percent?: number;
     school_classes?: Array<DashboardSummarySchoolClassesInnerDto>;
+    /**
+     * The most recent payments (own school for staff, platform-wide for admin with no school_id), newest first.
+     */
+    recent_payments?: Array<DashboardSummaryRecentPaymentsInnerDto>;
+    /**
+     * One point per day over the trailing two weeks (own school for staff, platform-wide for admin with no school_id). Days with no enrollments are included with count 0, so the series is continuous.
+     */
+    enrollment_trend?: Array<DashboardSummaryEnrollmentTrendInnerDto>;
 }
 

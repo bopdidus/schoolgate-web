@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { HttpInterceptorFn } from '@angular/common/http';
-import { TokenStorage } from '../auth/token-storage/token-storage.interface';
+import { TokenStorage } from '../services/token-storage';
 
 /**
  * Attaches the current access token, if any, as a Bearer `Authorization` header.

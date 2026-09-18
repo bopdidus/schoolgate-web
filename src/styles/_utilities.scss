@@ -1,0 +1,198 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Layout utilities. Every gap now comes from the spacing scale in _tokens.scss
+// instead of the ad-hoc 8/10/12/16/20/24/28/32 values used previously.
+// ─────────────────────────────────────────────────────────────────────────────
+
+@use './tokens' as t;
+
+.page-section {
+  margin-bottom: var(--space-section);
+}
+
+.page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-section);
+  margin-bottom: var(--space-section);
+
+  @include t.up(t.$bp-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  &.cols-3 {
+    @include t.up(t.$bp-md) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  &.cols-4 {
+    @include t.up(t.$bp-md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include t.up(t.$bp-lg) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-5);
+
+  @include t.up(t.$bp-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  &.cols-3 {
+    @include t.up(t.$bp-md) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  &.cols-4 {
+    // Jumping straight to 4 columns at $bp-md (a viewport-width breakpoint)
+    // ignores the permanent sidenav eating into the actual content width,
+    // which crammed fields into each other — step through 2 columns first,
+    // matching .stats-grid.cols-4.
+    @include t.up(t.$bp-md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include t.up(t.$bp-lg) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .span-2 {
+    @include t.up(t.$bp-md) {
+      grid-column: span 2;
+    }
+  }
+}
+
+.flex-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.flex-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: center;
+}
+
+.text-muted {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.text-primary-color {
+  color: var(--mat-sys-primary);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+// Wide content must scroll inside its own container so the page body never
+// scrolls sideways — the previous `overflow: hidden` clipped table columns.
+.scroll-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+// ── Filter bars ─────────────────────────────────────────────────────────────
+// Filter fields used to be sized with inline `style="width: 192px"` attributes,
+// one arbitrary width per page. An auto-fitting grid sizes them consistently and
+// reflows on narrow screens instead of overflowing.
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: var(--sp-3);
+  align-items: start;
+}
+
+.filter-grid__wide {
+  grid-column: 1 / -1;
+
+  @include t.up(t.$bp-md) {
+    grid-column: span 2;
+  }
+}
+
+.filter-grid__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+// ── Definition lists ────────────────────────────────────────────────────────
+// Label/value pairs on detail pages, previously hand-built out of muted spans
+// and inline-styled paragraphs on every screen that needed them.
+.detail-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-4) var(--sp-6);
+  margin: 0;
+
+  @include t.up(t.$bp-md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  &.cols-3 {
+    @include t.up(t.$bp-md) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+}
+
+.detail-list__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.detail-list__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.detail-list__value {
+  margin: 0;
+  color: var(--mat-sys-on-surface);
+  overflow-wrap: anywhere;
+
+  &.is-mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.8125rem;
+  }
+
+  &.is-empty {
+    color: var(--mat-sys-outline);
+  }
+}

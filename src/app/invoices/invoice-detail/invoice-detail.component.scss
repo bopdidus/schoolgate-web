@@ -1,0 +1,85 @@
+/* The invoice is the document that stands as proof of payment, so it is laid
+   out as a document — a bounded, centred page rather than a full-width panel. */
+.invoice-card {
+  max-width: 44rem;
+  margin-inline: auto;
+}
+
+.invoice-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-8);
+  padding-bottom: var(--sp-6);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.invoice-head__school {
+  margin: var(--sp-2) 0 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--mat-sys-primary);
+}
+
+.invoice-head__kind {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.invoice-amount {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--mat-sys-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.signature-hash {
+  padding: var(--sp-2);
+  border-radius: var(--radius-sm);
+  background: var(--mat-sys-surface-container-high);
+}
+
+/* Verification result: an icon and a tone, not an emoji. */
+.verify-banner__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  font-weight: 600;
+}
+
+.verify-banner__message {
+  margin: var(--sp-2) 0 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.verify-banner--ok {
+  border-left: 4px solid var(--sem-success);
+}
+
+.verify-banner--ok .verify-banner__head {
+  color: var(--sem-success);
+}
+
+.verify-banner--bad {
+  border-left: 4px solid var(--sem-danger);
+  background: var(--sem-danger-bg);
+}
+
+.verify-banner--bad .verify-banner__head {
+  color: var(--sem-danger);
+}
+
+@media print {
+  .invoice-card {
+    box-shadow: none;
+    border: none;
+    max-width: 100%;
+  }
+}

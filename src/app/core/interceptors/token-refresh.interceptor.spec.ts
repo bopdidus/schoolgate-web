@@ -4,10 +4,10 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { Store } from '@ngrx/store';
 import { Subject, of, throwError } from 'rxjs';
 import { tokenRefreshInterceptor } from './token-refresh.interceptor';
-import { AuthService } from '../auth/application/auth.service';
-import { TokenRefreshCoordinator } from '../auth/application/token-refresh-coordinator.service';
-import { AuthActions } from '../auth/store/auth.actions';
-import { SKIP_AUTH_REFRESH } from '../http/http-context-tokens';
+import { AuthService } from '../services/auth.service';
+import { TokenRefreshCoordinator } from '../services/token-refresh-coordinator.service';
+import { AuthActions } from '../store/auth.actions';
+import { SKIP_AUTH_REFRESH } from './http-context-tokens';
 
 describe('tokenRefreshInterceptor', () => {
   let http: HttpClient;

@@ -1,0 +1,52 @@
+.auth-layout {
+  box-sizing: border-box;
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6);
+  background-color: var(--mat-sys-surface);
+  overflow: hidden;
+}
+
+.auth-atmosphere {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 80% 50% at 12% -8%,
+      color-mix(in srgb, var(--mat-sys-primary) 16%, transparent),
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 70% 45% at 88% 108%,
+      color-mix(in srgb, var(--mat-sys-tertiary) 13%, transparent),
+      transparent 52%
+    );
+}
+
+.auth-shell {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-controls {
+  position: fixed;
+  top: var(--sp-4);
+  right: var(--sp-4);
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.lang-btn {
+  font-weight: 600;
+  min-width: 44px;
+  border-radius: var(--radius-md);
+}

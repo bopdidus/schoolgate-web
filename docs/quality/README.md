@@ -31,7 +31,7 @@ npm run build:prod      # build production avec budgets angular.json
 | Phase | Activités SchoolGateWeb |
 |-------|-------------------------|
 | Acquisition | Spécifications métier (inscriptions, pensions, commissions) |
-| Développement | Features Angular (`src/app/features/`), contrat API (`docs/API_CONTRACT.md`) |
+| Développement | Menus Angular (`src/app/<menu>/`), contrat API (`docs/API_CONTRACT.md`) |
 | Vérification | Tests unitaires Jasmine/Karma, revue de code |
 | Validation | Tests manuels par rôle (admin, school_admin, school_editor) |
 | Maintenance | Correctifs, évolutions i18n, migration UI Material |

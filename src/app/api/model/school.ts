@@ -28,6 +28,35 @@ export interface SchoolDto {
     review_deadline_days?: number;
     payment_deadline_days?: number;
     enrollment_deadline?: string | null;
+    /**
+     * When true, a returning student may skip the review queue and pay directly (see matricule_verification_mode for how the claim is checked).
+     */
+    allow_direct_payment_for_returning_students?: boolean;
+    /**
+     * How a returning student\'s claimed matricule is checked before the direct-payment bypass is granted. \"none\" trusts the claim as-is.
+     */
+    matricule_verification_mode?: SchoolDto.MatriculeVerificationModeEnum;
+    /**
+     * Set only when matricule_verification_mode is \"api\".
+     */
+    matricule_verification_api_url?: string;
+    /**
+     * Whether an API key is configured; the key itself is never echoed back. Set via PUT /schools/{id}/matricule-verification.
+     */
+    matricule_verification_api_key_set?: boolean;
+    /**
+     * Whether a roster file has been uploaded for matricule_verification_mode \"file\".
+     */
+    matricule_verification_roster_uploaded?: boolean;
     school_classes?: Array<SchoolClassDto>;
 }
+export namespace SchoolDto {
+    export const MatriculeVerificationModeEnum = {
+        None: 'none',
+        File: 'file',
+        Api: 'api'
+    } as const;
+    export type MatriculeVerificationModeEnum = typeof MatriculeVerificationModeEnum[keyof typeof MatriculeVerificationModeEnum];
+}
+
 

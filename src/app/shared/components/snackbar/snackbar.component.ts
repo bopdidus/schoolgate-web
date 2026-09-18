@@ -26,25 +26,8 @@ const SNACKBAR_ICONS: Record<SnackbarType, string> = {
   standalone: true,
   imports: [MatIconModule, MatButtonModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="app-snackbar">
-      <mat-icon class="app-snackbar__icon">{{ icon }}</mat-icon>
-      <span class="app-snackbar__message">{{ data.message | translate }}</span>
-      @if (data.actionLabel) {
-        <button mat-button class="app-snackbar__action" (click)="runAction()">
-          {{ data.actionLabel | translate }}
-        </button>
-      }
-      <button
-        mat-icon-button
-        class="app-snackbar__close"
-        aria-label="Close"
-        (click)="snackBarRef.dismiss()"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-  `,
+  templateUrl: './snackbar.component.html',
+  styleUrl: './snackbar.component.scss',
 })
 export class SnackbarComponent {
   readonly icon = SNACKBAR_ICONS[this.data.type];

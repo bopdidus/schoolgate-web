@@ -2,9 +2,9 @@ import { inject } from '@angular/core';
 import { HttpErrorResponse, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { Store } from '@ngrx/store';
 import { catchError, switchMap, throwError } from 'rxjs';
-import { TokenRefreshCoordinator } from '../auth/application/token-refresh-coordinator.service';
-import { AuthActions } from '../auth/store/auth.actions';
-import { SKIP_AUTH_REFRESH } from '../http/http-context-tokens';
+import { TokenRefreshCoordinator } from '../services/token-refresh-coordinator.service';
+import { AuthActions } from '../store/auth.actions';
+import { SKIP_AUTH_REFRESH } from './http-context-tokens';
 
 function withBearerToken<T>(req: HttpRequest<T>, accessToken: string): HttpRequest<T> {
   return req.clone({ setHeaders: { Authorization: `Bearer ${accessToken}` } });

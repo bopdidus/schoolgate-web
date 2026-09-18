@@ -1,8 +1,8 @@
 import { inject } from '@angular/core';
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
-import { NotificationService } from '../notifications/notification.service';
-import { ApiCodeService } from '../api/api-code.service';
+import { NotificationService } from '../services/notification.service';
+import { ApiCodeService } from '../services/api-code.service';
 
 /** 401 is intentionally absent: it is owned by `tokenRefreshInterceptor`. */
 const MESSAGE_KEY_BY_STATUS: Record<number, string> = {

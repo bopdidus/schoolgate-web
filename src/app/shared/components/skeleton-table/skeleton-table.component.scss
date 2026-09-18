@@ -1,0 +1,7 @@
+.skeleton-card {
+  overflow: hidden;
+}
+
+.skeleton-card .mat-mdc-card-content {
+  padding: 8px var(--spacing-card) var(--spacing-card) !important;
+}

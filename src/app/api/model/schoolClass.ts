@@ -21,6 +21,10 @@ export interface SchoolClassDto {
     level?: LevelDto;
     specialty?: SpecialtyDto;
     enrollment_fee_cents?: number;
+    /**
+     * Fixed campaign date for the enrollment fee; absent when the school set none.
+     */
+    enrollment_fee_due_date?: string | null;
     installments?: Array<InstallmentDto>;
     total_seats?: number;
     seats_remaining?: number;
