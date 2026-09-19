@@ -53,8 +53,8 @@ Ce document décrit l'approche de test pour l'application Angular front-office S
 ```
 src/
   app/
-    core/auth/application/auth.service.spec.ts
-    features/schools/application/school-form.validation.spec.ts
+    core/services/auth.service.spec.ts
+    schools/school-form.validation.spec.ts
     app.component.spec.ts
 ```
 

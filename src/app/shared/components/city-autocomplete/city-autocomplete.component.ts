@@ -31,7 +31,7 @@ import {
   of,
   switchMap,
 } from 'rxjs';
-import { RefCity, RefRepository } from '../../../core/ref/ref.repository';
+import { RefCity, RefService } from '../../../core/services/ref.service';
 
 /**
  * Searchable city dropdown backed by `GET /reference/cities?q=`.
@@ -49,50 +49,11 @@ import { RefCity, RefRepository } from '../../../core/ref/ref.repository';
     TranslateModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <mat-form-field appearance="outline" class="city-field">
-      <mat-label>{{ labelKey | translate }}</mat-label>
-      <input
-        matInput
-        [formControl]="searchCtrl"
-        [matAutocomplete]="cityAuto"
-        [required]="required"
-        autocomplete="off"
-        (blur)="onBlur()"
-      />
-      @if (loading()) {
-        <mat-spinner matSuffix diameter="18" />
-      }
-      <mat-autocomplete
-        #cityAuto="matAutocomplete"
-        [displayWith]="displayCity"
-        (optionSelected)="onSelected($event)"
-      >
-        @for (city of options(); track city.id) {
-          <mat-option [value]="city">
-            <span>{{ cityLabel(city) }}</span>
-          </mat-option>
-        }
-        @if (!loading() && hasQuery() && options().length === 0) {
-          <mat-option disabled>{{ 'COMMON.NO_DATA' | translate }}</mat-option>
-        }
-      </mat-autocomplete>
-      @if (showRequiredError()) {
-        <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
-      }
-    </mat-form-field>
-  `,
-  styles: `
-    :host {
-      display: block;
-    }
-    .city-field {
-      width: 100%;
-    }
-  `,
+  templateUrl: './city-autocomplete.component.html',
+  styleUrl: './city-autocomplete.component.scss',
 })
 export class CityAutocompleteComponent implements OnInit, ControlValueAccessor {
-  private readonly refRepository = inject(RefRepository);
+  private readonly refService = inject(RefService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly query$ = new Subject<string>();
@@ -123,7 +84,7 @@ export class CityAutocompleteComponent implements OnInit, ControlValueAccessor {
         distinctUntilChanged(),
         switchMap((q) => {
           this.loading.set(true);
-          return this.refRepository.searchCities(q).pipe(
+          return this.refService.searchCities(q).pipe(
             catchError(() => of([] as RefCity[])),
             finalize(() => this.loading.set(false)),
           );
@@ -159,7 +120,7 @@ export class CityAutocompleteComponent implements OnInit, ControlValueAccessor {
 
     if (this.selectedId != null) {
       this.loading.set(true);
-      this.refRepository
+      this.refService
         .searchCities('')
         .pipe(
           catchError(() => of([] as RefCity[])),

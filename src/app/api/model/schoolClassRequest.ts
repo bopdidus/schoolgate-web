@@ -30,6 +30,10 @@ export interface SchoolClassRequestDto {
      */
     specialty_other_label?: string;
     enrollment_fee_cents: number;
+    /**
+     * Fixed campaign date for the enrollment fee. The parent\'s actual deadline is the earlier of this date and (acceptance + payment_deadline_days); a date already past at acceptance is ignored. Omit or send null for the rolling deadline only.
+     */
+    enrollment_fee_due_date?: string | null;
     installments?: Array<InstallmentRequestDto>;
     total_seats: number;
     advance_allowed?: boolean;

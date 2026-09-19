@@ -1,0 +1,138 @@
+// Same card language as the login page, wider for a two-column form.
+.register-card {
+  width: 100%;
+  max-width: 44rem;
+  box-shadow: var(--shadow-card-hover);
+}
+
+.register-card .mat-mdc-card-content {
+  padding: var(--sp-8) var(--sp-5);
+
+  @media (min-width: 600px) {
+    padding: var(--sp-10) var(--sp-8);
+  }
+}
+
+.register-brand {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--sp-6);
+}
+
+.register-head {
+  text-align: center;
+  margin-bottom: var(--sp-8);
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  p {
+    margin: var(--sp-2) auto 0;
+    max-width: 32rem;
+  }
+}
+
+.register-section {
+  margin: 0 0 var(--sp-6);
+  padding: 0;
+  border: 0;
+  min-width: 0;
+
+  legend {
+    margin-bottom: var(--sp-4);
+    padding: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mat-sys-primary);
+  }
+}
+
+.register-section__hint {
+  margin: calc(-1 * var(--sp-2)) 0 var(--sp-4);
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.register-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: var(--sp-4);
+  // Room for the first row's floating outline labels.
+  padding-top: var(--sp-2);
+
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  mat-form-field,
+  app-city-autocomplete {
+    width: 100%;
+  }
+
+  .span-2 {
+    @media (min-width: 600px) {
+      grid-column: span 2;
+    }
+  }
+}
+
+.register-submit {
+  width: 100%;
+  min-height: 44px;
+}
+
+.register-submit mat-spinner {
+  margin: 0 auto;
+}
+
+.register-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-1);
+  margin-top: var(--sp-4);
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.875rem;
+}
+
+.register-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--sp-3);
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0 0 var(--sp-4);
+    max-width: 30rem;
+  }
+}
+
+.register-done__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-pill);
+  background: var(--sem-success-bg);
+  color: var(--sem-success);
+}
+
+.register-done__icon--pending {
+  background: var(--sem-warning-bg);
+  color: var(--sem-warning);
+}

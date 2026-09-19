@@ -40,20 +40,21 @@ To use the real Go API, set `useMockApi: false`.
 
 ```
 src/app/
-├── core/           # Auth, interceptors, guards, API, i18n
-├── shared/         # Layouts, pipes, common components
-└── features/
-    ├── auth/
-    ├── schools/
-    ├── enrollments/
-    ├── payments/
-    ├── invoices/
-    ├── users/
-    ├── settings/
-    └── dashboard/
+├── api/          # Generated OpenAPI client
+├── core/         # Services, guards, interceptors, NgRx store
+├── shared/       # components/, pipes/, models/, constants/, validators/
+├── layout/       # auth-layout, main-layout
+├── login/
+├── dashboard/
+├── schools/
+├── enrollments/
+├── payments/
+├── invoices/
+├── users/
+└── settings/
 ```
 
-Each feature follows DDD layers: `domain/`, `application/`, `infrastructure/`, `presentation/`.
+One folder per menu; every component has its own folder with `.ts`, `.html`, `.scss` and `.spec.ts`. See `PROJECT_STRUCTURE.md`.
 
 ## Roles
 

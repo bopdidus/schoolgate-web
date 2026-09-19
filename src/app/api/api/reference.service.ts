@@ -21,6 +21,8 @@ import { CityListEnvelopeDto } from '../model/cityListEnvelope';
 // @ts-ignore
 import { ClassLevelListEnvelopeDto } from '../model/classLevelListEnvelope';
 // @ts-ignore
+import { DocumentTypeListEnvelopeDto } from '../model/documentTypeListEnvelope';
+// @ts-ignore
 import { SpecialtyRefListEnvelopeDto } from '../model/specialtyRefListEnvelope';
 
 // @ts-ignore
@@ -41,6 +43,7 @@ export class ReferenceService extends BaseService {
 
     /**
      * List cities (Cameroon reference data)
+     * Public (no JWT): the school sign-up form picks its city before any account exists. The other /reference routes require a JWT.
      * @endpoint get /reference/cities
      * @param q Search by city or region name
      * @param limit 
@@ -64,6 +67,81 @@ export class ReferenceService extends BaseService {
             true,
         );
 
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'limit',
+            <any>limit,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'offset',
+            <any>offset,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/reference/cities`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<CityListEnvelopeDto>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                params: localVarQueryParameters.toHttpParams(),
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * List document types (global reference catalog)
+     * @endpoint get /reference/document-types
+     * @param limit 
+     * @param offset 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public referenceDocumentTypesGet(limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<DocumentTypeListEnvelopeDto>;
+    public referenceDocumentTypesGet(limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<DocumentTypeListEnvelopeDto>>;
+    public referenceDocumentTypesGet(limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<DocumentTypeListEnvelopeDto>>;
+    public referenceDocumentTypesGet(limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
         localVarQueryParameters = this.addToHttpParams(
             localVarQueryParameters,
@@ -111,9 +189,9 @@ export class ReferenceService extends BaseService {
             }
         }
 
-        let localVarPath = `/reference/cities`;
+        let localVarPath = `/reference/document-types`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<CityListEnvelopeDto>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<DocumentTypeListEnvelopeDto>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters.toHttpParams(),

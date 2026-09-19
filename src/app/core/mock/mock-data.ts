@@ -1,9 +1,9 @@
-import { User } from '../../core/auth/models/auth.model';
-import { School } from '../../features/schools/domain/models/school.model';
-import { Enrollment } from '../../features/enrollments/domain/models/enrollment.model';
-import { Payment } from '../../features/payments/domain/models/payment.model';
-import { Invoice } from '../../features/invoices/domain/models/invoice.model';
-import { DashboardOverview } from '../../features/dashboard/domain/models/dashboard.model';
+import { User } from '../models/auth.model';
+import { School } from '../../schools/school.model';
+import { Enrollment } from '../../enrollments/enrollment.model';
+import { Payment } from '../../payments/payment.model';
+import { Invoice } from '../../invoices/invoice.model';
+import { DashboardOverview } from '../../dashboard/dashboard.model';
 
 export const MOCK_CREDENTIALS = {
   admin: { email: 'admin@schoolgate.cm', password: 'demo' },
@@ -54,6 +54,12 @@ export const MOCK_SCHOOLS: School[] = [
     status: 'active',
     schoolSystem: 'bilingual',
     academicYear: '2025-2026',
+    matriculeVerification: {
+      allowDirectPaymentForReturningStudents: false,
+      mode: 'none',
+      apiKeySet: false,
+      rosterUploaded: false,
+    },
     totalClasses: 3,
     fillRate: 78,
     createdAt: '2026-01-15T00:00:00Z',
@@ -68,7 +74,6 @@ export const MOCK_SCHOOLS: School[] = [
         name: '6ème A',
         totalSeats: 40,
         advanceAllowed: true,
-        paymentValidationDays: 5,
         enrolledCount: 32,
         fillRate: 80,
         enrollmentFee: {
@@ -92,7 +97,6 @@ export const MOCK_SCHOOLS: School[] = [
         name: '5ème B',
         totalSeats: 35,
         advanceAllowed: false,
-        paymentValidationDays: 7,
         enrolledCount: 26,
         fillRate: 74,
         enrollmentFee: {
@@ -114,7 +118,6 @@ export const MOCK_SCHOOLS: School[] = [
         name: 'Form 1 A',
         totalSeats: 38,
         advanceAllowed: true,
-        paymentValidationDays: 5,
         enrolledCount: 28,
         fillRate: 74,
         enrollmentFee: {
@@ -141,6 +144,12 @@ export const MOCK_SCHOOLS: School[] = [
     status: 'active',
     schoolSystem: 'francophone',
     academicYear: '2025-2026',
+    matriculeVerification: {
+      allowDirectPaymentForReturningStudents: false,
+      mode: 'none',
+      apiKeySet: false,
+      rosterUploaded: false,
+    },
     totalClasses: 1,
     fillRate: 65,
     createdAt: '2026-02-01T00:00:00Z',
@@ -155,7 +164,6 @@ export const MOCK_SCHOOLS: School[] = [
         name: '4ème C',
         totalSeats: 30,
         advanceAllowed: false,
-        paymentValidationDays: 5,
         enrolledCount: 20,
         fillRate: 67,
         enrollmentFee: {
@@ -341,38 +349,42 @@ export const MOCK_INVOICES: Invoice[] = [
   },
 ];
 
-export function buildAdminDashboard(schools: School[] = MOCK_SCHOOLS): DashboardOverview {
-  const lastSchool = [...schools].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  )[0];
-
+export function buildAdminDashboard(_schools: School[] = MOCK_SCHOOLS): DashboardOverview {
   return {
     role: 'admin',
     stats: {
       pendingValidations: 2,
       validatedPayments: 48,
       seatsFilledPercent: 72,
-      totalSchools: schools.length,
-      totalEnrollments: 78,
-      totalRevenue: 12500000,
-      refundsTriggered: 1,
     },
-    lastRegisteredSchool: lastSchool
-      ? {
-          id: lastSchool.id,
-          name: lastSchool.name,
-          city: lastSchool.city,
-          createdAt: lastSchool.createdAt,
-        }
-      : undefined,
-    approachingDeadlinePayments: MOCK_PAYMENTS.filter((p) => p.status === 'declared').map((p) => ({
-      id: p.id,
-      studentName: p.studentName,
-      amount: p.amount,
-      deadline: p.deadline,
-      hoursRemaining: 18,
-    })),
+    classPaymentStats: [
+      { className: '6ème A', validated: 10, pending: 1 },
+      { className: '5ème B', validated: 2, pending: 0 },
+    ],
+    recentPayments: toMockRecentPayments(MOCK_PAYMENTS),
+    enrollmentTrend: mockEnrollmentTrend(),
   };
+}
+
+function toMockRecentPayments(payments: Payment[]): DashboardOverview['recentPayments'] {
+  return payments.map((p) => ({
+    id: p.id,
+    studentName: p.studentName,
+    amount: p.amount,
+    status: p.status,
+    declaredAt: p.declaredAt,
+  }));
+}
+
+/** A plausible 14-day series so the mock trend chart isn't a flat line. */
+function mockEnrollmentTrend(): DashboardOverview['enrollmentTrend'] {
+  const counts = [1, 2, 0, 3, 1, 4, 2, 5, 3, 6, 4, 7, 5, 8];
+  const today = new Date();
+  return counts.map((count, i) => {
+    const date = new Date(today);
+    date.setDate(date.getDate() - (counts.length - 1 - i));
+    return { date: date.toISOString().slice(0, 10), count };
+  });
 }
 
 /** Platform commission: 5% on each validated payment. */
@@ -419,15 +431,7 @@ export function buildSchoolDashboard(): DashboardOverview {
       { className: '6ème A', validated: 10, pending: 1 },
       { className: '5ème B', validated: 2, pending: 0 },
     ],
-    recentPayments: MOCK_PAYMENTS.filter((p) => p.schoolId === 'sch-1'),
-    approachingDeadlinePayments: [
-      {
-        id: 'pay-1',
-        studentName: 'Jean Dupont',
-        amount: 25000,
-        deadline: deadlineSoon,
-        hoursRemaining: 18,
-      },
-    ],
+    recentPayments: toMockRecentPayments(MOCK_PAYMENTS.filter((p) => p.schoolId === 'sch-1')),
+    enrollmentTrend: mockEnrollmentTrend(),
   };
 }

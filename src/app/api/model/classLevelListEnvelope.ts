@@ -8,13 +8,18 @@
  * Do not edit the class manually.
  */
 import { MetaDto } from './meta';
+import { ApiCodeDto } from './apiCode';
 import { ClassLevelRefDto } from './classLevelRef';
 import { ErrorBodyDto } from './errorBody';
 
 
 export interface ClassLevelListEnvelopeDto { 
+    code?: ApiCodeDto;
     data?: Array<ClassLevelRefDto>;
     error?: ErrorBodyDto;
     meta?: MetaDto;
 }
+export namespace ClassLevelListEnvelopeDto {
+}
+
 

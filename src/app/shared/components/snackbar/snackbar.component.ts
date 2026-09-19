@@ -9,6 +9,9 @@ export type SnackbarType = 'success' | 'error' | 'info' | 'warning';
 export interface SnackbarData {
   message: string;
   type: SnackbarType;
+  /** Optional action button (e.g. "View" navigating to the resource). */
+  actionLabel?: string;
+  onAction?: () => void;
 }
 
 const SNACKBAR_ICONS: Record<SnackbarType, string> = {
@@ -23,20 +26,8 @@ const SNACKBAR_ICONS: Record<SnackbarType, string> = {
   standalone: true,
   imports: [MatIconModule, MatButtonModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="app-snackbar">
-      <mat-icon class="app-snackbar__icon">{{ icon }}</mat-icon>
-      <span class="app-snackbar__message">{{ data.message | translate }}</span>
-      <button
-        mat-icon-button
-        class="app-snackbar__close"
-        aria-label="Close"
-        (click)="snackBarRef.dismiss()"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-  `,
+  templateUrl: './snackbar.component.html',
+  styleUrl: './snackbar.component.scss',
 })
 export class SnackbarComponent {
   readonly icon = SNACKBAR_ICONS[this.data.type];
@@ -45,4 +36,9 @@ export class SnackbarComponent {
     @Inject(MAT_SNACK_BAR_DATA) readonly data: SnackbarData,
     readonly snackBarRef: MatSnackBarRef<SnackbarComponent>,
   ) {}
+
+  runAction(): void {
+    this.data.onAction?.();
+    this.snackBarRef.dismiss();
+  }
 }

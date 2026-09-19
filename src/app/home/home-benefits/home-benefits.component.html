@@ -1,0 +1,18 @@
+<section class="home-benefits" aria-labelledby="benefits-title">
+  <div class="public-container">
+    <h2 id="benefits-title" class="home-benefits__title">{{ 'HOME.BENEFITS_TITLE' | translate }}</h2>
+    <div class="home-benefits__grid">
+      @for (a of audiences; track a.title) {
+        <div class="home-benefits__card">
+          <span class="icon-tile"><mat-icon>{{ a.icon }}</mat-icon></span>
+          <h3>{{ a.title | translate }}</h3>
+          <ul role="list">
+            @for (item of a.items; track item) {
+              <li><mat-icon>check</mat-icon>{{ item | translate }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </div>
+</section>

@@ -15,8 +15,23 @@ export interface SchoolRequestDto {
     address?: string;
     phone?: string;
     email?: string;
+    /**
+     * Applied only when a platform admin edits the school; omit it to keep the current status. \"pending\" comes from self-registration only.
+     */
     status?: SchoolRequestDto.StatusEnum;
     system?: SchoolRequestDto.SystemEnum;
+    /**
+     * Days the school has to answer a pending request before auto-rejection
+     */
+    review_deadline_days?: number;
+    /**
+     * Days the parent has to pay after acceptance
+     */
+    payment_deadline_days?: number;
+    /**
+     * Date after which new enrollment requests are refused (null = always open)
+     */
+    enrollment_deadline?: string | null;
 }
 export namespace SchoolRequestDto {
     export const StatusEnum = {

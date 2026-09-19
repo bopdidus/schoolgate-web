@@ -8,13 +8,18 @@
  * Do not edit the class manually.
  */
 import { MetaDto } from './meta';
+import { ApiCodeDto } from './apiCode';
 import { ErrorBodyDto } from './errorBody';
 import { SchoolDto } from './school';
 
 
 export interface SchoolListEnvelopeDto { 
+    code?: ApiCodeDto;
     data?: Array<SchoolDto>;
     error?: ErrorBodyDto;
     meta?: MetaDto;
 }
+export namespace SchoolListEnvelopeDto {
+}
+
 

@@ -1,0 +1,14 @@
+.row--clickable {
+  cursor: pointer;
+}
+
+.user-link {
+  color: inherit;
+  font-weight: 500;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
+}

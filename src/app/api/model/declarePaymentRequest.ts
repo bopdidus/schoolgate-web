@@ -14,7 +14,11 @@ export interface DeclarePaymentRequestDto {
     type: DeclarePaymentRequestDto.TypeEnum;
     installment_number?: number;
     amount_cents: number;
-    mobile_money_reference: string;
+    payment_method: DeclarePaymentRequestDto.PaymentMethodEnum;
+    /**
+     * Mobile Money phone number (USSD push target)
+     */
+    payer_msisdn: string;
 }
 export namespace DeclarePaymentRequestDto {
     export const TypeEnum = {
@@ -22,6 +26,11 @@ export namespace DeclarePaymentRequestDto {
         TuitionInstallment: 'tuition_installment'
     } as const;
     export type TypeEnum = typeof TypeEnum[keyof typeof TypeEnum];
+    export const PaymentMethodEnum = {
+        Mtn: 'mtn',
+        Orange: 'orange'
+    } as const;
+    export type PaymentMethodEnum = typeof PaymentMethodEnum[keyof typeof PaymentMethodEnum];
 }
 
 

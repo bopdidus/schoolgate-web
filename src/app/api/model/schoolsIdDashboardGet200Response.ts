@@ -8,13 +8,18 @@
  * Do not edit the class manually.
  */
 import { MetaDto } from './meta';
+import { ApiCodeDto } from './apiCode';
 import { DashboardSummaryDto } from './dashboardSummary';
 import { ErrorBodyDto } from './errorBody';
 
 
 export interface SchoolsIdDashboardGet200ResponseDto { 
+    code?: ApiCodeDto;
     data?: DashboardSummaryDto;
     error?: ErrorBodyDto;
     meta?: MetaDto;
 }
+export namespace SchoolsIdDashboardGet200ResponseDto {
+}
+
 

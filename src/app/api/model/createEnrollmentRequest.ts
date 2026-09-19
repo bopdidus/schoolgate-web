@@ -13,6 +13,9 @@ export interface CreateEnrollmentRequestDto {
     school_class_id: number;
     academic_year?: string;
     is_returning_student?: boolean;
-    documents?: Array<string>;
+    /**
+     * The child\'s matricule from a prior enrollment period. Only used (and only sent to a school\'s configured third party) when is_returning_student is true and the school offers allow_direct_payment_for_returning_students.
+     */
+    matricule?: string;
 }
 

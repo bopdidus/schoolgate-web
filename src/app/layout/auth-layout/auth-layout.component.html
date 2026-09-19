@@ -1,0 +1,20 @@
+<div class="auth-layout">
+  <div class="auth-atmosphere" aria-hidden="true"></div>
+  <div class="auth-shell">
+    <router-outlet />
+  </div>
+
+  <div class="auth-controls">
+    <app-theme-toggle />
+    <button
+      mat-button
+      type="button"
+      class="lang-btn"
+      (click)="toggleLanguage()"
+      [attr.aria-label]="'SETTINGS.LANGUAGE' | translate"
+      [matTooltip]="'SETTINGS.LANGUAGE' | translate"
+    >
+      {{ currentLang }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,40 @@
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.brand__mark {
+  flex-shrink: 0;
+  display: block;
+}
+
+.brand__tile {
+  fill: #0b6e64;
+}
+
+.brand__arch {
+  stroke: #ffffff;
+}
+
+/* A light amber. The themed tertiary role resolves to a dark brown in the
+   light scheme, which all but vanishes against the teal tile. */
+.brand__lintel {
+  stroke: #f5b547;
+}
+
+.brand__word {
+  font-family: var(--mat-sys-title-medium-font);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  letter-spacing: -0.02em;
+  color: var(--mat-sys-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand__word-accent {
+  color: var(--mat-sys-primary);
+}

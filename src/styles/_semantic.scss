@@ -1,0 +1,177 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Semantic colors and state chips.
+//
+// Semantic color is deliberately SEPARATE from the brand palette: success,
+// warning, danger and info must read as states, not as decoration. Every value
+// is declared once with `light-dark()`, so both themes stay in sync.
+//
+// The `--color-*` names are the aliases the existing templates already use.
+// They now derive from the M3 theme instead of being a third, parallel palette.
+// ─────────────────────────────────────────────────────────────────────────────
+
+@use '@angular/material' as mat;
+
+:root {
+  // ── State colors ──────────────────────────────────────────────────────────
+  --sem-success: #{light-dark(#0e6a41, #6fd3a2)};
+  --sem-success-bg: #{light-dark(#e4f3ea, rgba(111, 211, 162, 0.15))};
+  --sem-warning: #{light-dark(#8a5206, #eab264)};
+  --sem-warning-bg: #{light-dark(#fbefdc, rgba(234, 178, 100, 0.15))};
+  --sem-danger: #{light-dark(#b3261e, #f2867c)};
+  --sem-danger-bg: #{light-dark(#fbe9e7, rgba(242, 134, 124, 0.15))};
+  --sem-info: #{light-dark(#0b5f94, #7cb6e6)};
+  --sem-info-bg: #{light-dark(#e4f0f9, rgba(124, 182, 230, 0.15))};
+  --sem-notice: #{light-dark(#6b4ea8, #b9a3e8)};
+  --sem-notice-bg: #{light-dark(#eee9f8, rgba(185, 163, 232, 0.15))};
+  --sem-neutral: var(--mat-sys-on-surface-variant);
+  --sem-neutral-bg: var(--mat-sys-surface-container-high);
+
+  // ── Aliases consumed by existing templates and component styles ───────────
+  --color-primary: var(--mat-sys-primary);
+  --color-primary-container: var(--mat-sys-primary-container);
+  --color-on-primary-container: var(--mat-sys-on-primary-container);
+  --color-accent: var(--mat-sys-tertiary);
+  --color-accent-dark: var(--mat-sys-tertiary);
+  --color-background: var(--mat-sys-surface);
+  --color-surface: var(--mat-sys-surface-container-lowest);
+  --color-text: var(--mat-sys-on-surface);
+  --color-text-body: var(--mat-sys-on-surface-variant);
+  --color-muted: var(--mat-sys-on-surface-variant);
+  --color-border: var(--mat-sys-outline-variant);
+  --color-success: var(--sem-success);
+  --color-success-bg: var(--sem-success-bg);
+  --color-warning: var(--sem-warning);
+  --color-warning-bg: var(--sem-warning-bg);
+  --color-danger: var(--sem-danger);
+  --color-danger-bg: var(--sem-danger-bg);
+  --color-info: var(--sem-info);
+  --color-info-bg: var(--sem-info-bg);
+  --color-accent-strong: var(--sem-notice);
+  --color-accent-strong-bg: var(--sem-notice-bg);
+  --color-neutral: var(--sem-neutral);
+  --color-neutral-bg: var(--sem-neutral-bg);
+
+  // ── Elevation ─────────────────────────────────────────────────────────────
+  // Shadows are composed from a themed color channel: on a dark ground
+  // elevation reads through surface tint, so the shade must be far deeper and
+  // the ambient spread tighter.
+  --shadow-rgb: #{light-dark(16 32 30, 0 0 0)};
+  --shadow-a: #{light-dark(0.05, 0.4)};
+  --shadow-b: #{light-dark(0.05, 0.3)};
+  --shadow-card: 0 1px 2px rgb(var(--shadow-rgb) / var(--shadow-a)),
+    0 4px 12px rgb(var(--shadow-rgb) / var(--shadow-b));
+  --shadow-card-hover: 0 2px 6px rgb(var(--shadow-rgb) / calc(var(--shadow-a) + 0.02)),
+    0 10px 24px rgb(var(--shadow-rgb) / calc(var(--shadow-b) + 0.04));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// State chips
+//
+// Driven through the component's own design tokens rather than by overriding
+// `background-color` with `!important`, which is what made the old rules brittle.
+// ─────────────────────────────────────────────────────────────────────────────
+
+@mixin _chip-tone($fg, $bg) {
+  @include mat.chips-overrides(
+    (
+      elevated-container-color: $bg,
+      label-text-color: $fg,
+      outline-color: transparent,
+      with-icon-icon-color: $fg,
+      selected-label-text-color: $fg,
+    )
+  );
+}
+
+.status-chip,
+mat-chip.status-chip {
+  font-size: var(--mat-sys-label-small-size, 12px);
+  font-weight: 500;
+}
+
+mat-chip.status-declared,
+.status-declared {
+  @include _chip-tone(var(--sem-info), var(--sem-info-bg));
+}
+
+mat-chip.status-validated,
+mat-chip.status-active,
+mat-chip.status-issued,
+.status-validated,
+.status-active,
+.status-issued {
+  @include _chip-tone(var(--sem-success), var(--sem-success-bg));
+}
+
+mat-chip.status-rejected,
+.status-rejected {
+  @include _chip-tone(var(--sem-danger), var(--sem-danger-bg));
+}
+
+mat-chip.status-pending,
+mat-chip.status-refund_pending,
+.status-pending,
+.status-refund_pending {
+  @include _chip-tone(var(--sem-warning), var(--sem-warning-bg));
+}
+
+mat-chip.status-pending_documents,
+.status-pending_documents {
+  @include _chip-tone(var(--sem-notice), var(--sem-notice-bg));
+}
+
+mat-chip.status-refunded,
+mat-chip.status-cancelled,
+mat-chip.status-inactive,
+mat-chip.status-void,
+mat-chip.status-default,
+.status-refunded,
+.status-cancelled,
+.status-inactive,
+.status-void,
+.status-default {
+  @include _chip-tone(var(--sem-neutral), var(--sem-neutral-bg));
+}
+
+// Deadline urgency, used on the payments table.
+.status-urgent {
+  @include _chip-tone(var(--sem-danger), var(--sem-danger-bg));
+}
+
+.status-soon {
+  @include _chip-tone(var(--sem-info), var(--sem-info-bg));
+}
+
+// ── Education-type chips ────────────────────────────────────────────────────
+// `professional` is included alongside `vocational`: the API emits `vocational`
+// while the filter dropdowns emit `professional`, and the old map silently fell
+// through to the neutral default for one of them.
+
+.edu-type-chip,
+mat-chip.edu-type-chip {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+mat-chip.edu-type-general,
+.edu-type-general {
+  @include _chip-tone(var(--mat-sys-primary), var(--mat-sys-primary-container));
+}
+
+mat-chip.edu-type-technical,
+.edu-type-technical {
+  @include _chip-tone(var(--sem-info), var(--sem-info-bg));
+}
+
+mat-chip.edu-type-professional,
+mat-chip.edu-type-vocational,
+.edu-type-professional,
+.edu-type-vocational {
+  @include _chip-tone(var(--sem-notice), var(--sem-notice-bg));
+}
+
+mat-chip.edu-type-default,
+.edu-type-default {
+  @include _chip-tone(var(--sem-neutral), var(--sem-neutral-bg));
+}

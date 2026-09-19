@@ -9,12 +9,17 @@
  */
 import { InvoiceVerifyEnvelopeAllOfDataDto } from './invoiceVerifyEnvelopeAllOfData';
 import { MetaDto } from './meta';
+import { ApiCodeDto } from './apiCode';
 import { ErrorBodyDto } from './errorBody';
 
 
 export interface InvoiceVerifyEnvelopeDto { 
+    code?: ApiCodeDto;
     data?: InvoiceVerifyEnvelopeAllOfDataDto;
     error?: ErrorBodyDto;
     meta?: MetaDto;
 }
+export namespace InvoiceVerifyEnvelopeDto {
+}
+
 

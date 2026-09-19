@@ -1,4 +1,12 @@
-export type UserRole = 'admin' | 'school_admin' | 'school_editor';
+/**
+ * Every role the API can issue. `parent` is included even though this back-office
+ * has no parent-facing screens: leaving it out meant a parent login produced a
+ * role outside the union, which no guard could reason about.
+ */
+export type UserRole = 'admin' | 'school_admin' | 'school_editor' | 'parent';
+
+/** Roles that may use this back-office at all. */
+export const BACK_OFFICE_ROLES: UserRole[] = ['admin', 'school_admin', 'school_editor'];
 
 /** Francophone (6ème, 5ème…) vs Anglo-Saxon / Anglophone (Form 1, Form 2…). */
 export type EducationSystem = 'francophone' | 'anglophone';
@@ -8,7 +16,8 @@ export type EducationType = 'general' | 'technical' | 'vocational';
 /** All roles that belong to a school (not the platform admin). */
 export const SCHOOL_ROLES: UserRole[] = ['school_admin', 'school_editor'];
 
-export type SchoolStatus = 'active' | 'inactive';
+/** `pending`: signed itself up, waiting for a platform admin to validate it. */
+export type SchoolStatus = 'active' | 'inactive' | 'pending';
 
 export type EnrollmentStatus =
   | 'pending_documents'

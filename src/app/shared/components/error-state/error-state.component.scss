@@ -1,0 +1,41 @@
+.error-state {
+  text-align: center;
+}
+
+.error-state .mat-mdc-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-10) var(--sp-6);
+}
+
+.error-state__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-xl);
+  background-color: var(--sem-danger-bg);
+  margin-bottom: var(--sp-1);
+}
+
+.error-state__icon mat-icon {
+  font-size: 34px;
+  width: 34px;
+  height: 34px;
+  color: var(--sem-danger);
+}
+
+.error-state h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 650;
+}
+
+.error-state p {
+  margin: 0;
+  max-width: 30rem;
+  color: var(--mat-sys-on-surface-variant);
+}

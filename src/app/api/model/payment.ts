@@ -7,6 +7,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { SchoolClassDto } from './schoolClass';
+import { PersonDto } from './person';
+import { SchoolDto } from './school';
 
 
 export interface PaymentDto { 
@@ -16,10 +19,17 @@ export interface PaymentDto {
     installment_number?: number;
     amount_cents?: number;
     status?: string;
+    payment_method?: string;
     mobile_money_reference?: string;
+    payer_msisdn?: string;
+    external_reference?: string;
     declared_at?: string;
     validation_deadline?: string;
     validated_at?: string;
     rejected_at?: string;
+    rejection_reason?: string;
+    person?: PersonDto;
+    school?: SchoolDto;
+    school_class?: SchoolClassDto;
 }
 

@@ -54,7 +54,7 @@ Modèle de qualité du produit logiciel appliqué à SchoolGateWeb.
 
 | Sous-caractéristique | Implémentation | Preuve |
 |---------------------|----------------|--------|
-| Modularité | Architecture feature (`presentation` / `application`) | `src/app/features/` |
+| Modularité | Un dossier par menu (composant `.ts`/`.html`/`.scss`/`.spec.ts`) | `src/app/<menu>/` |
 | Réutilisabilité | Composants partagés (`page-header`, `empty-state`) | `src/app/shared/` |
 | Analysabilité | TypeScript strict, modèles typés | `tsconfig.json`, `*.model.ts` |
 | Modifiabilité | i18n externalisé, thème SCSS variables | `styles.scss` |

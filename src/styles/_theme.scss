@@ -1,0 +1,90 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// The single source of truth for color, typography and shape.
+//
+// One `mat.theme()` emission with `theme-type: color-scheme` produces BOTH the
+// light and the dark palette using CSS `light-dark()`. Switching themes is then
+// just a `color-scheme` change — no duplicated stylesheet, which matters because
+// the initial bundle is already over its budget.
+// ─────────────────────────────────────────────────────────────────────────────
+
+@use '@angular/material' as mat;
+@use './palettes';
+
+html {
+  // Follow the operating system unless the user makes an explicit choice below.
+  color-scheme: light dark;
+
+  @include mat.theme(
+    (
+      color: (
+        primary: palettes.$primary-palette,
+        tertiary: palettes.$tertiary-palette,
+        theme-type: color-scheme,
+      ),
+      // Two families: a brand face for display/headline levels, a highly legible
+      // UI face for body/label. Replaces the ad-hoc per-component font sizes.
+      typography: (
+        brand-family: ('Plus Jakarta Sans', 'Inter', system-ui, sans-serif),
+        plain-family: ('Inter', system-ui, -apple-system, 'Segoe UI', sans-serif),
+        bold-weight: 700,
+        medium-weight: 500,
+        regular-weight: 400,
+      ),
+      density: 0,
+    )
+  );
+
+  // ── Shape ─────────────────────────────────────────────────────────────────
+  @include mat.card-overrides(
+    (
+      outlined-container-shape: var(--radius-lg),
+      elevated-container-shape: var(--radius-lg),
+      outlined-outline-color: var(--mat-sys-outline-variant),
+      outlined-container-color: var(--mat-sys-surface-container-lowest),
+      elevated-container-color: var(--mat-sys-surface-container-lowest),
+    )
+  );
+
+  @include mat.button-overrides(
+    (
+      filled-container-shape: var(--radius-md),
+      outlined-container-shape: var(--radius-md),
+      protected-container-shape: var(--radius-md),
+      text-container-shape: var(--radius-md),
+      tonal-container-shape: var(--radius-md),
+    )
+  );
+
+  // Angular Material's own .mat-drawer-side rule sets border-right-color to
+  // var(--mat-sidenav-container-divider-color, transparent); left undefined,
+  // that fallback wins the cascade (its component style is injected after
+  // this global sheet) and the divider silently renders invisible.
+  @include mat.sidenav-overrides((container-divider-color: var(--mat-sys-outline-variant)));
+
+  @include mat.fab-overrides((container-shape: var(--radius-lg)));
+  @include mat.form-field-overrides((outlined-container-shape: var(--radius-md)));
+  @include mat.dialog-overrides((container-shape: var(--radius-xl)));
+  @include mat.chips-overrides((container-shape-radius: var(--radius-sm)));
+
+  // ── Density on data surfaces only ─────────────────────────────────────────
+  // A back-office table at default density wastes vertical space; forms keep
+  // the comfortable default so they stay easy to fill in.
+  @include mat.table-overrides(
+    (
+      header-container-height: 48px,
+      row-item-container-height: 44px,
+      background-color: transparent,
+    )
+  );
+
+  @include mat.paginator-overrides((container-background-color: transparent));
+}
+
+// Explicit user choice wins over the operating system, in both directions.
+html[data-theme='light'] {
+  color-scheme: light;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+}

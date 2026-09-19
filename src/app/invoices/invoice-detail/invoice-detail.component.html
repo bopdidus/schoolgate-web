@@ -1,0 +1,85 @@
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (invoice(); as inv) {
+  <app-page-header title="INVOICES.DETAIL">
+    <div actions class="flex-row no-print">
+      <button mat-stroked-button routerLink="/invoices">{{ 'COMMON.BACK' | translate }}</button>
+      <button mat-stroked-button (click)="verify()" [disabled]="verifying()">
+        <mat-icon>verified</mat-icon>
+        {{ 'INVOICES.VERIFY' | translate }}
+      </button>
+      <button mat-flat-button (click)="print()">
+        <mat-icon>print</mat-icon>
+        {{ 'COMMON.PRINT' | translate }}
+      </button>
+    </div>
+  </app-page-header>
+
+  @if (verification(); as v) {
+    <mat-card
+      appearance="outlined"
+      class="page-card no-print verify-banner"
+      [class.verify-banner--ok]="v.valid"
+      [class.verify-banner--bad]="!v.valid"
+      role="status"
+    >
+      <mat-card-content>
+        <p class="verify-banner__head">
+          <mat-icon>{{ v.valid ? 'verified' : 'gpp_bad' }}</mat-icon>
+          <span>{{ (v.valid ? 'INVOICES.VERIFIED' : 'INVOICES.NOT_VERIFIED') | translate }}</span>
+        </p>
+        <p class="verify-banner__message">{{ v.message }}</p>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <mat-card appearance="outlined" class="page-card invoice-card">
+    <mat-card-content>
+      <header class="invoice-head">
+        <app-brand-logo [size]="40" />
+        <h1 class="invoice-head__school">{{ inv.schoolName }}</h1>
+        <p class="invoice-head__kind">{{ 'INVOICES.TITLE' | translate }}</p>
+      </header>
+
+      <div class="detail-list">
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'ENROLLMENTS.STUDENT' | translate }}</span>
+          <p class="detail-list__value">{{ inv.studentName }}</p>
+        </div>
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'ENROLLMENTS.CLASS' | translate }}</span>
+          <p class="detail-list__value">{{ inv.className }}</p>
+        </div>
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'PAYMENTS.AMOUNT' | translate }}</span>
+          <p class="detail-list__value invoice-amount">{{ inv.amount | xafCurrency }}</p>
+        </div>
+        @if (inv.installmentNumber) {
+          <div class="detail-list__item">
+            <span class="detail-list__label">{{ 'INVOICES.INSTALLMENT' | translate }}</span>
+            <p class="detail-list__value">{{ inv.installmentNumber }}</p>
+          </div>
+        }
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'INVOICES.ISSUED_AT' | translate }}</span>
+          <p class="detail-list__value">{{ inv.issuedAt | localeDate: 'long' }}</p>
+        </div>
+        <div class="detail-list__item span-2">
+          <span class="detail-list__label">{{ 'INVOICES.UUID' | translate }}</span>
+          <p class="detail-list__value is-mono">{{ inv.uuid }}</p>
+        </div>
+        <div class="detail-list__item span-2">
+          <span class="detail-list__label">{{ 'INVOICES.SIGNATURE_HASH' | translate }}</span>
+          <p class="detail-list__value is-mono signature-hash">{{ inv.signatureHash }}</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+} @else {
+  <app-error-state
+    icon="receipt_long"
+    title="COMMON.NOT_FOUND_TITLE"
+    description="COMMON.NOT_FOUND_DESCRIPTION"
+    [retryable]="false"
+  />
+}

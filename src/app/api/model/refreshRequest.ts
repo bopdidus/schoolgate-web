@@ -10,6 +10,9 @@
 
 
 export interface RefreshRequestDto { 
-    refresh_token: string;
+    /**
+     * Native-client alternative to the HttpOnly cookie.
+     */
+    refresh_token?: string;
 }
 

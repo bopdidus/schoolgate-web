@@ -1,59 +1,92 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/auth/guards/auth.guard';
+import { authGuard, guestGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
+  // Public home page: what SchoolGate is, with the way in (login / sign-up).
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./layout/auth-layout/auth-layout.component').then(
+        (m) => m.AuthLayoutComponent,
+      ),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./register/register.component').then((m) => m.RegisterComponent),
+        canActivate: [guestGuard],
+      },
+    ],
+  },
   {
     path: 'login',
     loadComponent: () =>
-      import('./shared/layouts/auth-layout/auth-layout.component').then(
+      import('./layout/auth-layout/auth-layout.component').then(
         (m) => m.AuthLayoutComponent,
       ),
-    loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
+    loadChildren: () => import('./login/login.routes').then((m) => m.AUTH_ROUTES),
   },
   {
     path: '',
     loadComponent: () =>
-      import('./shared/layouts/main-layout/main-layout.component').then(
+      import('./layout/main-layout/main-layout.component').then(
         (m) => m.MainLayoutComponent,
       ),
     canActivate: [authGuard],
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: 'dashboard',
         loadChildren: () =>
-          import('./features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
+          import('./dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
       },
       {
         path: 'schools',
         loadChildren: () =>
-          import('./features/schools/schools.routes').then((m) => m.SCHOOL_ROUTES),
+          import('./schools/schools.routes').then((m) => m.SCHOOL_ROUTES),
       },
       {
         path: 'enrollments',
         loadChildren: () =>
-          import('./features/enrollments/enrollments.routes').then((m) => m.ENROLLMENT_ROUTES),
+          import('./enrollments/enrollments.routes').then((m) => m.ENROLLMENT_ROUTES),
       },
       {
         path: 'payments',
         loadChildren: () =>
-          import('./features/payments/payments.routes').then((m) => m.PAYMENT_ROUTES),
+          import('./payments/payments.routes').then((m) => m.PAYMENT_ROUTES),
       },
       {
         path: 'invoices',
         loadChildren: () =>
-          import('./features/invoices/invoices.routes').then((m) => m.INVOICE_ROUTES),
+          import('./invoices/invoices.routes').then((m) => m.INVOICE_ROUTES),
       },
       {
         path: 'users',
-        loadChildren: () => import('./features/users/users.routes').then((m) => m.USER_ROUTES),
+        loadChildren: () => import('./users/users.routes').then((m) => m.USER_ROUTES),
+      },
+      {
+        path: 'password-resets',
+        loadChildren: () =>
+          import('./password-resets/password-resets.routes').then((m) => m.PASSWORD_RESET_ROUTES),
       },
       {
         path: 'settings',
         loadChildren: () =>
-          import('./features/settings/settings.routes').then((m) => m.SETTINGS_ROUTES),
+          import('./settings/settings.routes').then((m) => m.SETTINGS_ROUTES),
+      },
+      // Rendered inside the shell so a mistyped URL keeps its navigation instead
+      // of being silently redirected to the dashboard.
+      {
+        path: '**',
+        loadComponent: () =>
+          import('./not-found/not-found.component').then(
+            (m) => m.NotFoundComponent,
+          ),
       },
     ],
   },
-  { path: '**', redirectTo: 'dashboard' },
 ];

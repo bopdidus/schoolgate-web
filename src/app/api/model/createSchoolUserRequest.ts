@@ -16,6 +16,10 @@ export interface CreateSchoolUserRequestDto {
     last_name: string;
     phone?: string;
     role: CreateSchoolUserRequestDto.RoleEnum;
+    /**
+     * School the staff account is scoped to (required; multi-staff model)
+     */
+    school_id: number;
 }
 export namespace CreateSchoolUserRequestDto {
     export const RoleEnum = {

@@ -1,0 +1,24 @@
+<app-home-header />
+
+<main>
+  <app-home-hero />
+  <app-home-how-it-works />
+  <app-home-benefits />
+
+  <section class="public-container home-band">
+    <div>
+      <h2 class="home-band__title">{{ 'HOME.BAND_TITLE' | translate }}</h2>
+      <p class="home-band__text">{{ 'HOME.BAND_TEXT' | translate }}</p>
+    </div>
+    <a mat-flat-button color="primary" routerLink="/register" class="register-link">
+      {{ 'HOME.REGISTER' | translate }}
+    </a>
+  </section>
+</main>
+
+<footer class="home-footer">
+  <div class="public-container home-footer__inner">
+    <span>© {{ year }} Senior Digital Soft</span>
+    <span>SchoolGate — {{ 'HOME.FOOTER_TAGLINE' | translate }}</span>
+  </div>
+</footer>

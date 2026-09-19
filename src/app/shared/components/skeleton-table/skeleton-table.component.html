@@ -1,0 +1,14 @@
+<mat-card appearance="outlined" class="page-card skeleton-card">
+  <mat-progress-bar mode="indeterminate" />
+  <mat-card-content>
+    <div class="skeleton-rows">
+      @for (row of rows; track row) {
+        <div class="skeleton-row">
+          @for (col of columns; track col) {
+            <div class="skeleton-bar"></div>
+          }
+        </div>
+      }
+    </div>
+  </mat-card-content>
+</mat-card>

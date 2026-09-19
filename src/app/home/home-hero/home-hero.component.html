@@ -1,0 +1,28 @@
+<section class="home-hero">
+  <div class="public-container home-hero__inner">
+    <div>
+      <p class="eyebrow">{{ 'HOME.EYEBROW' | translate }}</p>
+      <h1 class="home-hero__title">{{ 'HOME.HERO_TITLE' | translate }}</h1>
+      <p class="home-hero__lead">{{ 'HOME.HERO_LEAD' | translate }}</p>
+      <div class="home-hero__cta">
+        <a mat-flat-button color="primary" routerLink="/register" class="register-link">
+          {{ 'HOME.REGISTER' | translate }}
+          <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+        </a>
+        <a mat-stroked-button routerLink="/login" class="login-link">{{ 'AUTH.LOGIN' | translate }}</a>
+      </div>
+    </div>
+
+    <ul class="home-hero__highlights" role="list">
+      @for (h of highlights; track h.title) {
+        <li class="home-hero__highlight">
+          <span class="icon-tile"><mat-icon>{{ h.icon }}</mat-icon></span>
+          <div>
+            <p class="home-hero__highlight-title">{{ h.title | translate }}</p>
+            <p class="home-hero__highlight-text">{{ h.text | translate }}</p>
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+</section>

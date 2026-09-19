@@ -12,5 +12,9 @@
 export interface LoginRequestDto { 
     email: string;
     password: string;
+    /**
+     * false (default) issues a session cookie the browser drops on its own close; true issues a persistent cookie (up to the server\'s configured refresh-token lifetime).
+     */
+    remember_me?: boolean;
 }
 

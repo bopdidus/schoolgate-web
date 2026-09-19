@@ -1,0 +1,30 @@
+mat-dialog-content {
+  /* A fixed 360px floor overflowed phones narrower than that. Sizing from
+     the viewport lets the dialog shrink instead of pushing the page sideways. */
+  width: min(520px, 100%);
+  max-width: 100%;
+}
+mat-chip-set {
+  margin-bottom: 16px;
+}
+mat-divider {
+  margin: 16px 0;
+}
+h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+mat-spinner {
+  margin: 8px 0;
+}
+.loading-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
+}
+.audit-line {
+  margin: 0;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+}

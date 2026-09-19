@@ -8,13 +8,18 @@
  * Do not edit the class manually.
  */
 import { MetaDto } from './meta';
+import { ApiCodeDto } from './apiCode';
 import { ErrorBodyDto } from './errorBody';
 import { SpecialtyRefDto } from './specialtyRef';
 
 
 export interface SpecialtyRefListEnvelopeDto { 
+    code?: ApiCodeDto;
     data?: Array<SpecialtyRefDto>;
     error?: ErrorBodyDto;
     meta?: MetaDto;
 }
+export namespace SpecialtyRefListEnvelopeDto {
+}
+
 

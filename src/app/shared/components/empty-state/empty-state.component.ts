@@ -9,48 +9,8 @@ import { TranslateModule } from '@ngx-translate/core';
   standalone: true,
   imports: [MatIconModule, MatButtonModule, MatCardModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <mat-card appearance="outlined" class="empty-state-card">
-      <mat-card-content>
-        <mat-icon class="empty-icon">{{ icon }}</mat-icon>
-        <h3>{{ title | translate }}</h3>
-        @if (description) {
-          <p>{{ description | translate }}</p>
-        }
-      </mat-card-content>
-      @if (actionLabel) {
-        <mat-card-actions>
-          <button mat-flat-button color="primary" (click)="actionClick.emit()">
-            {{ actionLabel | translate }}
-          </button>
-        </mat-card-actions>
-      }
-    </mat-card>
-  `,
-  styles: `
-    .empty-state-card {
-      text-align: center;
-      padding: 24px 16px;
-    }
-    .empty-icon {
-      font-size: 48px;
-      width: 48px;
-      height: 48px;
-      color: var(--color-primary);
-      margin-bottom: 16px;
-    }
-    h3 {
-      margin: 0 0 8px;
-      font-size: 20px;
-      font-weight: 600;
-    }
-    p {
-      margin: 0 0 16px;
-      color: var(--color-muted);
-      max-width: 28rem;
-      margin-inline: auto;
-    }
-  `,
+  templateUrl: './empty-state.component.html',
+  styleUrl: './empty-state.component.scss',
 })
 export class EmptyStateComponent {
   @Input({ required: true }) icon = 'inbox';
