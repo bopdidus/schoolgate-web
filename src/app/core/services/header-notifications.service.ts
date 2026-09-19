@@ -1,8 +1,8 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
-import { filter, take } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subscription, timer } from 'rxjs';
+import { distinctUntilChanged, filter, map, take } from 'rxjs/operators';
 import {
   NotificationsService,
   NotificationDto,
@@ -26,6 +26,8 @@ export interface HeaderNotification {
   read?: boolean;
 }
 
+const MAX_RECONNECT_DELAY_MS = 30_000;
+
 @Injectable({ providedIn: 'root' })
 export class HeaderNotificationsService implements OnDestroy {
   private readonly notificationsApi = inject(NotificationsService);
@@ -41,13 +43,18 @@ export class HeaderNotificationsService implements OnDestroy {
   }>({ items: [], unreadCount: 0 });
 
   private socket: WebSocket | null = null;
-  private seeded = false;
+  private started = false;
   private tokenWaitSub: Subscription | null = null;
-  private userSub: Subscription | null = null;
+  private seedSub: Subscription | null = null;
+  private reconnectSub: Subscription | null = null;
+  private reconnectAttempts = 0;
+  private readonly userSubs = new Subscription();
   private currentUser: User | null = null;
 
   /**
-   * Seeds from HTTP GET once, then keeps emitting live WebSocket updates.
+   * Seeds from HTTP GET, then keeps emitting live WebSocket updates for the
+   * signed-in user. The feed follows the session: it restarts on a user change
+   * (logout then login in the same tab) and reconnects after the socket drops.
    * Fallback: if WS is unavailable, the HTTP snapshot remains the source of truth.
    */
   getNotifications(): Observable<{ items: HeaderNotification[]; unreadCount: number }> {
@@ -58,58 +65,89 @@ export class HeaderNotificationsService implements OnDestroy {
       });
     }
 
-    if (!this.seeded) {
-      this.seeded = true;
-      this.userSub = this.store
-        .select(selectUser)
-        .subscribe((user) => (this.currentUser = user));
-      this.seedFromHttp();
-      this.connectWebSocket();
+    if (!this.started) {
+      this.started = true;
+      const user$ = this.store.select(selectUser);
+      this.userSubs.add(user$.subscribe((user) => (this.currentUser = user)));
+      // Keyed on the id only: a profile update must not restart the feed.
+      this.userSubs.add(
+        user$
+          .pipe(
+            map((user) => user?.id ?? null),
+            distinctUntilChanged(),
+          )
+          .subscribe((userId) => this.restartFor(userId)),
+      );
     }
 
     return this.state$.asObservable();
   }
 
   ngOnDestroy(): void {
+    this.userSubs.unsubscribe();
+    this.stop();
+  }
+
+  /**
+   * Drops everything tied to the previous user — list, pending seed, socket —
+   * so a new login never shows (or keeps receiving) someone else's feed.
+   */
+  private restartFor(userId: string | null): void {
+    this.stop();
+    this.state$.next({ items: [], unreadCount: 0 });
+    if (userId == null) return;
+    this.seedFromHttp();
+    this.connectWebSocket();
+  }
+
+  private stop(): void {
     this.tokenWaitSub?.unsubscribe();
-    this.userSub?.unsubscribe();
+    this.tokenWaitSub = null;
+    this.seedSub?.unsubscribe();
+    this.seedSub = null;
+    this.reconnectSub?.unsubscribe();
+    this.reconnectSub = null;
+    this.reconnectAttempts = 0;
     this.disconnectWebSocket();
   }
 
-  /** Marks one notification read (badge stays reliable across sessions). */
+  /**
+   * Marks one notification read. The bell only lists unread ones, so it
+   * leaves the list (badge stays reliable across sessions).
+   */
   markAsRead(id: string): void {
     const numericId = Number(id);
     if (!Number.isFinite(numericId)) {
       return;
     }
     const current = this.state$.value;
-    const wasUnread = current.items.some((n) => n.id === id && !n.read);
+    const wasListed = current.items.some((n) => n.id === id);
     this.state$.next({
-      items: current.items.map((n) => (n.id === id ? { ...n, read: true } : n)),
-      unreadCount: Math.max(0, current.unreadCount - (wasUnread ? 1 : 0)),
+      items: current.items.filter((n) => n.id !== id),
+      unreadCount: Math.max(0, current.unreadCount - (wasListed ? 1 : 0)),
     });
     this.notificationsApi.notificationsIdReadPost(numericId).subscribe({ error: () => undefined });
   }
 
-  /** Marks everything read (bulk action from the header menu). */
+  /** Marks everything read (bulk action from the header menu), emptying the bell. */
   markAllAsRead(): void {
-    const current = this.state$.value;
-    this.state$.next({
-      items: current.items.map((n) => ({ ...n, read: true })),
-      unreadCount: 0,
-    });
+    this.state$.next({ items: [], unreadCount: 0 });
     this.notificationsApi.notificationsReadAllPost().subscribe({ error: () => undefined });
   }
 
   private seedFromHttp(): void {
-    this.notificationsApi.notificationsGet().subscribe({
+    this.seedSub?.unsubscribe();
+    // Unread only: a read notification has nothing left to act on.
+    this.seedSub = this.notificationsApi.notificationsGet(undefined, undefined, undefined, false).subscribe({
       next: (envelope: NotificationListEnvelopeDto) => {
-        const items = (unwrapData(envelope) ?? [])
+        const rows = unwrapData(envelope) ?? [];
+        const items = rows
           .map((n) => this.mapNotification(n))
           .filter((n): n is HeaderNotification => n != null);
-        const unreadCount = (envelope.data ?? []).filter(
-          (n) => !n.read && n.type !== 'payment_requested',
-        ).length;
+        // The badge counts every unread notification, not just the listed
+        // page, minus the ones this staff app never shows.
+        const hiddenInPage = rows.length - items.length;
+        const unreadCount = Math.max(items.length, (envelope.meta?.total ?? rows.length) - hiddenInPage);
         this.state$.next({ items, unreadCount });
       },
     });
@@ -146,14 +184,14 @@ export class HeaderNotificationsService implements OnDestroy {
     this.socket.onmessage = (event) => {
       try {
         const dto = JSON.parse(String(event.data)) as NotificationDto;
-        if (!this.isForCurrentSchool(dto)) return;
+        if (dto.read || !this.isForCurrentSchool(dto)) return;
         const mapped = this.mapNotification(dto);
         if (!mapped) return;
         const current = this.state$.value;
         const items = [mapped, ...current.items.filter((n) => n.id !== mapped.id)];
         this.state$.next({
           items,
-          unreadCount: current.unreadCount + (dto.read ? 0 : 1),
+          unreadCount: current.unreadCount + 1,
         });
         this.toasts.infoWithAction(mapped.message, 'COMMON.VIEW', () => {
           this.markAsRead(mapped.id);
@@ -164,17 +202,36 @@ export class HeaderNotificationsService implements OnDestroy {
       }
     };
 
-    this.socket.onclose = () => {
-      this.socket = null;
+    this.socket.onopen = () => {
+      // Anything sent while the socket was down only exists server-side:
+      // re-read the list after a reconnect so it is not silently missed.
+      if (this.reconnectAttempts > 0) {
+        this.seedFromHttp();
+      }
+      this.reconnectAttempts = 0;
     };
 
-    this.socket.onerror = () => {
-      this.disconnectWebSocket();
+    // Fires after errors too (including a rejected upgrade, e.g. an expired
+    // access token), so reconnecting from here covers every way the socket ends.
+    this.socket.onclose = () => {
+      this.socket = null;
+      this.scheduleReconnect();
     };
+  }
+
+  /** Exponential backoff (1s, 2s, 4s… capped at 30s) while a user is signed in. */
+  private scheduleReconnect(): void {
+    if (!this.currentUser) return;
+    const delayMs = Math.min(MAX_RECONNECT_DELAY_MS, 1000 * 2 ** this.reconnectAttempts);
+    this.reconnectAttempts++;
+    this.reconnectSub?.unsubscribe();
+    this.reconnectSub = timer(delayMs).subscribe(() => this.connectWebSocket());
   }
 
   private disconnectWebSocket(): void {
     if (this.socket) {
+      // Detached first: an intentional close must not schedule a reconnect.
+      this.socket.onclose = null;
       this.socket.close();
       this.socket = null;
     }
@@ -223,7 +280,9 @@ export class HeaderNotificationsService implements OnDestroy {
       return null;
     }
     // Prefer the localized catalog text; server title/body remain a fallback.
-    const localized = this.apiCodes.translateCode(dto.code);
+    // The payload (name, email…) fills the text's placeholders, so e.g. a
+    // password reset request says who is asking.
+    const localized = this.apiCodes.translateCode(dto.code, dto.data as Record<string, unknown>);
     return {
       id: String(dto.id ?? ''),
       title: String(dto.title ?? ''),
@@ -247,7 +306,9 @@ export class HeaderNotificationsService implements OnDestroy {
       case 'enrollment_rejected':
         return '/enrollments';
       case 'password_reset_requested':
-        return '/users';
+        return '/password-resets';
+      case 'school_registered':
+        return '/schools?status=pending';
       case 'payment_requested':
         return null;
       default:

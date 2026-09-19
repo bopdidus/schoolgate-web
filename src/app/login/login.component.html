@@ -62,6 +62,17 @@
             {{ 'AUTH.FORGOT_PASSWORD' | translate }}
           </button>
         </div>
+
+        <div class="login-links">
+          <span>{{ 'AUTH.NO_ACCOUNT' | translate }}</span>
+          <a mat-button routerLink="/register" class="register-link">{{ 'AUTH.REGISTER_SCHOOL' | translate }}</a>
+        </div>
+        <div class="text-center">
+          <a mat-button routerLink="/" class="home-link">
+            <mat-icon>arrow_back</mat-icon>
+            {{ 'AUTH.BACK_HOME' | translate }}
+          </a>
+        </div>
       </form>
     } @else {
       <form

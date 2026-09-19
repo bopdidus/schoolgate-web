@@ -15,9 +15,9 @@
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>{{ 'COMMON.STATUS' | translate }}</mat-label>
-        <mat-select (selectionChange)="onStatusChange($event.value)">
-          <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
+        <mat-select [value]="statusFilter()" (selectionChange)="onStatusChange($event.value)">
           <mat-option value="active">{{ 'SCHOOLS.ACTIVE' | translate }}</mat-option>
+          <mat-option value="pending">{{ 'SCHOOLS.PENDING' | translate }}</mat-option>
           <mat-option value="inactive">{{ 'SCHOOLS.INACTIVE' | translate }}</mat-option>
         </mat-select>
       </mat-form-field>
@@ -105,6 +105,18 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
         <td mat-cell *matCellDef="let school">
+          @if (school.status === 'pending') {
+            <button
+              mat-flat-button
+              color="primary"
+              class="validate-btn"
+              [disabled]="validating() === school.id"
+              (click)="validate(school)"
+            >
+              <mat-icon>verified</mat-icon>
+              {{ 'SCHOOLS.VALIDATE' | translate }}
+            </button>
+          }
           <button mat-icon-button [routerLink]="['/schools', school.id]" aria-label="View">
             <mat-icon>visibility</mat-icon>
           </button>

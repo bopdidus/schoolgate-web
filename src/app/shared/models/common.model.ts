@@ -16,7 +16,8 @@ export type EducationType = 'general' | 'technical' | 'vocational';
 /** All roles that belong to a school (not the platform admin). */
 export const SCHOOL_ROLES: UserRole[] = ['school_admin', 'school_editor'];
 
-export type SchoolStatus = 'active' | 'inactive';
+/** `pending`: signed itself up, waiting for a platform admin to validate it. */
+export type SchoolStatus = 'active' | 'inactive' | 'pending';
 
 export type EnrollmentStatus =
   | 'pending_documents'

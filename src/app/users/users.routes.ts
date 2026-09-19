@@ -10,4 +10,10 @@ export const USER_ROUTES: Routes = [
       ),
     canActivate: [roleGuard(['admin'])],
   },
+  {
+    path: ':id',
+    loadComponent: () =>
+      import('./user-detail/user-detail.component').then((m) => m.UserDetailComponent),
+    canActivate: [roleGuard(['admin'])],
+  },
 ];

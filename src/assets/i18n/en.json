@@ -36,10 +36,24 @@
     "PAYMENT_FAILED": "Payment failed",
     "MISSING_DOCUMENTS": "Required documents have not been uploaded",
     "PASSWORD_RESET_REQUEST_ACCEPTED": "If an account exists for this address, the administrator has been notified and will contact you.",
-    "PASSWORD_RESET_REQUESTED": "Password reset requested",
+    "PASSWORD_RESET_REQUESTED": "{{name}} ({{email}}) cannot sign in and is asking for a password reset",
     "PASSWORD_RESET_CODE_SENT": "If an account exists for this address, a code has been emailed.",
     "PASSWORD_RESET_CONFIRMED": "Password reset successfully.",
-    "INVALID_RESET_CODE": "Invalid or expired code"
+    "INVALID_RESET_CODE": "Invalid or expired code",
+    "SCHOOL_REGISTERED": "{{school_name}} signed up ({{name}}, {{email}})"
+  },
+  "PASSWORD_RESETS": {
+    "TITLE": "Password reset requests",
+    "SUBTITLE": "Users who can no longer sign in. A request stays pending until you set them a new password.",
+    "REQUESTED_AT": "Requested on",
+    "PENDING": "To handle",
+    "RESOLVED": "Handled",
+    "STATUS_PENDING": "Pending",
+    "STATUS_RESOLVED": "Password reset",
+    "RESET": "Reset",
+    "VIEW_USER": "View user",
+    "EMPTY": "No password reset requests",
+    "EMPTY_PENDING": "No pending requests"
   },
   "NAV": {
     "DASHBOARD": "Dashboard",
@@ -74,7 +88,10 @@
       "STAY_SIGNED_IN": "Stay signed in",
       "LOGOUT": "Sign out"
     },
-    "TOGGLE_PASSWORD": "Show or hide password"
+    "TOGGLE_PASSWORD": "Show or hide password",
+    "NO_ACCOUNT": "Your school has no account yet?",
+    "REGISTER_SCHOOL": "Register my school",
+    "BACK_HOME": "Back to home"
   },
   "COMMON": {
     "SAVE": "Save",
@@ -122,6 +139,8 @@
     "PENDING_VALIDATION": "Payments Pending Validation",
     "VALIDATED_PAYMENTS": "Validated Payments",
     "SEATS_FILLED": "Seats Filled",
+    "PASSWORD_RESET_REQUESTS": "Password reset requests",
+    "PASSWORD_RESET_REQUESTS_HINT": "Pending",
     "TOTAL_SCHOOLS": "Total Schools",
     "TOTAL_ENROLLMENTS": "Total Enrollments",
     "TOTAL_REVENUE": "Total Revenue",
@@ -134,7 +153,9 @@
     "DEADLINE_ALERT": "Declared payments approaching validation deadline (< 24h remaining)",
     "VALIDATED_VS_PENDING": "Validated vs Pending by Class",
     "LAST_REGISTERED_SCHOOL": "Last Registered School",
-    "VIEW_SCHOOL": "View School"
+    "VIEW_SCHOOL": "View School",
+    "PENDING_SCHOOLS": "Schools to validate",
+    "PENDING_SCHOOLS_HINT": "Self-registered"
   },
   "EDUCATION": {
     "FRANCOPHONE": "Francophone",
@@ -259,7 +280,10 @@
       "ERROR_FEE_DATE": "Invalid enrollment_fee_due_date (expected YYYY-MM-DD)",
       "ERROR_ADVANCE_PERCENTAGE": "Invalid advance_percentage (1-100 required when advance_allowed)",
       "ERROR_INSTALLMENT": "Invalid installment amount/date"
-    }
+    },
+    "PENDING": "Awaiting validation",
+    "VALIDATE": "Validate",
+    "VALIDATED_OK": "School validated: parents can now see it"
   },
   "ENROLLMENTS": {
     "TITLE": "Enrollments",
@@ -355,7 +379,20 @@
     "SCHOOL_ACCOUNT": "School account",
     "UPDATED_OK": "User updated",
     "ACTIVATE": "Activate",
-    "DEACTIVATE": "Deactivate"
+    "DEACTIVATE": "Deactivate",
+    "DETAIL": "User details",
+    "INFORMATION": "Information",
+    "RESET_REQUESTS": "Password reset requests",
+    "RESET_REQUESTS_TOTAL": "Requests made",
+    "RESET_REQUESTS_PENDING": "Pending",
+    "RESET_REQUESTS_LAST": "Last request",
+    "RESET_PASSWORD": "Reset password",
+    "RESET_PASSWORD_HINT": "The new password replaces the old one and signs the user out of every device. Pass it on to them afterwards.",
+    "RESET_PASSWORD_CONFIRM": "The current password will stop working and the user will be signed out everywhere. Continue?",
+    "GENERATE_PASSWORD": "Generate",
+    "COPY_PASSWORD": "Copy password",
+    "PASSWORD_COPIED": "Password copied",
+    "PASSWORD_RESET_OK": "Password reset. Pass it on to the user."
   },
   "SETTINGS": {
     "TITLE": "Settings",
@@ -369,7 +406,7 @@
     "THEME_LIGHT": "Light",
     "THEME_DARK": "Dark",
     "THEME_SYSTEM": "Match system",
-    "PASSWORD_HINT": "At least 6 characters",
+    "PASSWORD_HINT": "At least 8 characters",
     "PASSWORD_MISMATCH": "Passwords do not match",
     "PROFILE_UPDATED": "Profile updated",
     "PASSWORD_CHANGED": "Password changed"
@@ -387,5 +424,62 @@
     "VOID": "Void",
     "PENDING_DOCUMENTS": "Pending Documents",
     "CANCELLED": "Cancelled"
+  },
+  "HOME": {
+    "NAV_LABEL": "Access",
+    "REGISTER": "Register my school",
+    "GO_TO_DASHBOARD": "Dashboard",
+    "EYEBROW": "Online school enrollment",
+    "HERO_TITLE": "School enrollment and fees, made simple.",
+    "HERO_LEAD": "SchoolGate connects schools and parents: place requests, application review, Mobile Money payment and invoices, on a single platform.",
+    "HIGHLIGHT_1_TITLE": "A mobile app for parents",
+    "HIGHLIGHT_1_TEXT": "They find a school, request a place and follow their application from their phone.",
+    "HIGHLIGHT_2_TITLE": "Mobile Money payment",
+    "HIGHLIGHT_2_TEXT": "Enrollment fees and tuition installments paid without queuing at a counter.",
+    "HIGHLIGHT_3_TITLE": "Verifiable invoices",
+    "HIGHLIGHT_3_TEXT": "Every validated payment produces an invoice whose authenticity can be checked online.",
+    "HOW_EYEBROW": "How it works",
+    "HOW_TITLE": "How it works",
+    "STEP_1_TITLE": "The school signs up",
+    "STEP_1_TEXT": "It creates its account, then sets up its classes, seats and fees.",
+    "STEP_2_TITLE": "Parents request a place",
+    "STEP_2_TEXT": "From the app, they find the right school and submit their application.",
+    "STEP_3_TITLE": "The school reviews applications",
+    "STEP_3_TEXT": "It accepts or declines each request within the deadline it has set.",
+    "STEP_4_TITLE": "Payment and invoice",
+    "STEP_4_TEXT": "The parent pays with Mobile Money; the school validates and a verifiable invoice is issued.",
+    "BENEFITS_TITLE": "Built for everyone",
+    "FOR_SCHOOLS": "For schools",
+    "SCHOOL_BENEFIT_1": "Every enrollment request in one place",
+    "SCHOOL_BENEFIT_2": "Seats and class fill rates tracked in real time",
+    "SCHOOL_BENEFIT_3": "Mobile Money payments matched automatically",
+    "SCHOOL_BENEFIT_4": "Several staff members, each with their own rights",
+    "FOR_PARENTS": "For parents",
+    "PARENT_BENEFIT_1": "Find a school by city, level and system",
+    "PARENT_BENEFIT_2": "Apply without travelling",
+    "PARENT_BENEFIT_3": "Get notified at every step",
+    "PARENT_BENEFIT_4": "Pay securely and keep every invoice",
+    "BAND_TITLE": "Ready to take enrollments online?",
+    "BAND_TEXT": "Registering your school only takes a few minutes.",
+    "FOOTER_TAGLINE": "school enrollment and fees platform"
+  },
+  "REGISTER": {
+    "TITLE": "Register my school",
+    "SUBTITLE": "Create your school's account in a few minutes. You can then set up your classes and fees.",
+    "SCHOOL_SECTION": "School",
+    "SYSTEM": "Education system",
+    "ADMIN_SECTION": "Account owner",
+    "ADMIN_HINT": "This person will administer the school on SchoolGate.",
+    "FIRST_NAME": "First name",
+    "LAST_NAME": "Last name",
+    "EMAIL_HINT": "Used to sign in",
+    "EMAIL_TAKEN": "An account already uses this email",
+    "SUBMIT": "Create the school account",
+    "HAVE_ACCOUNT": "Already have an account?",
+    "DONE_ACTIVE_TITLE": "Your school is live",
+    "DONE_ACTIVE_TEXT": "Sign in to set up your classes and fees: parents can already find your school.",
+    "DONE_PENDING_TITLE": "Registration received",
+    "DONE_PENDING_TEXT": "Your school will be visible to parents once our team has validated it. You can already sign in and set up your classes and fees.",
+    "GO_TO_LOGIN": "Sign in"
   }
 }

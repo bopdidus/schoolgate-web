@@ -1,6 +1,6 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatCardModule } from '@angular/material/card';
@@ -22,6 +22,7 @@ import { NotificationService } from '../core/services/notification.service';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     TranslateModule,
     MatCardModule,
     MatFormFieldModule,
@@ -60,6 +61,14 @@ export class LoginComponent {
     password: ['', Validators.required],
     rememberMe: [false],
   });
+
+  constructor() {
+    // Set by the sign-up page, so a new school admin only types their password.
+    const email = this.route.snapshot.queryParamMap.get('email');
+    if (email) {
+      this.form.controls.email.setValue(email);
+    }
+  }
 
   readonly forgotPasswordForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],

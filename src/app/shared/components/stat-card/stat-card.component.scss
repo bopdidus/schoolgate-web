@@ -1,3 +1,37 @@
+// Fills its grid cell so every card in a row has the same height, whatever
+// its content (e.g. only some cards have a hint line).
+:host {
+  display: block;
+  height: 100%;
+}
+
+.stat-card {
+  height: 100%;
+}
+
+.stat-card-link {
+  display: block;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 2px;
+  }
+}
+
+.stat-card--link {
+  cursor: pointer;
+}
+
+.stat-card__chevron {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
 .stat-card__head {
   display: flex;
   align-items: center;

@@ -58,6 +58,23 @@ export class UserService {
     );
   }
 
+  getById(id: string): Observable<User> {
+    return this.authApi
+      .authSchoolUsersIdGet(Number(id))
+      .pipe(map((envelope) => this.mapUser(unwrapData(envelope))));
+  }
+
+  /**
+   * Sets a new password for a school staff account. The API also signs the
+   * user out everywhere and closes their pending reset requests; this emits
+   * how many requests it closed.
+   */
+  resetPassword(id: string, password: string): Observable<number> {
+    return this.authApi
+      .authSchoolUsersIdPasswordPut(Number(id), { password })
+      .pipe(map((envelope) => Number(unwrapData(envelope)?.resolved_requests ?? 0)));
+  }
+
   /** User activation toggle is not part of the OpenAPI contract. */
   toggleActive(id: string, isActive: boolean): Observable<User> {
     return of({

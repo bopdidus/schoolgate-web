@@ -13,6 +13,8 @@ import { MatCardModule } from '@angular/material/card';
 import { TranslateModule } from '@ngx-translate/core';
 import { SchoolService } from '../school.service';
 import { SchoolFilters, School } from '../school.model';
+import { SchoolStatus } from '../../shared/models/common.model';
+import { NotificationService } from '../../core/services/notification.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { SkeletonTableComponent } from '../../shared/components/skeleton-table/skeleton-table.component';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
@@ -52,6 +54,7 @@ import {
 export class SchoolListComponent implements OnInit {
   private readonly schoolService = inject(SchoolService);
   private readonly route = inject(ActivatedRoute);
+  private readonly notification = inject(NotificationService);
   readonly router = inject(Router);
 
   readonly loading = signal(true);
@@ -62,7 +65,10 @@ export class SchoolListComponent implements OnInit {
   readonly page = signal(0);
   readonly pageSize = signal(10);
   readonly search = signal('');
-  readonly statusFilter = signal('');
+  /** One status at a time (the API lists a single status); parents only ever see active ones. */
+  readonly statusFilter = signal<SchoolStatus>('active');
+  /** Id of the school being validated, to disable its button meanwhile. */
+  readonly validating = signal<string | null>(null);
   readonly schoolSystemFilter = signal('');
   readonly educationTypeFilter = signal('');
   readonly specialtyFilter = signal('');
@@ -78,6 +84,11 @@ export class SchoolListComponent implements OnInit {
     if (fromQuery) {
       this.search.set(fromQuery);
     }
+    // ?status=pending comes from the dashboard card and the bell.
+    const status = this.route.snapshot.queryParamMap.get('status');
+    if (status === 'active' || status === 'pending' || status === 'inactive') {
+      this.statusFilter.set(status);
+    }
     this.loadSchools();
   }
 
@@ -87,7 +98,7 @@ export class SchoolListComponent implements OnInit {
     this.schoolService
       .getAll({
         search: this.search(),
-        status: this.statusFilter() as '' | 'active' | 'inactive',
+        status: this.statusFilter(),
         schoolSystem: this.schoolSystemFilter() as SchoolFilters['schoolSystem'],
         educationType: this.educationTypeFilter() as SchoolFilters['educationType'],
         specialtyId: this.specialtyFilter() || undefined,
@@ -113,10 +124,23 @@ export class SchoolListComponent implements OnInit {
     this.loadSchools();
   }
 
-  onStatusChange(value: string): void {
+  onStatusChange(value: SchoolStatus): void {
     this.statusFilter.set(value);
     this.page.set(0);
     this.loadSchools();
+  }
+
+  /** Publishes a self-registered school; it then leaves the pending list. */
+  validate(school: School): void {
+    this.validating.set(school.id);
+    this.schoolService.validate(school.id).subscribe({
+      next: () => {
+        this.validating.set(null);
+        this.notification.success('SCHOOLS.VALIDATED_OK');
+        this.loadSchools();
+      },
+      error: () => this.validating.set(null),
+    });
   }
 
   onPageChange(event: PageEvent): void {

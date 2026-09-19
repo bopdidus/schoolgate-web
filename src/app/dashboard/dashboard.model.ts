@@ -39,4 +39,11 @@ export interface DashboardOverview {
   classPaymentStats?: ClassPaymentStats[];
   recentPayments?: DashboardRecentPayment[];
   enrollmentTrend?: EnrollmentTrend[];
+  /**
+   * Platform admins only: password reset requests still waiting for an admin
+   * to set a new password. Undefined for school staff — the API omits it.
+   */
+  pendingPasswordResetRequests?: number;
+  /** Platform admins only: self-registered schools waiting for validation. */
+  pendingSchoolRegistrations?: number;
 }

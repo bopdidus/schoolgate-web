@@ -39,14 +39,16 @@ export class DashboardService extends BaseService {
      * Dashboard overview
      * @endpoint get /dashboard/overview
      * @param schoolId 
+     * @param recentPaymentsLimit How many rows the \&quot;recent payments\&quot; widget returns.
+     * @param trendDays How many trailing days the enrollment trend series covers.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public dashboardOverviewGet(schoolId?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SchoolsIdDashboardGet200ResponseDto>;
-    public dashboardOverviewGet(schoolId?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SchoolsIdDashboardGet200ResponseDto>>;
-    public dashboardOverviewGet(schoolId?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SchoolsIdDashboardGet200ResponseDto>>;
-    public dashboardOverviewGet(schoolId?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public dashboardOverviewGet(schoolId?: number, recentPaymentsLimit?: number, trendDays?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SchoolsIdDashboardGet200ResponseDto>;
+    public dashboardOverviewGet(schoolId?: number, recentPaymentsLimit?: number, trendDays?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SchoolsIdDashboardGet200ResponseDto>>;
+    public dashboardOverviewGet(schoolId?: number, recentPaymentsLimit?: number, trendDays?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SchoolsIdDashboardGet200ResponseDto>>;
+    public dashboardOverviewGet(schoolId?: number, recentPaymentsLimit?: number, trendDays?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -54,6 +56,24 @@ export class DashboardService extends BaseService {
             localVarQueryParameters,
             'school_id',
             <any>schoolId,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'recent_payments_limit',
+            <any>recentPaymentsLimit,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'trend_days',
+            <any>trendDays,
             QueryParamStyle.Form,
             true,
         );
@@ -107,17 +127,39 @@ export class DashboardService extends BaseService {
      * School dashboard summary
      * @endpoint get /schools/{id}/dashboard
      * @param id 
+     * @param recentPaymentsLimit How many rows the \&quot;recent payments\&quot; widget returns.
+     * @param trendDays How many trailing days the enrollment trend series covers.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public schoolsIdDashboardGet(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SchoolsIdDashboardGet200ResponseDto>;
-    public schoolsIdDashboardGet(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SchoolsIdDashboardGet200ResponseDto>>;
-    public schoolsIdDashboardGet(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SchoolsIdDashboardGet200ResponseDto>>;
-    public schoolsIdDashboardGet(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public schoolsIdDashboardGet(id: number, recentPaymentsLimit?: number, trendDays?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SchoolsIdDashboardGet200ResponseDto>;
+    public schoolsIdDashboardGet(id: number, recentPaymentsLimit?: number, trendDays?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SchoolsIdDashboardGet200ResponseDto>>;
+    public schoolsIdDashboardGet(id: number, recentPaymentsLimit?: number, trendDays?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SchoolsIdDashboardGet200ResponseDto>>;
+    public schoolsIdDashboardGet(id: number, recentPaymentsLimit?: number, trendDays?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling schoolsIdDashboardGet.');
         }
+
+        let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'recent_payments_limit',
+            <any>recentPaymentsLimit,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'trend_days',
+            <any>trendDays,
+            QueryParamStyle.Form,
+            true,
+        );
+
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -152,6 +194,7 @@ export class DashboardService extends BaseService {
         return this.httpClient.request<SchoolsIdDashboardGet200ResponseDto>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                params: localVarQueryParameters.toHttpParams(),
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,

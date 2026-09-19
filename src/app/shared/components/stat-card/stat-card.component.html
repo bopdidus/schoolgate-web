@@ -1,27 +1,40 @@
-<mat-card appearance="outlined" class="stat-card" [attr.data-tone]="tone()">
-  <mat-card-content>
-    <div class="stat-card__head">
-      @if (icon()) {
-        <span class="stat-card__icon"><mat-icon>{{ icon() }}</mat-icon></span>
-      }
-      <div class="stat-card__body">
-        <p class="stat-label">{{ label() | translate }}</p>
-        <p class="stat-value">{{ value() }}</p>
-      </div>
-    </div>
+@if (link(); as link) {
+  <a class="stat-card-link" [routerLink]="link" [queryParams]="linkQueryParams()">
+    <ng-container *ngTemplateOutlet="card" />
+  </a>
+} @else {
+  <ng-container *ngTemplateOutlet="card" />
+}
 
-    @if (hint() || delta() !== null) {
-      <p class="stat-card__foot">
-        @if (delta() !== null) {
-          <span class="stat-card__delta" [attr.data-dir]="deltaDirection()">
-            <mat-icon>{{ deltaIcon() }}</mat-icon>
-            {{ deltaLabel() }}
-          </span>
+<ng-template #card>
+  <mat-card appearance="outlined" class="stat-card" [class.stat-card--link]="!!link()" [attr.data-tone]="tone()">
+    <mat-card-content>
+      <div class="stat-card__head">
+        @if (icon()) {
+          <span class="stat-card__icon"><mat-icon>{{ icon() }}</mat-icon></span>
         }
-        @if (hint()) {
-          <span class="stat-card__hint">{{ hint()! | translate }}</span>
+        <div class="stat-card__body">
+          <p class="stat-label">{{ label() | translate }}</p>
+          <p class="stat-value">{{ value() }}</p>
+        </div>
+        @if (link()) {
+          <mat-icon class="stat-card__chevron" aria-hidden="true">chevron_right</mat-icon>
         }
-      </p>
-    }
-  </mat-card-content>
-</mat-card>
+      </div>
+
+      @if (hint() || delta() !== null) {
+        <p class="stat-card__foot">
+          @if (delta() !== null) {
+            <span class="stat-card__delta" [attr.data-dir]="deltaDirection()">
+              <mat-icon>{{ deltaIcon() }}</mat-icon>
+              {{ deltaLabel() }}
+            </span>
+          }
+          @if (hint()) {
+            <span class="stat-card__hint">{{ hint()! | translate }}</span>
+          }
+        </p>
+      }
+    </mat-card-content>
+  </mat-card>
+</ng-template>

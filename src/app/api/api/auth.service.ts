@@ -17,9 +17,13 @@ import { Observable }                                        from 'rxjs';
 import { OpenApiHttpParams, QueryParamStyle } from '../query.params';
 
 // @ts-ignore
+import { AuthMeGet200ResponseDto } from '../model/authMeGet200Response';
+// @ts-ignore
 import { AuthRefreshPost200ResponseDto } from '../model/authRefreshPost200Response';
 // @ts-ignore
-import { AuthSchoolUsersPost201ResponseDto } from '../model/authSchoolUsersPost201Response';
+import { AuthSchoolRegistrationsPost201ResponseDto } from '../model/authSchoolRegistrationsPost201Response';
+// @ts-ignore
+import { AuthSchoolUsersIdPasswordPut200ResponseDto } from '../model/authSchoolUsersIdPasswordPut200Response';
 // @ts-ignore
 import { AuthTokensEnvelopeDto } from '../model/authTokensEnvelope';
 // @ts-ignore
@@ -31,9 +35,15 @@ import { LoginRequestDto } from '../model/loginRequest';
 // @ts-ignore
 import { PasswordResetRequestDto } from '../model/passwordResetRequest';
 // @ts-ignore
+import { PasswordResetRequestRecordListEnvelopeDto } from '../model/passwordResetRequestRecordListEnvelope';
+// @ts-ignore
 import { RefreshRequestDto } from '../model/refreshRequest';
 // @ts-ignore
 import { RegisterRequestDto } from '../model/registerRequest';
+// @ts-ignore
+import { ResetUserPasswordRequestDto } from '../model/resetUserPasswordRequest';
+// @ts-ignore
+import { SchoolRegistrationRequestDto } from '../model/schoolRegistrationRequest';
 // @ts-ignore
 import { UserListEnvelopeDto } from '../model/userListEnvelope';
 
@@ -191,6 +201,62 @@ export class AuthService extends BaseService {
     }
 
     /**
+     * Profile of the signed-in account
+     * Lets a client that keeps its access token in memory rebuild the session\&#39;s profile after a page reload (refresh, then /auth/me).
+     * @endpoint get /auth/me
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public authMeGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AuthMeGet200ResponseDto>;
+    public authMeGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AuthMeGet200ResponseDto>>;
+    public authMeGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AuthMeGet200ResponseDto>>;
+    public authMeGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/auth/me`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<AuthMeGet200ResponseDto>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * Request a self-service password-reset code (mobile)
      * Mobile self-service \&quot;forgot password\&quot;, step 1. Unlike the web flow (POST /auth/password-reset-requests), a 6-digit one-time code is emailed directly to the account — parent accounts self-register, so a genuine self-service reset is appropriate. The response is deliberately identical whether or not the email is registered.
      * @endpoint post /auth/password-reset/code
@@ -312,6 +378,105 @@ export class AuthService extends BaseService {
             {
                 context: localVarHttpContext,
                 body: confirmPasswordResetRequestDto,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * List web password reset requests (admin only)
+     * Requests recorded by POST /auth/password-reset-requests for school staff accounts, newest first. A request stays pending until an admin sets a new password for the user (PUT /auth/school-users/{id}/password).
+     * @endpoint get /auth/password-reset-requests
+     * @param status Only pending or only resolved requests; omit for both.
+     * @param userId Only this user\&#39;s requests.
+     * @param limit 
+     * @param offset 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public authPasswordResetRequestsGet(status?: 'pending' | 'resolved', userId?: number, limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PasswordResetRequestRecordListEnvelopeDto>;
+    public authPasswordResetRequestsGet(status?: 'pending' | 'resolved', userId?: number, limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PasswordResetRequestRecordListEnvelopeDto>>;
+    public authPasswordResetRequestsGet(status?: 'pending' | 'resolved', userId?: number, limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PasswordResetRequestRecordListEnvelopeDto>>;
+    public authPasswordResetRequestsGet(status?: 'pending' | 'resolved', userId?: number, limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'status',
+            <any>status,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'user_id',
+            <any>userId,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'limit',
+            <any>limit,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'offset',
+            <any>offset,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/auth/password-reset-requests`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<PasswordResetRequestRecordListEnvelopeDto>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                params: localVarQueryParameters.toHttpParams(),
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
@@ -578,6 +743,73 @@ export class AuthService extends BaseService {
     }
 
     /**
+     * Public school sign-up
+     * Creates a school and the school_admin account of the person who registers it, without an admin. The school is published at once when the deployment sets SCHOOL_SELF_SIGNUP_AUTO_ACTIVATE (public test phase); otherwise it is \&quot;pending\&quot; and hidden from parents until a platform admin validates it (POST /schools/{id}/validate). The account can sign in right away either way. Rate-limited per IP.
+     * @endpoint post /auth/school-registrations
+     * @param schoolRegistrationRequestDto 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public authSchoolRegistrationsPost(schoolRegistrationRequestDto: SchoolRegistrationRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AuthSchoolRegistrationsPost201ResponseDto>;
+    public authSchoolRegistrationsPost(schoolRegistrationRequestDto: SchoolRegistrationRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AuthSchoolRegistrationsPost201ResponseDto>>;
+    public authSchoolRegistrationsPost(schoolRegistrationRequestDto: SchoolRegistrationRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AuthSchoolRegistrationsPost201ResponseDto>>;
+    public authSchoolRegistrationsPost(schoolRegistrationRequestDto: SchoolRegistrationRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (schoolRegistrationRequestDto === null || schoolRegistrationRequestDto === undefined) {
+            throw new Error('Required parameter schoolRegistrationRequestDto was null or undefined when calling authSchoolRegistrationsPost.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/auth/school-registrations`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<AuthSchoolRegistrationsPost201ResponseDto>('post', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: schoolRegistrationRequestDto,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * List school staff users (admin only)
      * @endpoint get /auth/school-users
      * @param schoolId 
@@ -666,6 +898,140 @@ export class AuthService extends BaseService {
     }
 
     /**
+     * Get one school staff user (admin only)
+     * Admin and parent accounts answer 404, like a missing id.
+     * @endpoint get /auth/school-users/{id}
+     * @param id 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public authSchoolUsersIdGet(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AuthMeGet200ResponseDto>;
+    public authSchoolUsersIdGet(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AuthMeGet200ResponseDto>>;
+    public authSchoolUsersIdGet(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AuthMeGet200ResponseDto>>;
+    public authSchoolUsersIdGet(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling authSchoolUsersIdGet.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/auth/school-users/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<AuthMeGet200ResponseDto>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Set a new password for a school staff user (admin only)
+     * The web answer to a forgot-password request: installs the new password, revokes every existing session of the account, and resolves all of the user\&#39;s pending password reset requests.
+     * @endpoint put /auth/school-users/{id}/password
+     * @param id 
+     * @param resetUserPasswordRequestDto 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public authSchoolUsersIdPasswordPut(id: number, resetUserPasswordRequestDto: ResetUserPasswordRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AuthSchoolUsersIdPasswordPut200ResponseDto>;
+    public authSchoolUsersIdPasswordPut(id: number, resetUserPasswordRequestDto: ResetUserPasswordRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AuthSchoolUsersIdPasswordPut200ResponseDto>>;
+    public authSchoolUsersIdPasswordPut(id: number, resetUserPasswordRequestDto: ResetUserPasswordRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AuthSchoolUsersIdPasswordPut200ResponseDto>>;
+    public authSchoolUsersIdPasswordPut(id: number, resetUserPasswordRequestDto: ResetUserPasswordRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling authSchoolUsersIdPasswordPut.');
+        }
+        if (resetUserPasswordRequestDto === null || resetUserPasswordRequestDto === undefined) {
+            throw new Error('Required parameter resetUserPasswordRequestDto was null or undefined when calling authSchoolUsersIdPasswordPut.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/auth/school-users/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/password`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<AuthSchoolUsersIdPasswordPut200ResponseDto>('put', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: resetUserPasswordRequestDto,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * Create school staff user (admin only)
      * @endpoint post /auth/school-users
      * @param createSchoolUserRequestDto 
@@ -673,9 +1039,9 @@ export class AuthService extends BaseService {
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public authSchoolUsersPost(createSchoolUserRequestDto: CreateSchoolUserRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AuthSchoolUsersPost201ResponseDto>;
-    public authSchoolUsersPost(createSchoolUserRequestDto: CreateSchoolUserRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AuthSchoolUsersPost201ResponseDto>>;
-    public authSchoolUsersPost(createSchoolUserRequestDto: CreateSchoolUserRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AuthSchoolUsersPost201ResponseDto>>;
+    public authSchoolUsersPost(createSchoolUserRequestDto: CreateSchoolUserRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AuthMeGet200ResponseDto>;
+    public authSchoolUsersPost(createSchoolUserRequestDto: CreateSchoolUserRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AuthMeGet200ResponseDto>>;
+    public authSchoolUsersPost(createSchoolUserRequestDto: CreateSchoolUserRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AuthMeGet200ResponseDto>>;
     public authSchoolUsersPost(createSchoolUserRequestDto: CreateSchoolUserRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (createSchoolUserRequestDto === null || createSchoolUserRequestDto === undefined) {
             throw new Error('Required parameter createSchoolUserRequestDto was null or undefined when calling authSchoolUsersPost.');
@@ -720,7 +1086,7 @@ export class AuthService extends BaseService {
 
         let localVarPath = `/auth/school-users`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<AuthSchoolUsersPost201ResponseDto>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<AuthMeGet200ResponseDto>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: createSchoolUserRequestDto,

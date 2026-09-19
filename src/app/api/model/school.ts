@@ -19,7 +19,10 @@ export interface SchoolDto {
     address?: string;
     phone?: string;
     email?: string;
-    status?: string;
+    /**
+     * pending = self-registered, waiting for an admin to validate it.
+     */
+    status?: SchoolDto.StatusEnum;
     system?: string;
     /**
      * Current academic year derived from the school calendar (Sep–Aug)
@@ -51,6 +54,12 @@ export interface SchoolDto {
     school_classes?: Array<SchoolClassDto>;
 }
 export namespace SchoolDto {
+    export const StatusEnum = {
+        Active: 'active',
+        Inactive: 'inactive',
+        Pending: 'pending'
+    } as const;
+    export type StatusEnum = typeof StatusEnum[keyof typeof StatusEnum];
     export const MatriculeVerificationModeEnum = {
         None: 'none',
         File: 'file',

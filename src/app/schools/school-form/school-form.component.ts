@@ -16,7 +16,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { NotificationService } from '../../core/services/notification.service';
 import { HasUnsavedChanges } from '../../core/guards/unsaved-changes.guard';
 import { CreateSchoolRequest, School, UpdateSchoolRequest } from '../school.model';
-import { SchoolSystem } from '../../shared/models/common.model';
+import { SchoolStatus, SchoolSystem } from '../../shared/models/common.model';
 import {
   SCHOOL_SYSTEM_I18N,
   SCHOOL_SYSTEMS,
@@ -67,7 +67,7 @@ export class SchoolFormComponent implements OnInit, HasUnsavedChanges {
     address: ['', Validators.required],
     phone: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    status: ['active' as 'active' | 'inactive', Validators.required],
+    status: ['active' as SchoolStatus, Validators.required],
     system: ['francophone' as SchoolSystem, Validators.required],
     // Two distinct delays: answering a request vs paying after acceptance.
     reviewDeadlineDays: [7, [Validators.required, Validators.min(1), Validators.max(30)]],

@@ -1,7 +1,28 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { authGuard, guestGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
+  // Public home page: what SchoolGate is, with the way in (login / sign-up).
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./layout/auth-layout/auth-layout.component').then(
+        (m) => m.AuthLayoutComponent,
+      ),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./register/register.component').then((m) => m.RegisterComponent),
+        canActivate: [guestGuard],
+      },
+    ],
+  },
   {
     path: 'login',
     loadComponent: () =>
@@ -18,7 +39,6 @@ export const routes: Routes = [
       ),
     canActivate: [authGuard],
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: 'dashboard',
         loadChildren: () =>
@@ -47,6 +67,11 @@ export const routes: Routes = [
       {
         path: 'users',
         loadChildren: () => import('./users/users.routes').then((m) => m.USER_ROUTES),
+      },
+      {
+        path: 'password-resets',
+        loadChildren: () =>
+          import('./password-resets/password-resets.routes').then((m) => m.PASSWORD_RESET_ROUTES),
       },
       {
         path: 'settings',

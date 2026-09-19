@@ -42,7 +42,7 @@ To use the real Go API, set `useMockApi: false`.
 src/app/
 ├── api/          # Generated OpenAPI client
 ├── core/         # Services, guards, interceptors, NgRx store
-├── shared/       # components/, pipes/, models/, constants/
+├── shared/       # components/, pipes/, models/, constants/, validators/
 ├── layout/       # auth-layout, main-layout
 ├── login/
 ├── dashboard/

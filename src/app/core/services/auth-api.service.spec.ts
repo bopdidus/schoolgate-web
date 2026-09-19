@@ -14,17 +14,20 @@ describe('AuthApiService', () => {
   let authLogoutPostSpy: jasmine.Spy;
   let authLoginPostSpy: jasmine.Spy;
   let authPasswordResetRequestsPostSpy: jasmine.Spy;
+  let authMeGetSpy: jasmine.Spy;
 
   beforeEach(() => {
     authRefreshPostSpy = jasmine.createSpy('authRefreshPost');
     authLogoutPostSpy = jasmine.createSpy('authLogoutPost');
     authLoginPostSpy = jasmine.createSpy('authLoginPost');
     authPasswordResetRequestsPostSpy = jasmine.createSpy('authPasswordResetRequestsPost');
+    authMeGetSpy = jasmine.createSpy('authMeGet');
     const openApiAuthStub = {
       authLoginPost: authLoginPostSpy,
       authRefreshPost: authRefreshPostSpy,
       authLogoutPost: authLogoutPostSpy,
       authPasswordResetRequestsPost: authPasswordResetRequestsPostSpy,
+      authMeGet: authMeGetSpy,
     } as unknown as OpenApiAuthService;
 
     TestBed.configureTestingModule({
@@ -134,5 +137,20 @@ describe('AuthApiService', () => {
       jasmine.objectContaining({ context: jasmine.any(HttpContext) }),
     );
     expect(completed).toBe(true);
+  });
+
+  // Session restore after a reload: refresh, then this. It must not trigger a
+  // second refresh on 401 — the session is simply gone at that point.
+  it('should load the signed-in profile from /auth/me without the refresh-on-401 flow', () => {
+    authMeGetSpy.and.returnValue(
+      of({ data: { id: 8, email: 'admin@verif.com', first_name: 'My', last_name: 'Verifadmin', role: 'school_admin', school_id: 1 }, error: null }),
+    );
+
+    let name = '';
+    service.getProfile().subscribe((u) => (name = u.name));
+
+    const options = authMeGetSpy.calls.mostRecent().args[2] as { context: HttpContext };
+    expect(options.context.get(SKIP_AUTH_REFRESH)).toBeTrue();
+    expect(name).toBe('My Verifadmin');
   });
 });

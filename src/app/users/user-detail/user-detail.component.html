@@ -1,0 +1,133 @@
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (failed()) {
+  <app-error-state (retry)="load()" />
+} @else if (user(); as u) {
+  <app-page-header [title]="u.name || u.email" subtitle="USERS.DETAIL">
+    <a actions mat-stroked-button routerLink="/users">
+      <mat-icon>arrow_back</mat-icon>
+      {{ 'COMMON.BACK' | translate }}
+    </a>
+  </app-page-header>
+
+  <mat-card appearance="outlined" class="page-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'USERS.INFORMATION' | translate }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="detail-list cols-3">
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'USERS.NAME' | translate }}</span>
+          <p class="detail-list__value">{{ u.name || '—' }}</p>
+        </div>
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'AUTH.EMAIL' | translate }}</span>
+          <p class="detail-list__value">{{ u.email }}</p>
+        </div>
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'USERS.ROLE' | translate }}</span>
+          <p class="detail-list__value">{{ roleLabel(u.role) | translate }}</p>
+        </div>
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'ENROLLMENTS.SCHOOL' | translate }}</span>
+          <p class="detail-list__value">{{ schoolName() ?? '—' }}</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card appearance="outlined" class="page-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'USERS.RESET_REQUESTS' | translate }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (stats(); as s) {
+        <div class="detail-list cols-3">
+          <div class="detail-list__item">
+            <span class="detail-list__label">{{ 'USERS.RESET_REQUESTS_TOTAL' | translate }}</span>
+            <p class="detail-list__value reset-total">{{ s.total }}</p>
+          </div>
+          <div class="detail-list__item">
+            <span class="detail-list__label">{{ 'USERS.RESET_REQUESTS_PENDING' | translate }}</span>
+            <p class="detail-list__value">
+              @if (s.pending > 0) {
+                <mat-chip-set>
+                  <mat-chip class="status-chip status-pending reset-pending">{{ s.pending }}</mat-chip>
+                </mat-chip-set>
+              } @else {
+                <span class="reset-pending">0</span>
+              }
+            </p>
+          </div>
+          <div class="detail-list__item">
+            <span class="detail-list__label">{{ 'USERS.RESET_REQUESTS_LAST' | translate }}</span>
+            <p class="detail-list__value">{{ s.lastRequestedAt ? (s.lastRequestedAt | localeDate) : '—' }}</p>
+          </div>
+        </div>
+      } @else {
+        <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card appearance="outlined" class="page-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'USERS.RESET_PASSWORD' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'USERS.RESET_PASSWORD_HINT' | translate }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="passwordForm" class="reset-form" (ngSubmit)="resetPassword()">
+        <mat-form-field appearance="outline" class="reset-form__field">
+          <mat-label>{{ 'SETTINGS.NEW_PASSWORD' | translate }}</mat-label>
+          <input
+            matInput
+            [type]="hidePassword() ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="new-password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword.set(!hidePassword())"
+            [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate"
+          >
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-hint>{{ 'SETTINGS.PASSWORD_HINT' | translate }}</mat-hint>
+          @if (passwordForm.controls.password.hasError('minlength')) {
+            <mat-error>{{ 'SETTINGS.PASSWORD_HINT' | translate }}</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="reset-form__actions">
+          <button mat-stroked-button type="button" class="generate-btn" (click)="generate()">
+            <mat-icon>password</mat-icon>
+            {{ 'USERS.GENERATE_PASSWORD' | translate }}
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            class="copy-btn"
+            (click)="copy()"
+            [disabled]="!passwordForm.controls.password.value"
+            [matTooltip]="'USERS.COPY_PASSWORD' | translate"
+            [attr.aria-label]="'USERS.COPY_PASSWORD' | translate"
+          >
+            <mat-icon>content_copy</mat-icon>
+          </button>
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            class="reset-btn"
+            [disabled]="passwordForm.invalid || saving()"
+          >
+            <mat-icon>lock_reset</mat-icon>
+            {{ 'USERS.RESET_PASSWORD' | translate }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+}

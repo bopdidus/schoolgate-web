@@ -43,6 +43,7 @@ export class ReferenceService extends BaseService {
 
     /**
      * List cities (Cameroon reference data)
+     * Public (no JWT): the school sign-up form picks its city before any account exists. The other /reference routes require a JWT.
      * @endpoint get /reference/cities
      * @param q Search by city or region name
      * @param limit 
@@ -86,9 +87,6 @@ export class ReferenceService extends BaseService {
 
 
         let localVarHeaders = this.defaultHeaders;
-
-        // authentication (bearerAuth) required
-        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
             'application/json'

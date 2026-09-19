@@ -15,6 +15,9 @@ export interface SchoolRequestDto {
     address?: string;
     phone?: string;
     email?: string;
+    /**
+     * Applied only when a platform admin edits the school; omit it to keep the current status. \"pending\" comes from self-registration only.
+     */
     status?: SchoolRequestDto.StatusEnum;
     system?: SchoolRequestDto.SystemEnum;
     /**

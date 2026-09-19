@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,6 +19,7 @@ import { NotificationService } from '../../core/services/notification.service';
   selector: 'app-user-list',
   standalone: true,
   imports: [
+    RouterLink,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -37,6 +39,7 @@ export class UserListComponent implements OnInit {
   private readonly userService = inject(UserService);
   private readonly notification = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
+  private readonly router = inject(Router);
 
   readonly loading = signal(true);
   /** Separates a failed request from a genuinely empty list. */
@@ -61,6 +64,11 @@ export class UserListComponent implements OnInit {
           this.loading.set(false);
         },
     });
+  }
+
+  /** The whole row opens the user; the name link keeps it reachable by keyboard. */
+  open(user: User): void {
+    void this.router.navigate(['/users', user.id]);
   }
 
   openCreateDialog(): void {

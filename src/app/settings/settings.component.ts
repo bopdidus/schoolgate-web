@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,6 +17,7 @@ import { AuthActions } from '../core/store/auth.actions';
 import { selectUser } from '../core/store/auth.reducer';
 import { NotificationService } from '../core/services/notification.service';
 import { ThemeService, ThemeMode } from '../core/services/theme.service';
+import { matchesControl } from '../shared/validators/matches-control.validator';
 
 @Component({
   selector: 'app-settings',
@@ -53,9 +55,20 @@ export class SettingsComponent implements OnInit {
 
   readonly passwordForm = this.fb.nonNullable.group({
     currentPassword: ['', Validators.required],
-    newPassword: ['', [Validators.required, Validators.minLength(6)]],
-    confirmPassword: ['', Validators.required],
+    newPassword: ['', [Validators.required, Validators.minLength(8)]],
+    confirmPassword: ['', [Validators.required, matchesControl('newPassword')]],
   });
+
+  readonly hideCurrentPassword = signal(true);
+  readonly hideNewPassword = signal(true);
+  readonly hideConfirmPassword = signal(true);
+
+  constructor() {
+    // The confirmation must be re-checked when the password it copies changes.
+    this.passwordForm.controls.newPassword.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.passwordForm.controls.confirmPassword.updateValueAndValidity());
+  }
 
   ngOnInit(): void {
     this.user$.subscribe((user) => {
@@ -73,15 +86,6 @@ export class SettingsComponent implements OnInit {
     this.theme.apply(mode);
   }
 
-  /**
-   * Surfaced inline instead of only as a snackbar after submitting, so the user
-   * sees the problem while the field still has their attention.
-   */
-  passwordMismatch(): boolean {
-    const { newPassword, confirmPassword } = this.passwordForm.getRawValue();
-    return !!confirmPassword && newPassword !== confirmPassword;
-  }
-
   saveProfile(): void {
     if (this.profileForm.invalid) return;
     this.authService.updateProfile(this.profileForm.getRawValue()).subscribe({
@@ -93,11 +97,8 @@ export class SettingsComponent implements OnInit {
   }
 
   changePassword(): void {
+    if (this.passwordForm.invalid) return;
     const v = this.passwordForm.getRawValue();
-    if (v.newPassword !== v.confirmPassword) {
-      this.notification.error('SETTINGS.PASSWORD_MISMATCH');
-      return;
-    }
     this.authService
       .changePassword({ current_password: v.currentPassword, new_password: v.newPassword })
       .subscribe({

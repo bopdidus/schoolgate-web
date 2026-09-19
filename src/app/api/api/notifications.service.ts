@@ -42,14 +42,16 @@ export class NotificationsService extends BaseService {
      * @endpoint get /notifications
      * @param limit 
      * @param offset 
+     * @param type Only notifications of this type (e.g. password_reset_requested). Omit to list every type. The total in meta counts the filtered set.
+     * @param read Only read (true) or unread (false) notifications; omit for both.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public notificationsGet(limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<NotificationListEnvelopeDto>;
-    public notificationsGet(limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<NotificationListEnvelopeDto>>;
-    public notificationsGet(limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<NotificationListEnvelopeDto>>;
-    public notificationsGet(limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public notificationsGet(limit?: number, offset?: number, type?: string, read?: boolean, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<NotificationListEnvelopeDto>;
+    public notificationsGet(limit?: number, offset?: number, type?: string, read?: boolean, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<NotificationListEnvelopeDto>>;
+    public notificationsGet(limit?: number, offset?: number, type?: string, read?: boolean, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<NotificationListEnvelopeDto>>;
+    public notificationsGet(limit?: number, offset?: number, type?: string, read?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -66,6 +68,24 @@ export class NotificationsService extends BaseService {
             localVarQueryParameters,
             'offset',
             <any>offset,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'type',
+            <any>type,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'read',
+            <any>read,
             QueryParamStyle.Form,
             true,
         );

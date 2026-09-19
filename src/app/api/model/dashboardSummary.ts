@@ -19,12 +19,20 @@ export interface DashboardSummaryDto {
     aggregate_filled_percent?: number;
     school_classes?: Array<DashboardSummarySchoolClassesInnerDto>;
     /**
-     * The most recent payments (own school for staff, platform-wide for admin with no school_id), newest first.
+     * The most recent payments (own school for staff, platform-wide for admin with no school_id), newest first. Row count is controlled by the recent_payments_limit query parameter.
      */
     recent_payments?: Array<DashboardSummaryRecentPaymentsInnerDto>;
     /**
-     * One point per day over the trailing two weeks (own school for staff, platform-wide for admin with no school_id). Days with no enrollments are included with count 0, so the series is continuous.
+     * One point per day over the trailing window (own school for staff, platform-wide for admin with no school_id), sized by the trend_days query parameter. Days with no enrollments are included with count 0, so the series is continuous.
      */
     enrollment_trend?: Array<DashboardSummaryEnrollmentTrendInnerDto>;
+    /**
+     * Platform admins only (absent for everyone else): how many password reset requests still wait for an admin to set a new password, platform-wide.
+     */
+    pending_password_reset_requests_count?: number;
+    /**
+     * Platform admins only (absent for everyone else): how many self-registered schools still wait for validation.
+     */
+    pending_school_registrations_count?: number;
 }
 

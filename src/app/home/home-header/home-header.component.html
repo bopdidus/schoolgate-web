@@ -1,0 +1,31 @@
+<header class="home-header">
+  <div class="public-container home-header__inner">
+    <a routerLink="/" class="home-brand" aria-label="SchoolGate — Senior Digital Soft">
+      <app-brand-logo [size]="32" />
+      <span class="home-brand__by">by Senior Digital Soft</span>
+    </a>
+
+    <nav class="home-header__actions" [attr.aria-label]="'HOME.NAV_LABEL' | translate">
+      <button
+        mat-button
+        type="button"
+        (click)="toggleLanguage()"
+        [matTooltip]="'SETTINGS.LANGUAGE' | translate"
+        [attr.aria-label]="'SETTINGS.LANGUAGE' | translate"
+      >
+        {{ currentLang }}
+      </button>
+      <app-theme-toggle />
+      @if (user$ | async) {
+        <a mat-flat-button color="primary" routerLink="/dashboard" class="dashboard-link">
+          {{ 'HOME.GO_TO_DASHBOARD' | translate }}
+        </a>
+      } @else {
+        <a mat-stroked-button routerLink="/login" class="login-link">{{ 'AUTH.LOGIN' | translate }}</a>
+        <a mat-flat-button color="primary" routerLink="/register" class="register-link home-header__register">
+          {{ 'HOME.REGISTER' | translate }}
+        </a>
+      }
+    </nav>
+  </div>
+</header>

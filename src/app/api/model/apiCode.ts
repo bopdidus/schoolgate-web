@@ -46,6 +46,7 @@ export const ApiCodeDto = {
     PaymentFailed: 'PAYMENT_FAILED',
     PasswordResetRequestAccepted: 'PASSWORD_RESET_REQUEST_ACCEPTED',
     PasswordResetRequested: 'PASSWORD_RESET_REQUESTED',
+    SchoolRegistered: 'SCHOOL_REGISTERED',
     PasswordResetCodeSent: 'PASSWORD_RESET_CODE_SENT',
     PasswordResetConfirmed: 'PASSWORD_RESET_CONFIRMED',
     InvalidResetCode: 'INVALID_RESET_CODE'

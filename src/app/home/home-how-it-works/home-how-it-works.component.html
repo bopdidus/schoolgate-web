@@ -1,0 +1,16 @@
+<section class="home-how" id="how-it-works" aria-labelledby="how-title">
+  <div class="public-container">
+    <p class="eyebrow">{{ 'HOME.HOW_EYEBROW' | translate }}</p>
+    <h2 id="how-title" class="home-how__title">{{ 'HOME.HOW_TITLE' | translate }}</h2>
+    <ol class="home-how__steps">
+      @for (step of steps; track step.title; let i = $index) {
+        <li class="home-how__step">
+          <span class="home-how__number">{{ i + 1 }}</span>
+          <mat-icon class="home-how__icon">{{ step.icon }}</mat-icon>
+          <h3 class="home-how__step-title">{{ step.title | translate }}</h3>
+          <p class="home-how__step-text">{{ step.text | translate }}</p>
+        </li>
+      }
+    </ol>
+  </div>
+</section>

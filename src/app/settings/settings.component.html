@@ -86,11 +86,39 @@
       <form [formGroup]="passwordForm" class="form-grid cols-3">
         <mat-form-field appearance="outline">
           <mat-label>{{ 'SETTINGS.CURRENT_PASSWORD' | translate }}</mat-label>
-          <input matInput type="password" formControlName="currentPassword" autocomplete="current-password" />
+          <input
+            matInput
+            [type]="hideCurrentPassword() ? 'password' : 'text'"
+            formControlName="currentPassword"
+            autocomplete="current-password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hideCurrentPassword.set(!hideCurrentPassword())"
+            [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate"
+          >
+            <mat-icon>{{ hideCurrentPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>{{ 'SETTINGS.NEW_PASSWORD' | translate }}</mat-label>
-          <input matInput type="password" formControlName="newPassword" autocomplete="new-password" />
+          <input
+            matInput
+            [type]="hideNewPassword() ? 'password' : 'text'"
+            formControlName="newPassword"
+            autocomplete="new-password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hideNewPassword.set(!hideNewPassword())"
+            [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate"
+          >
+            <mat-icon>{{ hideNewPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
           <mat-hint>{{ 'SETTINGS.PASSWORD_HINT' | translate }}</mat-hint>
           @if (passwordForm.controls.newPassword.hasError('minlength') && passwordForm.controls.newPassword.touched) {
             <mat-error>{{ 'SETTINGS.PASSWORD_HINT' | translate }}</mat-error>
@@ -98,8 +126,22 @@
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>{{ 'SETTINGS.CONFIRM_PASSWORD' | translate }}</mat-label>
-          <input matInput type="password" formControlName="confirmPassword" autocomplete="new-password" />
-          @if (passwordMismatch()) {
+          <input
+            matInput
+            [type]="hideConfirmPassword() ? 'password' : 'text'"
+            formControlName="confirmPassword"
+            autocomplete="new-password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hideConfirmPassword.set(!hideConfirmPassword())"
+            [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate"
+          >
+            <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (passwordForm.controls.confirmPassword.hasError('mismatch')) {
             <mat-error>{{ 'SETTINGS.PASSWORD_MISMATCH' | translate }}</mat-error>
           }
         </mat-form-field>
@@ -107,7 +149,7 @@
           <button
             mat-flat-button
             (click)="changePassword()"
-            [disabled]="passwordForm.invalid || passwordMismatch()"
+            [disabled]="passwordForm.invalid"
           >
             {{ 'SETTINGS.CHANGE_PASSWORD' | translate }}
           </button>

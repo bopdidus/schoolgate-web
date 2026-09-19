@@ -43,7 +43,9 @@ export class SchoolService {
     const page = filters.page ?? 1;
     const pageSize = filters.pageSize ?? 10;
     const { limit, offset } = pageToOffset(page, pageSize);
-    return this.schoolsApi.schoolsGet(filters.search || undefined, limit, offset).pipe(
+    return this.schoolsApi
+      .schoolsGet(filters.search || undefined, filters.status || undefined, limit, offset)
+      .pipe(
       map((envelope) => {
         const rows = unwrapData(envelope) ?? [];
         return toPaginated(
@@ -58,6 +60,13 @@ export class SchoolService {
 
   getById(id: string): Observable<School> {
     return this.schoolsApi.schoolsIdGet(+id).pipe(
+      map((envelope) => this.mapSchool(unwrapData(envelope))),
+    );
+  }
+
+  /** Publishes a self-registered school (platform admin only). */
+  validate(id: string): Observable<School> {
+    return this.schoolsApi.schoolsIdValidatePost(+id).pipe(
       map((envelope) => this.mapSchool(unwrapData(envelope))),
     );
   }
@@ -281,7 +290,9 @@ export class SchoolService {
       address: data.address,
       phone: data.phone,
       email: data.email,
-      status: data.status as SchoolRequestDto.StatusEnum,
+      // `pending` is never sent back: only validation publishes a school, and
+      // an omitted status keeps the current one.
+      status: data.status === 'pending' ? undefined : (data.status as SchoolRequestDto.StatusEnum),
       system: data.system as SchoolRequestDto.SystemEnum,
       review_deadline_days: data.reviewDeadlineDays,
       payment_deadline_days: data.paymentDeadlineDays,

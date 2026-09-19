@@ -42,6 +42,14 @@ export class DashboardService {
         date: String(row.date ?? ''),
         count: Number(row.count ?? 0),
       })),
+      pendingPasswordResetRequests:
+        dto.pending_password_reset_requests_count == null
+          ? undefined
+          : Number(dto.pending_password_reset_requests_count),
+      pendingSchoolRegistrations:
+        dto.pending_school_registrations_count == null
+          ? undefined
+          : Number(dto.pending_school_registrations_count),
     };
   }
 }

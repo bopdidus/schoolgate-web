@@ -22,10 +22,13 @@ src/
     │   ├── components/          # brand-logo, confirm-dialog, empty-state, page-header, stat-card...
     │   ├── constants/
     │   ├── models/
-    │   └── pipes/
+    │   ├── pipes/
+    │   └── validators/          # matchesControl (password confirmation)
     ├── layout/
     │   ├── auth-layout/
     │   └── main-layout/         # Sidebar + top bar + bottom nav
+    ├── home/                    # / — public landing page (header, hero, steps, benefits sub-components)
+    ├── register/                # /register — public school sign-up
     ├── login/                   # /login
     ├── dashboard/               # /dashboard
     ├── schools/                 # /schools
@@ -36,6 +39,7 @@ src/
     ├── payments/                # /payments
     ├── invoices/                # /invoices (invoice-list/, invoice-detail/)
     ├── users/                   # /users
+    ├── password-resets/         # /password-resets — admin: forgot-password requests
     ├── settings/                # /settings
     ├── not-found/
     ├── app.component.*
@@ -56,13 +60,16 @@ src/
 
 | Path | Role | Feature |
 |------|------|---------|
+| `/` | Public | Home page (SchoolGate by Senior Digital Soft) |
+| `/register` | Guest | School self sign-up |
 | `/login` | Guest | Auth |
 | `/dashboard` | Admin + School | Dashboard (role-scoped) |
 | `/schools` | Admin | Schools CRUD |
 | `/enrollments` | Admin + School | Enrollments + document confirm |
 | `/payments` | Admin + School | Validate/reject payments |
 | `/invoices` | Admin + School | List, detail, verify, print |
-| `/users` | Admin | User management |
+| `/users` | Admin | User management, user detail + password reset |
+| `/password-resets` | Admin | Forgot-password requests |
 | `/settings` | Admin + School | Language, profile, password |
 
 ## Run

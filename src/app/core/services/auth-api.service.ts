@@ -89,11 +89,15 @@ export class AuthApiService implements AuthApi {
   }
 
   /**
-   * Backend has no `/auth/me`. Session restore uses the user cached at login.
-   * Callers (AuthEffects) already fall back to cache on failure.
+   * `GET /auth/me`: the profile of the signed-in account. The token lives only
+   * in memory, so after a page reload this is how the session gets its user
+   * back (AuthEffects: refresh, then profile). It runs right after a refresh,
+   * so a 401 here means the session is gone — no second refresh attempt.
    */
   getProfile(): Observable<User> {
-    return throwError(() => new Error('Profile endpoint is not available'));
+    return this.authApi
+      .authMeGet('body', false, { context: this.skipRefreshContext })
+      .pipe(map((envelope) => this.mapUser(unwrapData(envelope))));
   }
 
   /** Profile update is not exposed by the OpenAPI contract. */

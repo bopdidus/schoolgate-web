@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { AuthApiService } from './auth-api.service';
 import { InMemoryTokenStorage } from './in-memory-token-storage.service';
@@ -67,8 +67,9 @@ describe('AuthService', () => {
     expect(service.isAuthenticated()).toBeTrue();
   });
 
-  it('should refresh without reading any token from storage (cookie carries it)', () => {
-    service.refreshToken().subscribe();
+  // Async: the refresh waits for the cross-tab lock before calling the API.
+  it('should refresh without reading any token from storage (cookie carries it)', async () => {
+    await firstValueFrom(service.refreshToken());
 
     expect(authApi.refreshToken).toHaveBeenCalledWith();
     expect(tokenStorage.getAccessToken()).toBe('new-access');

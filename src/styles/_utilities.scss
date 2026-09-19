@@ -196,3 +196,40 @@
     color: var(--mat-sys-outline);
   }
 }
+
+// ── Public pages (home, sign-up) ─────────────────────────────────────────────
+
+// Centered content column of the public site.
+.public-container {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-inline: var(--sp-4);
+
+  @include t.up(t.$bp-md) {
+    padding-inline: var(--sp-8);
+  }
+}
+
+// Small uppercase label above a title.
+.eyebrow {
+  margin: 0 0 var(--sp-3);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mat-sys-primary);
+}
+
+// Icon on a tinted square, used in lists of features.
+.icon-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}

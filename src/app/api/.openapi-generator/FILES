@@ -13,8 +13,10 @@ configuration.ts
 encoder.ts
 index.ts
 model/apiCode.ts
+model/authMeGet200Response.ts
 model/authRefreshPost200Response.ts
-model/authSchoolUsersPost201Response.ts
+model/authSchoolRegistrationsPost201Response.ts
+model/authSchoolUsersIdPasswordPut200Response.ts
 model/authTokensEnvelope.ts
 model/authTokensEnvelopeAllOfData.ts
 model/cityListEnvelope.ts
@@ -60,6 +62,9 @@ model/models.ts
 model/notification.ts
 model/notificationListEnvelope.ts
 model/passwordResetRequest.ts
+model/passwordResetRequestRecord.ts
+model/passwordResetRequestRecordListEnvelope.ts
+model/passwordResetResult.ts
 model/payment.ts
 model/paymentListEnvelope.ts
 model/person.ts
@@ -67,10 +72,15 @@ model/refreshRequest.ts
 model/registerDeviceRequest.ts
 model/registerRequest.ts
 model/rejectEnrollmentRequest.ts
+model/resetUserPasswordRequest.ts
 model/school.ts
 model/schoolClass.ts
 model/schoolClassRequest.ts
 model/schoolListEnvelope.ts
+model/schoolRegistrationRequest.ts
+model/schoolRegistrationRequestAdmin.ts
+model/schoolRegistrationRequestSchool.ts
+model/schoolRegistrationResult.ts
 model/schoolRequest.ts
 model/schoolsIdDashboardGet200Response.ts
 model/schoolsIdDelete200Response.ts

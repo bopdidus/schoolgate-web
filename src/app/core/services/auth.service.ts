@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { AuthApiService } from './auth-api.service';
 import {
@@ -9,11 +9,15 @@ import {
   User,
 } from '../models/auth.model';
 import { TokenStorage } from './token-storage';
+import { withWebLock } from '../utils/web-lock.util';
+
+const REFRESH_LOCK_NAME = 'schoolgate-auth-refresh';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly authApi = inject(AuthApiService);
   private readonly tokenStorage = inject(TokenStorage);
+  private readonly zone = inject(NgZone);
 
   login(credentials: LoginCredentials): Observable<{ user: User; tokens: AuthTokens }> {
     return this.authApi.login(credentials).pipe(
@@ -30,9 +34,20 @@ export class AuthService {
    * authApi call needs no argument. If the cookie is missing/expired the
    * backend simply answers 401 and callers (interceptor/guard) treat it as an
    * unrecoverable session, same as before.
+   *
+   * Serialized across tabs: refresh tokens are single-use and the backend treats
+   * a second presentation as theft, revoking the whole session. Tabs refreshing
+   * at the same moment with the same cookie (typically a browser restart that
+   * restores several tabs) would otherwise log the user out everywhere. Once the
+   * lock is granted, the waiting tab sends the rotated cookie the first tab just
+   * received, since the cookie jar is shared.
    */
   refreshToken(): Observable<AuthTokens> {
-    return this.authApi.refreshToken().pipe(tap((tokens) => this.persistTokens(tokens)));
+    return withWebLock(
+      REFRESH_LOCK_NAME,
+      this.authApi.refreshToken().pipe(tap((tokens) => this.persistTokens(tokens))),
+      this.zone,
+    );
   }
 
   getProfile(): Observable<User> {

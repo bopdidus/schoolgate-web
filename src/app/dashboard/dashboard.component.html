@@ -15,6 +15,7 @@
 } @else if (failed()) {
   <app-error-state (retry)="loadDashboard()" />
 } @else {
+  <!-- Three per row whatever the role, so every card keeps the same size. -->
   <div class="stats-grid cols-3">
     <app-stat-card
       label="DASHBOARD.PENDING_VALIDATION"
@@ -32,6 +33,31 @@
       icon="event_seat"
       [value]="(stats()?.seatsFilledPercent ?? 0) + '%'"
     />
+    @let resetRequests = pendingPasswordResetRequests();
+    @if (resetRequests !== null) {
+      <app-stat-card
+        class="password-resets-card"
+        label="DASHBOARD.PASSWORD_RESET_REQUESTS"
+        icon="lock_reset"
+        hint="DASHBOARD.PASSWORD_RESET_REQUESTS_HINT"
+        link="/password-resets"
+        [tone]="resetRequests > 0 ? 'warning' : 'primary'"
+        [value]="resetRequests"
+      />
+    }
+    @let schoolSignups = pendingSchoolRegistrations();
+    @if (schoolSignups !== null) {
+      <app-stat-card
+        class="pending-schools-card"
+        label="DASHBOARD.PENDING_SCHOOLS"
+        icon="domain_add"
+        hint="DASHBOARD.PENDING_SCHOOLS_HINT"
+        link="/schools"
+        [linkQueryParams]="{ status: 'pending' }"
+        [tone]="schoolSignups > 0 ? 'warning' : 'primary'"
+        [value]="schoolSignups"
+      />
+    }
   </div>
 
   <div class="dash-grid dash-grid--wide">

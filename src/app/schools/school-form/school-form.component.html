@@ -33,6 +33,8 @@
           <mat-select formControlName="status">
             <mat-option value="active">{{ 'SCHOOLS.ACTIVE' | translate }}</mat-option>
             <mat-option value="inactive">{{ 'SCHOOLS.INACTIVE' | translate }}</mat-option>
+            <!-- Shown for a school awaiting validation; publishing it is done from the list. -->
+            <mat-option value="pending" disabled>{{ 'SCHOOLS.PENDING' | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>

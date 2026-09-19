@@ -68,3 +68,16 @@
 .forgot-password-btn {
   font-size: 0.8125rem;
 }
+
+// Way to sign-up for a school that has no account yet.
+.login-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-1);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.875rem;
+}

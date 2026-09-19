@@ -78,6 +78,10 @@ export class DashboardComponent implements OnInit {
   readonly recentPayments = signal<DashboardRecentPayment[]>([]);
   readonly classStats = signal<ClassPaymentStats[]>([]);
   readonly enrollmentTrend = signal<EnrollmentTrend[]>([]);
+  /** Null when the API sends no count (school staff): the card is then hidden. */
+  readonly pendingPasswordResetRequests = signal<number | null>(null);
+  /** Null when the API sends no count (school staff): the card is then hidden. */
+  readonly pendingSchoolRegistrations = signal<number | null>(null);
 
   /** Charts render nothing useful with an empty series — guard rather than draw an empty canvas. */
   readonly hasClassStats = computed(() => this.classStats().length > 0);
@@ -117,6 +121,8 @@ export class DashboardComponent implements OnInit {
         this.classStats.set(overview.classPaymentStats ?? []);
         this.enrollmentTrend.set(overview.enrollmentTrend ?? []);
         this.recentPayments.set(overview.recentPayments ?? []);
+        this.pendingPasswordResetRequests.set(overview.pendingPasswordResetRequests ?? null);
+        this.pendingSchoolRegistrations.set(overview.pendingSchoolRegistrations ?? null);
         this.applyChartData();
         this.loading.set(false);
       },

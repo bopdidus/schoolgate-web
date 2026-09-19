@@ -6,12 +6,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { UserService, CreateUserRequest } from '../user.service';
 import { SchoolService } from '../../schools/school.service';
 import { School } from '../../schools/school.model';
 import { NotificationService } from '../../core/services/notification.service';
 import { UserRole } from '../../shared/models/common.model';
+import { matchesControl } from '../../shared/validators/matches-control.validator';
 
 @Component({
   selector: 'app-user-create-dialog',
@@ -23,6 +25,7 @@ import { UserRole } from '../../shared/models/common.model';
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    MatIconModule,
     TranslateModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,11 +41,14 @@ export class UserCreateDialogComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly schools = signal<School[]>([]);
+  readonly hidePassword = signal(true);
+  readonly hideConfirmPassword = signal(true);
 
   readonly form = this.fb.nonNullable.group({
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
+    confirmPassword: ['', [Validators.required, matchesControl('password')]],
     role: ['school_admin' as UserRole, Validators.required],
     schoolId: [''],
   });
@@ -57,6 +63,10 @@ export class UserCreateDialogComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.syncSchoolIdValidators());
     this.syncSchoolIdValidators();
+    // The confirmation must be re-checked when the password it copies changes.
+    this.form.controls.password.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.form.controls.confirmPassword.updateValueAndValidity());
   }
 
   private syncSchoolIdValidators(): void {
