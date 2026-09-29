@@ -1,0 +1,7 @@
+# OpenAPI Generator Ignore
+# Prevent regenerating unused scaffolding on each swagger:generate run.
+
+git_push.sh
+README.md
+api.module.ts
+.gitignore

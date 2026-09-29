@@ -1,0 +1,8 @@
+{
+  "outputDirectory": "dist/school-gate-web/browser",
+  "rewrites": [
+    { "source": "/api/v1/:path*", "destination": "https://schoolgate-api-nine.vercel.app/api/v1/:path*" },
+    { "source": "/health", "destination": "https://schoolgate-api-nine.vercel.app/health" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

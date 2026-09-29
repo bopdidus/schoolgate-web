@@ -1,0 +1,31 @@
+<mat-form-field appearance="outline" class="city-field">
+  <mat-label>{{ labelKey | translate }}</mat-label>
+  <input
+    matInput
+    [formControl]="searchCtrl"
+    [matAutocomplete]="cityAuto"
+    [required]="required"
+    autocomplete="off"
+    (blur)="onBlur()"
+  />
+  @if (loading()) {
+    <mat-spinner matSuffix diameter="18" />
+  }
+  <mat-autocomplete
+    #cityAuto="matAutocomplete"
+    [displayWith]="displayCity"
+    (optionSelected)="onSelected($event)"
+  >
+    @for (city of options(); track city.id) {
+      <mat-option [value]="city">
+        <span>{{ cityLabel(city) }}</span>
+      </mat-option>
+    }
+    @if (!loading() && hasQuery() && options().length === 0) {
+      <mat-option disabled>{{ 'COMMON.NO_DATA' | translate }}</mat-option>
+    }
+  </mat-autocomplete>
+  @if (showRequiredError()) {
+    <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+  }
+</mat-form-field>

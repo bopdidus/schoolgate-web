@@ -1,0 +1,8 @@
+name,education_type,specialty,specialty_other,pedagogic_system,level,total_seats,enrollment_fee_amount,enrollment_fee_due_date,advance_allowed,advance_percentage,installment1_amount,installment1_due_date,installment2_amount,installment2_due_date,installment3_amount,installment3_due_date
+6ème A,general,,,francophone,6ème,60,25000,2026-09-15,false,,30000,2026-11-01,30000,2027-02-01,,
+5ème B,general,,,francophone,5ème,55,25000,2026-09-15,true,30,35000,2026-11-15,35000,2027-02-15,,
+Form 1 A,general,,,anglophone,Form 1,50,30000,2026-09-20,false,,40000,2026-11-20,40000,2027-03-01,,
+2nde TI,technical,TI,,francophone,Other,40,35000,2026-09-10,false,,45000,2026-11-10,45000,2027-02-10,45000,2027-05-10
+CAP Menuiserie 1,vocational,Menuiserie,,francophone,Other,30,20000,2026-09-01,true,25,25000,2026-12-01,25000,2027-03-01,,
+Terminale CG,technical,CG,,francophone,Other,35,40000,2026-09-12,false,,50000,2026-11-12,50000,2027-02-12,,
+1ère Autre,technical,Other,Génie civil,francophone,Other,32,38000,2026-09-18,false,,48000,2026-11-18,48000,2027-02-18,,

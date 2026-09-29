@@ -1,0 +1,22 @@
+.reset-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  // Room for the outline field's floating label above its border.
+  padding-top: var(--sp-2);
+}
+
+.reset-form__field {
+  flex: 1 1 280px;
+  max-width: 420px;
+}
+
+.reset-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  // Lines the buttons up with the input, not with its hint below.
+  min-height: 56px;
+}

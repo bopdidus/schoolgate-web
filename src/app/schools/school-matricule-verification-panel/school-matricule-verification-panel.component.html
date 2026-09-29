@@ -1,0 +1,98 @@
+<mat-card-header>
+  <mat-card-title>{{ 'SCHOOLS.MATRICULE_VERIFICATION_TITLE' | translate }}</mat-card-title>
+</mat-card-header>
+
+<mat-card-content>
+  @if (canManage()) {
+    <p class="text-muted">{{ 'SCHOOLS.MATRICULE_VERIFICATION_HINT' | translate }}</p>
+
+    <div class="form-block">
+      <mat-slide-toggle [ngModel]="allowBypass()" (ngModelChange)="allowBypass.set($event)">
+        {{ 'SCHOOLS.MATRICULE_VERIFICATION_ALLOW' | translate }}
+      </mat-slide-toggle>
+    </div>
+
+    @if (allowBypass()) {
+      <div class="form-block">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'SCHOOLS.MATRICULE_VERIFICATION_MODE' | translate }}</mat-label>
+          <mat-select [ngModel]="mode()" (ngModelChange)="mode.set($event)">
+            <mat-option value="none">{{ 'SCHOOLS.MATRICULE_VERIFICATION_MODE_NONE' | translate }}</mat-option>
+            <mat-option value="file">{{ 'SCHOOLS.MATRICULE_VERIFICATION_MODE_FILE' | translate }}</mat-option>
+            <mat-option value="api">{{ 'SCHOOLS.MATRICULE_VERIFICATION_MODE_API' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      @if (mode() === 'none') {
+        <p class="text-muted is-italic">{{ 'SCHOOLS.MATRICULE_VERIFICATION_MODE_NONE_HINT' | translate }}</p>
+      }
+
+      @if (mode() === 'api') {
+        <div class="form-block">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'SCHOOLS.MATRICULE_VERIFICATION_API_URL' | translate }}</mat-label>
+            <input
+              matInput
+              [ngModel]="apiUrl()"
+              (ngModelChange)="apiUrl.set($event)"
+              type="url"
+              placeholder="https://..."
+            />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'SCHOOLS.MATRICULE_VERIFICATION_API_KEY' | translate }}</mat-label>
+            <input
+              matInput
+              [ngModel]="apiKey()"
+              (ngModelChange)="apiKey.set($event)"
+              type="password"
+              [placeholder]="
+                (apiKeySet() ? 'SCHOOLS.MATRICULE_VERIFICATION_API_KEY_SET' : 'SCHOOLS.MATRICULE_VERIFICATION_API_KEY_UNSET') | translate
+              "
+            />
+            <mat-hint>{{ 'SCHOOLS.MATRICULE_VERIFICATION_API_KEY_HINT' | translate }}</mat-hint>
+          </mat-form-field>
+        </div>
+      }
+
+      @if (mode() === 'file') {
+        <div class="form-block">
+          <p class="text-muted">
+            @if (rosterUploaded()) {
+              <mat-icon inline>check_circle</mat-icon>
+              {{ 'SCHOOLS.MATRICULE_ROSTER_UPLOADED_STATUS' | translate }}
+            } @else {
+              {{ 'SCHOOLS.MATRICULE_ROSTER_NONE' | translate }}
+            }
+          </p>
+          <button mat-stroked-button [disabled]="uploading()" (click)="rosterInput.click()">
+            <mat-icon>upload_file</mat-icon>
+            {{ 'SCHOOLS.MATRICULE_ROSTER_UPLOAD' | translate }}
+          </button>
+          <input
+            #rosterInput
+            type="file"
+            hidden
+            accept=".csv,.txt"
+            (change)="onRosterSelected($event)"
+          />
+        </div>
+      }
+    }
+  } @else {
+    @if (school().matriculeVerification.allowDirectPaymentForReturningStudents) {
+      <p class="text-muted">{{ 'SCHOOLS.MATRICULE_VERIFICATION_ENABLED_READONLY' | translate }}</p>
+    } @else {
+      <p class="text-muted is-italic">{{ 'SCHOOLS.MATRICULE_VERIFICATION_DISABLED_READONLY' | translate }}</p>
+    }
+  }
+</mat-card-content>
+
+@if (canManage()) {
+  <mat-card-actions align="end">
+    <button mat-flat-button color="primary" [disabled]="saving()" (click)="save()">
+      {{ 'COMMON.SAVE' | translate }}
+    </button>
+  </mat-card-actions>
+}

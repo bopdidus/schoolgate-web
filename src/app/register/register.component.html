@@ -1,0 +1,165 @@
+<mat-card appearance="outlined" class="register-card">
+  <mat-card-content>
+    <div class="register-brand">
+      <a routerLink="/" [attr.aria-label]="'AUTH.BACK_HOME' | translate">
+        <app-brand-logo [size]="40" />
+      </a>
+    </div>
+
+    @if (result(); as r) {
+      <div class="register-done">
+        <span class="register-done__icon" [class.register-done__icon--pending]="r.status === 'pending'">
+          <mat-icon>{{ r.status === 'active' ? 'check_circle' : 'hourglass_top' }}</mat-icon>
+        </span>
+        <h1>{{ (r.status === 'active' ? 'REGISTER.DONE_ACTIVE_TITLE' : 'REGISTER.DONE_PENDING_TITLE') | translate }}</h1>
+        <p class="text-muted">
+          {{ (r.status === 'active' ? 'REGISTER.DONE_ACTIVE_TEXT' : 'REGISTER.DONE_PENDING_TEXT') | translate }}
+        </p>
+        <a
+          mat-flat-button
+          color="primary"
+          class="register-submit go-login"
+          routerLink="/login"
+          [queryParams]="{ email: r.adminEmail }"
+        >
+          {{ 'REGISTER.GO_TO_LOGIN' | translate }}
+        </a>
+      </div>
+    } @else {
+      <div class="register-head">
+        <h1>{{ 'REGISTER.TITLE' | translate }}</h1>
+        <p class="text-muted">{{ 'REGISTER.SUBTITLE' | translate }}</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <fieldset class="register-section" formGroupName="school">
+          <legend>{{ 'REGISTER.SCHOOL_SECTION' | translate }}</legend>
+          <div class="register-grid">
+            <mat-form-field appearance="outline" class="span-2">
+              <mat-label>{{ 'SCHOOLS.NAME' | translate }}</mat-label>
+              <input matInput formControlName="name" autocomplete="organization" />
+              @if (form.controls.school.controls.name.hasError('required')) {
+                <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+              }
+            </mat-form-field>
+            <app-city-autocomplete formControlName="cityId" [required]="true" />
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'REGISTER.SYSTEM' | translate }}</mat-label>
+              <mat-select formControlName="system">
+                @for (s of systems; track s) {
+                  <mat-option [value]="s">{{ systemI18n[s] | translate }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="span-2">
+              <mat-label>{{ 'SCHOOLS.ADDRESS' | translate }}</mat-label>
+              <input matInput formControlName="address" autocomplete="street-address" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'SCHOOLS.PHONE' | translate }}</mat-label>
+              <input matInput type="tel" formControlName="phone" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'SCHOOLS.EMAIL' | translate }}</mat-label>
+              <input matInput type="email" formControlName="email" />
+              @if (form.controls.school.controls.email.hasError('email')) {
+                <mat-error>{{ 'COMMON.INVALID_EMAIL' | translate }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </fieldset>
+
+        <fieldset class="register-section" formGroupName="admin">
+          <legend>{{ 'REGISTER.ADMIN_SECTION' | translate }}</legend>
+          <p class="register-section__hint">{{ 'REGISTER.ADMIN_HINT' | translate }}</p>
+          <div class="register-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'REGISTER.FIRST_NAME' | translate }}</mat-label>
+              <input matInput formControlName="firstName" autocomplete="given-name" />
+              @if (form.controls.admin.controls.firstName.hasError('required')) {
+                <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'REGISTER.LAST_NAME' | translate }}</mat-label>
+              <input matInput formControlName="lastName" autocomplete="family-name" />
+              @if (form.controls.admin.controls.lastName.hasError('required')) {
+                <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'AUTH.EMAIL' | translate }}</mat-label>
+              <input matInput type="email" formControlName="email" autocomplete="email" />
+              <mat-hint>{{ 'REGISTER.EMAIL_HINT' | translate }}</mat-hint>
+              @if (form.controls.admin.controls.email.hasError('taken')) {
+                <mat-error>{{ 'REGISTER.EMAIL_TAKEN' | translate }}</mat-error>
+              } @else if (form.controls.admin.controls.email.invalid) {
+                <mat-error>{{ 'COMMON.INVALID_EMAIL' | translate }}</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'SCHOOLS.PHONE' | translate }}</mat-label>
+              <input matInput type="tel" formControlName="phone" autocomplete="tel" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'AUTH.PASSWORD' | translate }}</mat-label>
+              <input
+                matInput
+                [type]="hidePassword() ? 'password' : 'text'"
+                formControlName="password"
+                autocomplete="new-password"
+              />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hidePassword.set(!hidePassword())"
+                [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate"
+              >
+                <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-hint>{{ 'SETTINGS.PASSWORD_HINT' | translate }}</mat-hint>
+              @if (form.controls.admin.controls.password.hasError('minlength')) {
+                <mat-error>{{ 'SETTINGS.PASSWORD_HINT' | translate }}</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'SETTINGS.CONFIRM_PASSWORD' | translate }}</mat-label>
+              <input
+                matInput
+                [type]="hideConfirmPassword() ? 'password' : 'text'"
+                formControlName="confirmPassword"
+                autocomplete="new-password"
+              />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hideConfirmPassword.set(!hideConfirmPassword())"
+                [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate"
+              >
+                <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (form.controls.admin.controls.confirmPassword.hasError('mismatch')) {
+                <mat-error>{{ 'SETTINGS.PASSWORD_MISMATCH' | translate }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </fieldset>
+
+        <button mat-flat-button color="primary" type="submit" class="register-submit" [disabled]="submitting()">
+          @if (submitting()) {
+            <mat-spinner diameter="20" />
+          } @else {
+            {{ 'REGISTER.SUBMIT' | translate }}
+          }
+        </button>
+
+        <div class="register-links">
+          <span>{{ 'REGISTER.HAVE_ACCOUNT' | translate }}</span>
+          <a mat-button routerLink="/login" class="login-link">{{ 'AUTH.LOGIN' | translate }}</a>
+        </div>
+      </form>
+    }
+  </mat-card-content>
+</mat-card>

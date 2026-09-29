@@ -1,0 +1,90 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Design tokens — the single source of truth for every non-color scale.
+// Colors are NOT defined here: they come from the M3 theme (_theme.scss) and
+// are exposed as semantic aliases in _semantic.scss.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Breakpoints. SCSS variables, because CSS custom properties cannot be used
+// inside media queries. `$bp-md` stays at 768px to match the existing layout.
+$bp-sm: 600px;
+$bp-md: 768px;
+$bp-lg: 1024px;
+$bp-xl: 1280px;
+
+@mixin up($bp) {
+  @media (min-width: $bp) {
+    @content;
+  }
+}
+
+@mixin down($bp) {
+  @media (max-width: $bp - 1px) {
+    @content;
+  }
+}
+
+:root {
+  // Spacing — a 4px base scale. Replaces the ad-hoc 8/10/12/16/20/24/28/32 mix.
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  // Named spacing roles, so components express intent rather than a number.
+  --space-card: var(--sp-6);
+  --space-section: var(--sp-6);
+  --space-gutter: var(--sp-4);
+
+  // Radius scale.
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  // Legacy aliases kept so existing component styles keep resolving.
+  --radius-card: var(--radius-lg);
+  --radius-control: var(--radius-md);
+  --spacing-card: var(--space-card);
+  --spacing-section: var(--space-section);
+
+  // Motion.
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-interactive: all var(--dur-base) var(--ease-standard);
+
+  // Z-index scale — previously ad-hoc integers scattered across files.
+  --z-sticky: 10;
+  --z-drawer: 20;
+  --z-overlay: 30;
+  --z-toast: 40;
+}
+
+// Respect users who ask for less motion.
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 1ms;
+    --dur-base: 1ms;
+    --dur-slow: 1ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

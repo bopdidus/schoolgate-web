@@ -1,0 +1,119 @@
+<mat-card appearance="outlined" class="login-card">
+  <mat-card-content>
+    <div class="login-brand">
+      <app-brand-logo [size]="44" />
+      <h1>{{ 'AUTH.WELCOME' | translate }}</h1>
+      <p>{{ 'APP.SUBTITLE' | translate }}</p>
+    </div>
+
+    @if (!showForgotPassword()) {
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="page-stack" novalidate>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'AUTH.EMAIL' | translate }}</mat-label>
+          <mat-icon matPrefix class="login-field-icon">mail</mat-icon>
+          <input matInput type="email" formControlName="email" autocomplete="email" />
+          @if (form.controls.email.hasError('required') && form.controls.email.touched) {
+            <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'AUTH.PASSWORD' | translate }}</mat-label>
+          <mat-icon matPrefix class="login-field-icon">lock</mat-icon>
+          <input
+            matInput
+            [type]="hidePassword.value ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword.value = !hidePassword.value"
+            [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate"
+          >
+            <mat-icon>{{ hidePassword.value ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (form.controls.password.hasError('required') && form.controls.password.touched) {
+            <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-checkbox formControlName="rememberMe">{{ 'AUTH.REMEMBER_ME' | translate }}</mat-checkbox>
+
+        @if (error$ | async; as error) {
+          <p class="login-error" role="alert">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ error | translate }}</span>
+          </p>
+        }
+
+        <button mat-flat-button type="submit" class="login-submit" [disabled]="loading$ | async">
+          @if (loading$ | async) {
+            <mat-spinner diameter="20" />
+          } @else {
+            {{ 'AUTH.LOGIN' | translate }}
+          }
+        </button>
+
+        <div class="text-center">
+          <button mat-button type="button" class="forgot-password-btn" (click)="openForgotPassword()">
+            {{ 'AUTH.FORGOT_PASSWORD' | translate }}
+          </button>
+        </div>
+
+        <div class="login-links">
+          <span>{{ 'AUTH.NO_ACCOUNT' | translate }}</span>
+          <a mat-button routerLink="/register" class="register-link">{{ 'AUTH.REGISTER_SCHOOL' | translate }}</a>
+        </div>
+        <div class="text-center">
+          <a mat-button routerLink="/" class="home-link">
+            <mat-icon>arrow_back</mat-icon>
+            {{ 'AUTH.BACK_HOME' | translate }}
+          </a>
+        </div>
+      </form>
+    } @else {
+      <form
+        [formGroup]="forgotPasswordForm"
+        (ngSubmit)="submitForgotPassword()"
+        class="page-stack"
+        novalidate
+      >
+        <p class="text-muted">{{ 'AUTH.FORGOT_PASSWORD_HINT' | translate }}</p>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'AUTH.EMAIL' | translate }}</mat-label>
+          <mat-icon matPrefix class="login-field-icon">mail</mat-icon>
+          <input matInput type="email" formControlName="email" autocomplete="email" />
+          @if (
+            forgotPasswordForm.controls.email.hasError('required') &&
+            forgotPasswordForm.controls.email.touched
+          ) {
+            <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+          }
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          type="submit"
+          class="login-submit"
+          [disabled]="forgotPasswordSubmitting()"
+        >
+          @if (forgotPasswordSubmitting()) {
+            <mat-spinner diameter="20" />
+          } @else {
+            {{ 'AUTH.FORGOT_PASSWORD_SUBMIT' | translate }}
+          }
+        </button>
+
+        <div class="text-center">
+          <button mat-button type="button" (click)="cancelForgotPassword()">
+            {{ 'COMMON.BACK' | translate }}
+          </button>
+        </div>
+      </form>
+    }
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,50 @@
+.home-header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: var(--z-sticky);
+  background: var(--mat-sys-surface);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.home-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  min-height: 64px;
+}
+
+.home-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-brand__by {
+  display: none;
+  padding-left: var(--sp-3);
+  border-left: 1px solid var(--mat-sys-outline-variant);
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+
+  @media (min-width: 768px) {
+    display: inline;
+  }
+}
+
+.home-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+// Small screens keep the hero's buttons as the way in; the header stays light.
+.home-header__register {
+  display: none;
+
+  @media (min-width: 600px) {
+    display: inline-flex;
+  }
+}

@@ -1,0 +1,116 @@
+// Fills its grid cell so every card in a row has the same height, whatever
+// its content (e.g. only some cards have a hint line).
+:host {
+  display: block;
+  height: 100%;
+}
+
+.stat-card {
+  height: 100%;
+}
+
+.stat-card-link {
+  display: block;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 2px;
+  }
+}
+
+.stat-card--link {
+  cursor: pointer;
+}
+
+.stat-card__chevron {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.stat-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.stat-card__body {
+  min-width: 0;
+}
+
+.stat-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+  background: var(--stat-bg, var(--mat-sys-primary));
+  color: var(--stat-fg, var(--mat-sys-on-primary));
+}
+
+.stat-card__icon mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.stat-card__foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: var(--sp-3) 0 0;
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.stat-card__delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-card__delta mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.stat-card__delta[data-dir='up'] {
+  color: var(--sem-success);
+}
+
+.stat-card__delta[data-dir='down'] {
+  color: var(--sem-danger);
+}
+
+/* Tone drives only the icon tile — a solid color block with a white
+   icon, matching the reference design — the figure itself always reads
+   as plain text so the eye lands on the number, not the color. */
+.stat-card[data-tone='success'] {
+  --stat-bg: var(--sem-success);
+  --stat-fg: white;
+}
+
+.stat-card[data-tone='warning'] {
+  --stat-bg: var(--sem-warning);
+  --stat-fg: white;
+}
+
+.stat-card[data-tone='danger'] {
+  --stat-bg: var(--sem-danger);
+  --stat-fg: white;
+}
+
+.stat-card[data-tone='accent'] {
+  --stat-bg: var(--mat-sys-tertiary);
+  --stat-fg: var(--mat-sys-on-tertiary);
+}

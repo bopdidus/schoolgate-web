@@ -1,0 +1,15 @@
+<mat-card appearance="outlined" class="empty-state-card error-state" role="alert">
+  <mat-card-content>
+    <span class="error-state__icon">
+      <mat-icon>{{ icon() }}</mat-icon>
+    </span>
+    <h3>{{ title() | translate }}</h3>
+    <p>{{ description() | translate }}</p>
+    @if (retryable()) {
+      <button mat-flat-button type="button" (click)="retry.emit()">
+        <mat-icon>refresh</mat-icon>
+        {{ 'COMMON.RETRY' | translate }}
+      </button>
+    }
+  </mat-card-content>
+</mat-card>

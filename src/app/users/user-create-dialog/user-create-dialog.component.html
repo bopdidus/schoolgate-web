@@ -1,0 +1,94 @@
+<h2 mat-dialog-title>{{ "USERS.NEW" | translate }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="user-form">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "USERS.NAME" | translate }}</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "AUTH.EMAIL" | translate }}</mat-label>
+      <input matInput type="email" formControlName="email" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "AUTH.PASSWORD" | translate }}</mat-label>
+      <input
+        matInput
+        [type]="hidePassword() ? 'password' : 'text'"
+        formControlName="password"
+        autocomplete="new-password"
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        (click)="hidePassword.set(!hidePassword())"
+        [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate"
+      >
+        <mat-icon>{{ hidePassword() ? "visibility_off" : "visibility" }}</mat-icon>
+      </button>
+      <mat-hint>{{ "SETTINGS.PASSWORD_HINT" | translate }}</mat-hint>
+      @if (form.controls.password.hasError("minlength")) {
+        <mat-error>{{ "SETTINGS.PASSWORD_HINT" | translate }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "SETTINGS.CONFIRM_PASSWORD" | translate }}</mat-label>
+      <input
+        matInput
+        [type]="hideConfirmPassword() ? 'password' : 'text'"
+        formControlName="confirmPassword"
+        autocomplete="new-password"
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        (click)="hideConfirmPassword.set(!hideConfirmPassword())"
+        [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate"
+      >
+        <mat-icon>{{ hideConfirmPassword() ? "visibility_off" : "visibility" }}</mat-icon>
+      </button>
+      @if (form.controls.confirmPassword.hasError("mismatch")) {
+        <mat-error>{{ "SETTINGS.PASSWORD_MISMATCH" | translate }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ "USERS.ROLE" | translate }}</mat-label>
+      <mat-select formControlName="role">
+        <mat-option value="admin">{{ "USERS.ADMIN" | translate }}</mat-option>
+        <mat-option value="school_admin">{{
+          "USERS.SCHOOL_ADMIN" | translate
+        }}</mat-option>
+        <mat-option value="school_editor">{{
+          "USERS.SCHOOL_EDITOR" | translate
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    @if (isSchoolRole) {
+      <mat-form-field appearance="outline">
+        <mat-label>{{ "USERS.ASSIGN_SCHOOL" | translate }}</mat-label>
+        <mat-select formControlName="schoolId">
+          @for (school of schools(); track school.id) {
+            <mat-option [value]="school.id">{{ school.name }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.schoolId.hasError("required")) {
+          <mat-error>{{ "USERS.SCHOOL_REQUIRED" | translate }}</mat-error>
+        }
+      </mat-form-field>
+    }
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-stroked-button mat-dialog-close>
+    {{ "COMMON.CANCEL" | translate }}
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="create()"
+    [disabled]="form.invalid"
+  >
+    {{ "COMMON.CREATE" | translate }}
+  </button>
+</mat-dialog-actions>

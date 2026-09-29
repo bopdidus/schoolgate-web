@@ -1,0 +1,12 @@
+<mat-toolbar class="page-header-toolbar">
+  <div class="page-header-text">
+    <h1>{{ title | translate: titleParams }}</h1>
+    @if (subtitle) {
+      <p>{{ subtitle | translate }}</p>
+    }
+  </div>
+  <span class="toolbar-spacer"></span>
+  <div class="page-header-actions">
+    <ng-content select="[actions]"></ng-content>
+  </div>
+</mat-toolbar>

@@ -1,0 +1,61 @@
+.home-how {
+  padding-block: var(--sp-12);
+
+  @media (min-width: 768px) {
+    padding-block: var(--sp-16);
+  }
+}
+
+.home-how__title {
+  margin: 0 0 var(--sp-10);
+  font-size: clamp(1.5rem, 3vw, 2.125rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.home-how__steps {
+  display: grid;
+  gap: var(--sp-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+// A rule in the accent color above each step reads as a timeline.
+.home-how__step {
+  padding-top: var(--sp-5);
+  border-top: 2px solid var(--mat-sys-primary);
+}
+
+.home-how__number {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--mat-sys-primary);
+}
+
+.home-how__icon {
+  display: block;
+  margin: var(--sp-3) 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.home-how__step-title {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.home-how__step-text {
+  margin: var(--sp-2) 0 0;
+  line-height: 1.6;
+  color: var(--mat-sys-on-surface-variant);
+}

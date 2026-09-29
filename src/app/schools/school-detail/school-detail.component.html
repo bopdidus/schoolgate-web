@@ -1,0 +1,167 @@
+@if (loading()) {
+  <app-skeleton-table />
+} @else {
+  @if (school(); as s) {
+    <app-page-header title="SCHOOLS.DETAIL">
+      @if (canEditSchool(s.id)) {
+        <button actions mat-flat-button color="primary" [routerLink]="['/schools', s.id, 'edit']">
+          <mat-icon>edit</mat-icon>
+          {{ 'COMMON.EDIT' | translate }}
+        </button>
+      }
+    </app-page-header>
+
+    <mat-card appearance="outlined" class="page-card">
+      <mat-card-content>
+        <div class="detail-list cols-3">
+          <div class="detail-list__item">
+            <span class="detail-list__label">{{ 'SCHOOLS.NAME' | translate }}</span>
+            <p class="detail-list__value">{{ s.name }}</p>
+          </div>
+          <div class="detail-list__item">
+            <span class="detail-list__label">{{ 'SCHOOLS.CITY' | translate }}</span>
+            <p class="detail-list__value">{{ s.city }}</p>
+          </div>
+          <div class="detail-list__item">
+            <span class="detail-list__label">{{ 'SCHOOLS.ADDRESS' | translate }}</span>
+            <p class="detail-list__value">{{ s.address }}</p>
+          </div>
+          <div class="detail-list__item">
+            <span class="detail-list__label">{{ 'SCHOOLS.PHONE' | translate }}</span>
+            <p class="detail-list__value">{{ s.phone }}</p>
+          </div>
+          <div class="detail-list__item">
+            <span class="detail-list__label">{{ 'SCHOOLS.EMAIL' | translate }}</span>
+            <p class="detail-list__value">{{ s.email }}</p>
+          </div>
+          <div class="detail-list__item">
+            <span class="detail-list__label">{{ 'SCHOOLS.ACADEMIC_YEAR' | translate }}</span>
+            <p class="detail-list__value">{{ s.academicYear || '—' }}</p>
+          </div>
+          <div class="detail-list__item">
+            <span class="detail-list__label">{{ 'COMMON.STATUS' | translate }}</span>
+            <p class="detail-list__value">
+              <mat-chip-set>
+                <mat-chip [class]="s.status | statusColor">{{ ('STATUS.' + s.status.toUpperCase()) | translate }}</mat-chip>
+              </mat-chip-set>
+            </p>
+          </div>
+          <div class="detail-list__item span-2">
+            <span class="detail-list__label">{{ 'EDUCATION.SCHOOL_SYSTEM' | translate }}</span>
+            <p class="detail-list__value">
+              <mat-chip-set>
+                <mat-chip>{{ schoolSystemI18n[s.schoolSystem] | translate }}</mat-chip>
+              </mat-chip-set>
+            </p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card appearance="outlined" class="page-card">
+      <mat-card-header>
+        <mat-card-title>{{ 'SCHOOLS.CLASSES' | translate }} ({{ s.classes.length }})</mat-card-title>
+      </mat-card-header>
+      @if (canManageClasses(s.id)) {
+        <mat-card-actions align="end">
+          <button mat-stroked-button color="primary" [routerLink]="['/schools', s.id, 'classes', 'new']">
+            <mat-icon>add</mat-icon>
+            {{ 'SCHOOLS.ADD_CLASS' | translate }}
+          </button>
+        </mat-card-actions>
+      }
+      <mat-card-content>
+        @if (s.classes.length === 0) {
+          <p class="text-muted is-italic">{{ 'SCHOOLS.NO_CLASSES' | translate }}</p>
+        }
+        @for (group of groupedClasses(s); track group.type + group.specialty) {
+          <div class="system-group">
+            <div class="flex-row">
+              <mat-chip [class]="group.type | educationTypeColor">{{ educationTypeBadge[group.type] }}</mat-chip>
+              <span class="section-label">{{ educationTypeI18n[group.type] | translate }}</span>
+              @if (group.specialty) {
+                <span class="text-muted">· {{ group.specialty }}</span>
+              }
+              <span class="text-muted">({{ group.classes.length }})</span>
+            </div>
+            @for (cls of group.classes; track trackById($index, cls)) {
+              <div class="class-block">
+                <div class="flex-row-between class-block__head">
+                  <h3 class="class-block__title">{{ cls.name }}</h3>
+                  @if (canManageClasses(s.id) && cls.id) {
+                    <button mat-icon-button [routerLink]="['/schools', s.id, 'classes', cls.id, 'edit']" [attr.aria-label]="'COMMON.EDIT' | translate">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  }
+                </div>
+
+                <div class="detail-list cols-3">
+                  <div class="detail-list__item">
+                    <span class="detail-list__label">{{ 'SCHOOLS.TOTAL_SEATS' | translate }}</span>
+                    <div>{{ cls.totalSeats }}</div>
+                  </div>
+                  <div class="detail-list__item">
+                    <span class="detail-list__label">{{ 'EDUCATION.LEVEL' | translate }}</span>
+                    <div>{{ cls.levelLabel || cls.levelId }}</div>
+                  </div>
+                  <div class="detail-list__item">
+                    <span class="detail-list__label">{{ 'SCHOOLS.ENROLLMENT_FEE_ADVANCE' | translate }}</span>
+                    <div>{{ cls.advanceAllowed ? ('COMMON.YES' | translate) : ('COMMON.NO' | translate) }}</div>
+                  </div>
+                </div>
+
+                <div class="fee-block">
+                  <p class="section-caption">{{ 'SCHOOLS.ENROLLMENT_FEE_SECTION' | translate }}</p>
+                  <div class="flex-wrap">
+                    <span>{{ 'PAYMENTS.AMOUNT' | translate }}: <strong>{{ cls.enrollmentFee.amount | xafCurrency }}</strong></span>
+                    <span>{{ 'SCHOOLS.DUE_DATE' | translate }}: {{ cls.enrollmentFee.dueDate | localeDate }}</span>
+                    @if (cls.advanceAllowed && cls.enrollmentFee.advancePercentage) {
+                      <span>{{ 'SCHOOLS.ADVANCE_PERCENTAGE' | translate }}: {{ cls.enrollmentFee.advancePercentage }}%</span>
+                    }
+                  </div>
+                </div>
+
+                @if (cls.installments.length > 0) {
+                  <p class="section-caption">{{ 'SCHOOLS.INSTALLMENTS_SECTION' | translate }}</p>
+                  @for (inst of cls.installments; track inst.order) {
+                    <div class="installment-row">
+                      <span class="order-badge">{{ inst.order }}</span>
+                      <span>{{ inst.amount | xafCurrency }}</span>
+                      <span class="text-muted">{{ inst.dueDate | localeDate }}</span>
+                      @if (inst.advanceAllowed && inst.advancePercentage) {
+                        <span class="text-primary-color">{{ inst.advancePercentage }}% {{ 'SCHOOLS.ADVANCE_SHORT' | translate }}</span>
+                      }
+                    </div>
+                  }
+                } @else {
+                  <p class="text-muted is-italic">{{ 'SCHOOLS.NO_INSTALLMENTS' | translate }}</p>
+                }
+              </div>
+            }
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card appearance="outlined" class="page-card">
+      <app-school-document-requirements-panel [schoolId]="s.id" />
+    </mat-card>
+
+    <mat-card appearance="outlined" class="page-card">
+      <app-school-matricule-verification-panel [schoolId]="s.id" [school]="s" />
+    </mat-card>
+
+    <mat-card appearance="outlined" class="page-card">
+      <mat-card-content>
+        <app-school-enrollments-panel [schoolId]="s.id" />
+      </mat-card-content>
+    </mat-card>
+  } @else {
+    <app-error-state
+      icon="school"
+      title="COMMON.NOT_FOUND_TITLE"
+      description="COMMON.NOT_FOUND_DESCRIPTION"
+      [retryable]="false"
+    />
+  }
+}

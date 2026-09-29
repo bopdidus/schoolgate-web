@@ -1,0 +1,83 @@
+.login-card {
+  width: 100%;
+  max-width: 27rem;
+  box-shadow: var(--shadow-card-hover);
+}
+
+.login-card .mat-mdc-card-content {
+  padding: var(--sp-10) var(--sp-8);
+}
+
+.login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-8);
+}
+
+.login-brand h1 {
+  margin: var(--sp-3) 0 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.login-brand p {
+  margin: 0;
+  max-width: 22rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+/* A leading glyph gives each field an anchor and makes the pair read as a set. */
+.login-field-icon {
+  color: var(--mat-sys-outline);
+  margin-right: var(--sp-2);
+}
+
+.login-error {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: var(--sp-3);
+  border-radius: var(--radius-md);
+  background: var(--sem-danger-bg);
+  color: var(--sem-danger);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.login-error mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.login-submit {
+  width: 100%;
+  min-height: 44px;
+}
+
+.login-submit mat-spinner {
+  margin: 0 auto;
+}
+
+.forgot-password-btn {
+  font-size: 0.8125rem;
+}
+
+// Way to sign-up for a school that has no account yet.
+.login-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-1);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.875rem;
+}

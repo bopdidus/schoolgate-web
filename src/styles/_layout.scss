@@ -1,0 +1,414 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Application shell.
+//
+// These live in the global sheet rather than in main-layout.component.scss for
+// two reasons: the shell is a singleton so encapsulation buys nothing, and the
+// component stylesheet was over its 2 kB budget. Moving it here also removes the
+// three `::ng-deep` escapes the bottom bar previously needed.
+// ─────────────────────────────────────────────────────────────────────────────
+
+@use './tokens' as t;
+
+.layout-container {
+  height: 100vh;
+  background: var(--mat-sys-surface);
+}
+
+// ── Side navigation ─────────────────────────────────────────────────────────
+
+.layout-sidenav {
+  background: var(--mat-sys-surface-container-lowest);
+  // The divider itself comes from Angular Material's own .mat-drawer-side
+  // rule, colored via the sidenav-overrides token in _theme.scss — setting
+  // border-right here directly would just lose to that rule's cascade order.
+
+  &.collapsed .sidenav-brand {
+    justify-content: center;
+    padding-inline: var(--sp-2);
+  }
+}
+
+.mat-drawer-transition .mat-drawer.layout-sidenav {
+  transition: width var(--dur-slow) var(--ease-emphasized);
+}
+
+.sidenav-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidenav-brand {
+  display: flex;
+  align-items: center;
+  // Must match .top-bar's min-height so the brand row's bottom border lines
+  // up with the header instead of sitting 4px below it.
+  min-height: 64px;
+  padding: 0 var(--sp-4);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  flex-shrink: 0;
+}
+
+.sidenav-nav-list {
+  flex: 1;
+  padding-top: var(--sp-3);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  // Active item: a left accent bar plus a tinted background in the brand's
+  // accent color, so the current section reads at a glance without relying
+  // on Material's default (much subtler) activated-state tinting.
+  a.mdc-list-item {
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    margin-inline-end: var(--sp-2);
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: var(--sp-2);
+      inset-inline-start: 0;
+      width: 3px;
+      border-radius: var(--radius-pill);
+      background: transparent;
+    }
+
+    &.mdc-list-item--activated {
+      background: color-mix(in srgb, var(--mat-sys-tertiary) 12%, transparent);
+
+      &::before {
+        background: var(--mat-sys-tertiary);
+      }
+
+      .mdc-list-item__primary-text,
+      .mat-icon {
+        color: var(--mat-sys-tertiary);
+      }
+    }
+  }
+}
+
+.sidenav-footer {
+  margin-top: auto;
+  padding-bottom: var(--sp-2);
+}
+
+.sidenav-role-badge {
+  padding: var(--sp-4);
+}
+
+// ── Top bar ─────────────────────────────────────────────────────────────────
+
+.top-bar {
+  // A translucent bar has to keep its own ground in both themes; the old
+  // hardcoded white turned to a bright band the moment dark mode existed.
+  background: color-mix(in srgb, var(--mat-sys-surface-container-lowest) 86%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  min-height: 64px;
+  gap: var(--sp-1);
+  color: var(--mat-sys-on-surface);
+}
+
+.top-bar__brand {
+  margin-left: var(--sp-1);
+}
+
+// ── Search ──────────────────────────────────────────────────────────────────
+
+.top-bar__search {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  max-width: 22rem;
+  height: 40px;
+  padding-inline: var(--sp-4);
+  margin-left: var(--sp-2);
+  border-radius: var(--radius-pill);
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    color: var(--mat-sys-on-surface-variant);
+    flex-shrink: 0;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font: inherit;
+    color: var(--mat-sys-on-surface);
+
+    &::placeholder {
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+}
+
+@include t.down(t.$bp-md) {
+  .top-bar__search {
+    display: none;
+  }
+}
+
+.lang-toggle {
+  font-weight: 600;
+  min-width: 44px;
+  border-radius: var(--radius-md);
+}
+
+// ── Account ─────────────────────────────────────────────────────────────────
+
+.user-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  border-radius: var(--radius-pill);
+  padding-inline: var(--sp-1) var(--sp-3);
+
+  .user-name {
+    color: var(--mat-sys-on-surface);
+    font-weight: 500;
+    max-width: 12rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// Two-line identity (name over role), matching the avatar's height.
+.top-bar__identity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.25;
+  max-width: 12rem;
+}
+
+.top-bar__name {
+  color: var(--mat-sys-on-surface);
+  font-weight: 600;
+  font-size: 0.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.top-bar__role {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.75rem;
+}
+
+.top-bar__logout {
+  color: var(--mat-sys-tertiary);
+}
+
+// Initials read as a person far better than a generic account glyph, and cost
+// nothing to render — this product has no avatar uploads.
+.user-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+
+  &--lg {
+    width: 40px;
+    height: 40px;
+    font-size: 0.875rem;
+  }
+}
+
+.user-menu-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  min-width: 15rem;
+}
+
+.user-menu-identity {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.user-menu-name {
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-menu-email {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ── Notifications ───────────────────────────────────────────────────────────
+
+.notifications-btn {
+  overflow: visible;
+}
+
+.notifications-menu {
+  max-width: 24rem;
+}
+
+.notif-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-2) var(--sp-2) var(--sp-4);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+
+.notif-head__action {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.notif-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-6) var(--sp-4);
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.875rem;
+
+  mat-icon {
+    color: var(--mat-sys-outline);
+  }
+}
+
+// Title and message on separate lines: they used to be jammed onto one row
+// separated by an em dash, which made neither readable.
+.notif-item {
+  height: auto;
+  padding-block: var(--sp-3);
+
+  .mat-mdc-menu-item-text {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+  }
+}
+
+.notif-item__dot {
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--mat-sys-primary);
+  flex-shrink: 0;
+
+  &--read {
+    background: var(--mat-sys-outline-variant);
+  }
+}
+
+.notif-item__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.notif-item__title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface);
+  line-height: 1.35;
+}
+
+.notif-item__message {
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+  line-height: 1.4;
+  white-space: normal;
+}
+
+// ── Content ─────────────────────────────────────────────────────────────────
+
+.page-content {
+  padding: var(--sp-6) var(--sp-8);
+  min-height: calc(100vh - 64px);
+}
+
+// ── Phone navigation ────────────────────────────────────────────────────────
+// Rendered only below the breakpoint (see the template), so it is no longer
+// sitting in the DOM on every desktop page hidden by `display: none`.
+
+.bottom-nav {
+  position: fixed;
+  inset: auto 0 0 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  background: color-mix(in srgb, var(--mat-sys-surface-container-lowest) 94%, transparent);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  z-index: var(--z-drawer);
+  min-height: 64px;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.bottom-nav__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: var(--sp-2) var(--sp-1);
+  text-decoration: none;
+  color: var(--mat-sys-on-surface-variant);
+  transition: color var(--dur-fast) var(--ease-standard);
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+
+  &--active {
+    color: var(--mat-sys-primary);
+    font-variation-settings: 'FILL' 1;
+  }
+}
+
+.bottom-nav__label {
+  font-size: 0.625rem;
+  line-height: 1.2;
+  font-weight: 500;
+  text-align: center;
+}
+
+@include t.down(t.$bp-md) {
+  .page-content {
+    // Bottom padding clears the fixed phone bar.
+    padding: var(--sp-5) var(--sp-4) calc(64px + var(--sp-5));
+  }
+}

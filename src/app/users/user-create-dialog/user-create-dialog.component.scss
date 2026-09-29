@@ -1,0 +1,15 @@
+// Fields sit directly in the form: mat-form-field already reserves room for
+// its hint/error line, which is all the spacing a dialog form needs.
+.user-form {
+  display: flex;
+  flex-direction: column;
+  // Material drops the content's top padding right after a mat-dialog-title,
+  // and the content scrolls (overflow: auto), so the first outline field's
+  // floating label — drawn above the field's border — would be clipped.
+  padding-top: var(--sp-2);
+  min-width: min(400px, 100%);
+
+  mat-form-field {
+    width: 100%;
+  }
+}

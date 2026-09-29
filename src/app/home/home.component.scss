@@ -1,0 +1,48 @@
+// Minimalist corporate: one accent (the theme primary), generous whitespace,
+// thin outlines instead of shadows, type doing the work. Each section styles
+// itself; this sheet only holds the page frame, the closing band and footer.
+
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+.home-band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-6);
+  padding-block: var(--sp-12);
+
+  @media (min-width: 768px) {
+    padding-block: var(--sp-16);
+  }
+}
+
+.home-band__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.home-band__text {
+  margin: var(--sp-2) 0 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.home-footer {
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  padding-block: var(--sp-6) calc(var(--sp-6) + env(safe-area-inset-bottom, 0px));
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.home-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}

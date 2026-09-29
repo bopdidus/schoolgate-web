@@ -1,0 +1,15 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// SchoolGate — global stylesheet.
+//
+// Order matters: tokens define the scales, the theme emits the color and type
+// systems, and everything after consumes them. Nothing below may introduce a
+// raw hex value — if a color is needed, it comes from a token.
+// ─────────────────────────────────────────────────────────────────────────────
+
+@use './styles/tokens';
+@use './styles/theme';
+@use './styles/semantic';
+@use './styles/base';
+@use './styles/utilities';
+@use './styles/components';
+@use './styles/layout';

@@ -1,0 +1,24 @@
+<span class="brand" [class.brand--compact]="compact()">
+  <svg
+    class="brand__mark"
+    [attr.width]="size()"
+    [attr.height]="size()"
+    viewBox="0 0 32 32"
+    role="img"
+    [attr.aria-label]="compact() ? 'SchoolGate' : null"
+    [attr.aria-hidden]="compact() ? null : 'true'"
+  >
+    <rect width="32" height="32" rx="7" class="brand__tile" />
+    <path
+      d="M8 25V14.5a8 8 0 0 1 16 0V25"
+      fill="none"
+      class="brand__arch"
+      stroke-width="3"
+      stroke-linecap="round"
+    />
+    <path d="M7 19.5h18" fill="none" class="brand__lintel" stroke-width="3" stroke-linecap="round" />
+  </svg>
+  @if (!compact()) {
+    <span class="brand__word">School<span class="brand__word-accent">Gate</span></span>
+  }
+</span>

@@ -1,0 +1,80 @@
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-section);
+  margin-bottom: var(--space-section);
+}
+
+@media (min-width: 1024px) {
+  .dash-grid--wide {
+    grid-template-columns: 1.6fr 1fr;
+  }
+}
+
+// Right-hand column: the trend chart stacked over the class bar chart, at
+// the same combined height as the wide table beside them.
+.dash-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section);
+}
+
+/* A fixed box lets the canvas fill it; without this Chart.js keeps its own
+   aspect ratio and the two cards in a row end up different heights. */
+.chart-box {
+  position: relative;
+  height: 260px;
+}
+
+// Stacked side-column charts: half height each so the column doesn't tower
+// over the table next to it.
+.chart-box--sm {
+  height: 190px;
+}
+
+.chart-empty {
+  margin: 0;
+  padding: var(--sp-8) 0;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.cell-amount {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.cell-actions {
+  white-space: nowrap;
+}
+
+.action-approve {
+  color: var(--sem-success);
+}
+
+.action-reject {
+  color: var(--sem-danger);
+}
+
+// ── Recent-payments table ───────────────────────────────────────────────────
+
+.payment-row__student {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.payment-row__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
