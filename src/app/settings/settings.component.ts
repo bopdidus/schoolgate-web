@@ -1,7 +1,8 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
+import { map } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,6 +19,7 @@ import { selectUser } from '../core/store/auth.reducer';
 import { NotificationService } from '../core/services/notification.service';
 import { ThemeService, ThemeMode } from '../core/services/theme.service';
 import { matchesControl } from '../shared/validators/matches-control.validator';
+import { PaymentSettingsPanelComponent } from './payment-settings-panel/payment-settings-panel.component';
 
 @Component({
   selector: 'app-settings',
@@ -33,6 +35,7 @@ import { matchesControl } from '../shared/validators/matches-control.validator';
     MatCardModule,
     TranslateModule,
     PageHeaderComponent,
+    PaymentSettingsPanelComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './settings.component.html',
@@ -47,6 +50,8 @@ export class SettingsComponent implements OnInit {
   readonly theme = inject(ThemeService);
 
   readonly user$ = this.store.select(selectUser);
+  /** Payment accounts belong to a school: platform admins without one don't get the card. */
+  readonly schoolId = toSignal(this.user$.pipe(map((user) => user?.schoolId ?? null)), { initialValue: null });
 
   readonly profileForm = this.fb.nonNullable.group({
     name: ['', Validators.required],

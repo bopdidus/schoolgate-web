@@ -22,6 +22,8 @@ import { DeclarePaymentRequestDto } from '../model/declarePaymentRequest';
 import { EnrollmentsIdPaymentsGet200ResponseDto } from '../model/enrollmentsIdPaymentsGet200Response';
 // @ts-ignore
 import { PaymentListEnvelopeDto } from '../model/paymentListEnvelope';
+// @ts-ignore
+import { PaymentsFeePolicyGet200ResponseDto } from '../model/paymentsFeePolicyGet200Response';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -86,6 +88,62 @@ export class PaymentsService extends BaseService {
         let localVarPath = `/enrollments/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/payments`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<EnrollmentsIdPaymentsGet200ResponseDto>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Platform service fee added to every parent payment
+     * Any authenticated role. The fee for one payment is percent of amount_cents, rounded up to a whole franc; POST /payments charges it on top of the school amount and returns it as fee_cents.
+     * @endpoint get /payments/fee-policy
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public paymentsFeePolicyGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentsFeePolicyGet200ResponseDto>;
+    public paymentsFeePolicyGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentsFeePolicyGet200ResponseDto>>;
+    public paymentsFeePolicyGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentsFeePolicyGet200ResponseDto>>;
+    public paymentsFeePolicyGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/payments/fee-policy`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<PaymentsFeePolicyGet200ResponseDto>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

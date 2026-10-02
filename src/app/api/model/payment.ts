@@ -17,7 +17,18 @@ export interface PaymentDto {
     enrollment_id?: number;
     type?: string;
     installment_number?: number;
+    /**
+     * Owed to the school.
+     */
     amount_cents?: number;
+    /**
+     * Platform service fee paid by the parent on top of amount_cents.
+     */
+    fee_cents?: number;
+    /**
+     * What the operator charges the parent (amount_cents + fee_cents).
+     */
+    total_cents?: number;
     status?: string;
     payment_method?: string;
     mobile_money_reference?: string;

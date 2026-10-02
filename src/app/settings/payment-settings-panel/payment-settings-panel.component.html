@@ -1,0 +1,224 @@
+<mat-card appearance="outlined" class="page-card">
+  <mat-card-header>
+    <mat-card-title>{{ 'SETTINGS.PAYMENT_TITLE' | translate }}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p class="text-muted">
+      {{ (canManage() ? 'SETTINGS.PAYMENT_HINT' : 'SETTINGS.PAYMENT_READ_ONLY') | translate }}
+    </p>
+
+    @if (!loading()) {
+      <form [formGroup]="form">
+        <!-- Orange Money -->
+        <section class="channel" formGroupName="orange">
+          <mat-slide-toggle formControlName="enabled">
+            {{ 'SETTINGS.PAYMENT_ORANGE' | translate }}
+          </mat-slide-toggle>
+          @if (form.controls.orange.controls.enabled.value) {
+            <div class="form-grid channel__fields">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_MOBILE_NUMBER' | translate }}</mat-label>
+                <span matTextPrefix>+237&nbsp;</span>
+                <input matInput formControlName="number" inputmode="tel" autocomplete="off" placeholder="6XX XX XX XX" />
+                @if (form.controls.orange.controls.number.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                } @else if (form.controls.orange.controls.number.hasError('mobile')) {
+                  <mat-error>{{ 'SETTINGS.PAYMENT_MOBILE_INVALID' | translate }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_ACCOUNT_NAME' | translate }}</mat-label>
+                <input matInput formControlName="accountName" />
+                <mat-hint>{{ 'SETTINGS.PAYMENT_ACCOUNT_NAME_HINT' | translate }}</mat-hint>
+                @if (form.controls.orange.controls.accountName.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <h4 class="form-subhead channel__subhead">{{ 'SETTINGS.PAYMENT_API_CREDENTIALS' | translate }}</h4>
+            <p class="text-muted channel__hint">
+              {{ 'SETTINGS.PAYMENT_ORANGE_API_HINT' | translate }}
+              @if (form.controls.orange.controls.secretsSet.value) {
+                {{ 'SETTINGS.PAYMENT_SECRETS_KEEP_HINT' | translate }}
+              }
+            </p>
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_ORANGE_CLIENT_ID' | translate }}</mat-label>
+                <input matInput formControlName="clientId" autocomplete="off" />
+                @if (form.controls.orange.controls.clientId.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_ORANGE_CLIENT_SECRET' | translate }}</mat-label>
+                <input matInput type="password" formControlName="clientSecret" autocomplete="new-password"
+                  [placeholder]="(form.controls.orange.controls.secretsSet.value ? 'SETTINGS.PAYMENT_SECRET_SAVED' : '') | translate" />
+                @if (form.controls.orange.controls.clientSecret.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_ORANGE_AUTH_TOKEN' | translate }}</mat-label>
+                <input matInput type="password" formControlName="authToken" autocomplete="new-password"
+                  [placeholder]="(form.controls.orange.controls.secretsSet.value ? 'SETTINGS.PAYMENT_SECRET_SAVED' : '') | translate" />
+                @if (form.controls.orange.controls.authToken.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_ORANGE_PIN' | translate }}</mat-label>
+                <input matInput type="password" formControlName="pin" autocomplete="new-password"
+                  [placeholder]="(form.controls.orange.controls.secretsSet.value ? 'SETTINGS.PAYMENT_SECRET_SAVED' : '') | translate" />
+                @if (form.controls.orange.controls.pin.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                } @else if (form.controls.orange.controls.pin.hasError('pattern')) {
+                  <mat-error>{{ 'SETTINGS.PAYMENT_PIN_INVALID' | translate }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          }
+        </section>
+
+        <mat-divider />
+
+        <!-- MTN Mobile Money -->
+        <section class="channel" formGroupName="mtn">
+          <mat-slide-toggle formControlName="enabled">
+            {{ 'SETTINGS.PAYMENT_MTN' | translate }}
+          </mat-slide-toggle>
+          @if (form.controls.mtn.controls.enabled.value) {
+            <div class="form-grid channel__fields">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_MOBILE_NUMBER' | translate }}</mat-label>
+                <span matTextPrefix>+237&nbsp;</span>
+                <input matInput formControlName="number" inputmode="tel" autocomplete="off" placeholder="6XX XX XX XX" />
+                @if (form.controls.mtn.controls.number.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                } @else if (form.controls.mtn.controls.number.hasError('mobile')) {
+                  <mat-error>{{ 'SETTINGS.PAYMENT_MOBILE_INVALID' | translate }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_ACCOUNT_NAME' | translate }}</mat-label>
+                <input matInput formControlName="accountName" />
+                <mat-hint>{{ 'SETTINGS.PAYMENT_ACCOUNT_NAME_HINT' | translate }}</mat-hint>
+                @if (form.controls.mtn.controls.accountName.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <h4 class="form-subhead channel__subhead">{{ 'SETTINGS.PAYMENT_API_CREDENTIALS' | translate }}</h4>
+            <p class="text-muted channel__hint">
+              {{ 'SETTINGS.PAYMENT_MTN_API_HINT' | translate }}
+              @if (form.controls.mtn.controls.secretsSet.value) {
+                {{ 'SETTINGS.PAYMENT_SECRETS_KEEP_HINT' | translate }}
+              }
+            </p>
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_MTN_API_USER' | translate }}</mat-label>
+                <input matInput formControlName="apiUser" autocomplete="off" />
+                @if (form.controls.mtn.controls.apiUser.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_MTN_API_KEY' | translate }}</mat-label>
+                <input matInput type="password" formControlName="apiKey" autocomplete="new-password"
+                  [placeholder]="(form.controls.mtn.controls.secretsSet.value ? 'SETTINGS.PAYMENT_SECRET_SAVED' : '') | translate" />
+                @if (form.controls.mtn.controls.apiKey.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_MTN_SUBSCRIPTION_KEY' | translate }}</mat-label>
+                <input matInput type="password" formControlName="subscriptionKey" autocomplete="new-password"
+                  [placeholder]="(form.controls.mtn.controls.secretsSet.value ? 'SETTINGS.PAYMENT_SECRET_SAVED' : '') | translate" />
+                @if (form.controls.mtn.controls.subscriptionKey.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          }
+        </section>
+
+        <mat-divider />
+
+        <!-- PayPal -->
+        <section class="channel" formGroupName="paypal">
+          <mat-slide-toggle formControlName="enabled">
+            {{ 'SETTINGS.PAYMENT_PAYPAL' | translate }}
+          </mat-slide-toggle>
+          @if (form.controls.paypal.controls.enabled.value) {
+            <div class="form-grid channel__fields">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_PAYPAL_EMAIL' | translate }}</mat-label>
+                <input matInput type="email" formControlName="email" autocomplete="off" />
+                @if (form.controls.paypal.controls.email.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                } @else if (form.controls.paypal.controls.email.hasError('email')) {
+                  <mat-error>{{ 'COMMON.INVALID_EMAIL' | translate }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          }
+        </section>
+
+        <mat-divider />
+
+        <!-- Bank transfer -->
+        <section class="channel" formGroupName="bank">
+          <mat-slide-toggle formControlName="enabled">
+            {{ 'SETTINGS.PAYMENT_BANK' | translate }}
+          </mat-slide-toggle>
+          @if (form.controls.bank.controls.enabled.value) {
+            <div class="form-grid channel__fields">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_BANK_NAME' | translate }}</mat-label>
+                <input matInput formControlName="name" />
+                @if (form.controls.bank.controls.name.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_BANK_HOLDER' | translate }}</mat-label>
+                <input matInput formControlName="holder" />
+                @if (form.controls.bank.controls.holder.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_BANK_ACCOUNT' | translate }}</mat-label>
+                <input matInput formControlName="accountNumber" autocomplete="off" />
+                <mat-hint>{{ 'SETTINGS.PAYMENT_BANK_ACCOUNT_HINT' | translate }}</mat-hint>
+                @if (form.controls.bank.controls.accountNumber.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                } @else if (form.controls.bank.controls.accountNumber.hasError('bankAccount')) {
+                  <mat-error>{{ 'SETTINGS.PAYMENT_BANK_ACCOUNT_INVALID' | translate }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_BANK_SWIFT' | translate }}</mat-label>
+                <input matInput formControlName="swiftCode" autocomplete="off" />
+                <mat-hint>{{ 'SETTINGS.PAYMENT_OPTIONAL' | translate }}</mat-hint>
+                @if (form.controls.bank.controls.swiftCode.hasError('swift')) {
+                  <mat-error>{{ 'SETTINGS.PAYMENT_BANK_SWIFT_INVALID' | translate }}</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          }
+        </section>
+
+        @if (canManage()) {
+          <div class="channel__actions">
+            <button mat-flat-button type="button" (click)="save()" [disabled]="saving() || form.pristine">
+              {{ 'COMMON.SAVE' | translate }}
+            </button>
+          </div>
+        }
+      </form>
+    }
+  </mat-card-content>
+</mat-card>

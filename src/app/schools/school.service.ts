@@ -3,6 +3,7 @@ import { Observable, map } from 'rxjs';
 import {
   DocumentRequirementDto,
   DocumentRequirementInputDto,
+  PaymentSettingsDto,
   SchoolClassDto,
   SchoolClassRequestDto,
   SchoolDto,
@@ -29,6 +30,8 @@ import {
   MatriculeVerificationConfig,
   MatriculeVerificationInfo,
   MatriculeVerificationMode,
+  PaymentSettings,
+  PaymentSettingsUpdate,
   School,
   SchoolClass,
   SchoolFilters,
@@ -145,6 +148,40 @@ export class SchoolService {
         api_key: config.apiKey,
       })
       .pipe(map((envelope) => this.mapSchool(unwrapData(envelope))));
+  }
+
+  getPaymentSettings(schoolId: string): Observable<PaymentSettings> {
+    return this.schoolsApi
+      .schoolsIdPaymentSettingsGet(+schoolId)
+      .pipe(map((envelope) => this.mapPaymentSettings(unwrapData(envelope))));
+  }
+
+  /** Full replace: send every channel, enabled or not. */
+  setPaymentSettings(schoolId: string, settings: PaymentSettingsUpdate): Observable<PaymentSettings> {
+    return this.schoolsApi
+      .schoolsIdPaymentSettingsPut(+schoolId, {
+        orange_money_enabled: settings.orangeMoneyEnabled,
+        orange_money_number: settings.orangeMoneyNumber,
+        orange_money_account_name: settings.orangeMoneyAccountName,
+        orange_client_id: settings.orangeClientId,
+        orange_client_secret: settings.orangeClientSecret,
+        orange_auth_token: settings.orangeAuthToken,
+        orange_pin: settings.orangePin,
+        mtn_momo_enabled: settings.mtnMomoEnabled,
+        mtn_momo_number: settings.mtnMomoNumber,
+        mtn_momo_account_name: settings.mtnMomoAccountName,
+        mtn_api_user: settings.mtnApiUser,
+        mtn_api_key: settings.mtnApiKey,
+        mtn_subscription_key: settings.mtnSubscriptionKey,
+        paypal_enabled: settings.paypalEnabled,
+        paypal_email: settings.paypalEmail,
+        bank_transfer_enabled: settings.bankTransferEnabled,
+        bank_name: settings.bankName,
+        bank_account_holder: settings.bankAccountHolder,
+        bank_account_number: settings.bankAccountNumber,
+        bank_swift_code: settings.bankSwiftCode,
+      })
+      .pipe(map((envelope) => this.mapPaymentSettings(unwrapData(envelope))));
   }
 
   uploadMatriculeRoster(schoolId: string, file: File): Observable<School> {
@@ -329,6 +366,29 @@ export class SchoolService {
       // Class-level advance fields = enrollment fee only.
       advance_allowed: cls.advanceAllowed,
       advance_percentage: cls.advanceAllowed ? cls.enrollmentFee.advancePercentage : undefined,
+    };
+  }
+
+  private mapPaymentSettings(d: PaymentSettingsDto): PaymentSettings {
+    return {
+      orangeMoneyEnabled: d.orange_money_enabled ?? false,
+      orangeMoneyNumber: d.orange_money_number ?? '',
+      orangeMoneyAccountName: d.orange_money_account_name ?? '',
+      orangeClientId: d.orange_client_id ?? '',
+      orangeSecretsSet: d.orange_secrets_set ?? false,
+      mtnMomoEnabled: d.mtn_momo_enabled ?? false,
+      mtnMomoNumber: d.mtn_momo_number ?? '',
+      mtnMomoAccountName: d.mtn_momo_account_name ?? '',
+      mtnApiUser: d.mtn_api_user ?? '',
+      mtnSecretsSet: d.mtn_secrets_set ?? false,
+      paypalEnabled: d.paypal_enabled ?? false,
+      paypalEmail: d.paypal_email ?? '',
+      bankTransferEnabled: d.bank_transfer_enabled ?? false,
+      bankName: d.bank_name ?? '',
+      bankAccountHolder: d.bank_account_holder ?? '',
+      bankAccountNumber: d.bank_account_number ?? '',
+      bankSwiftCode: d.bank_swift_code ?? '',
+      updatedAt: d.updated_at,
     };
   }
 }

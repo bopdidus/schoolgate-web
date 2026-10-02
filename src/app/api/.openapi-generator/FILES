@@ -67,6 +67,11 @@ model/passwordResetRequestRecordListEnvelope.ts
 model/passwordResetResult.ts
 model/payment.ts
 model/paymentListEnvelope.ts
+model/paymentSettings.ts
+model/paymentSettingsEnvelope.ts
+model/paymentSettingsRequest.ts
+model/paymentsFeePolicyGet200Response.ts
+model/paymentsFeePolicyGet200ResponseAllOfData.ts
 model/person.ts
 model/refreshRequest.ts
 model/registerDeviceRequest.ts
@@ -85,6 +90,8 @@ model/schoolRequest.ts
 model/schoolsIdDashboardGet200Response.ts
 model/schoolsIdDelete200Response.ts
 model/schoolsIdDelete200ResponseAllOfData.ts
+model/schoolsIdPaymentMethodsGet200Response.ts
+model/schoolsIdPaymentMethodsGet200ResponseAllOfData.ts
 model/schoolsIdSchoolClassesPost201Response.ts
 model/schoolsPost201Response.ts
 model/specialty.ts

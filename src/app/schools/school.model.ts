@@ -153,3 +153,45 @@ export interface MatriculeVerificationConfig {
    */
   apiKey?: string;
 }
+
+/**
+ * Where a school receives its money (`GET/PUT /schools/{id}/payment-settings`).
+ * A disabled channel keeps its details so it can be switched back on later.
+ */
+export interface PaymentSettings {
+  orangeMoneyEnabled: boolean;
+  orangeMoneyNumber: string;
+  orangeMoneyAccountName: string;
+  /** Orange merchant API OAuth client id (not secret). */
+  orangeClientId: string;
+  /** Client secret, X-AUTH-TOKEN and PIN are saved; the API never returns them. */
+  orangeSecretsSet: boolean;
+  mtnMomoEnabled: boolean;
+  mtnMomoNumber: string;
+  mtnMomoAccountName: string;
+  /** MTN MoMo Collection API user (not secret). */
+  mtnApiUser: string;
+  /** API key and subscription key are saved; the API never returns them. */
+  mtnSecretsSet: boolean;
+  paypalEnabled: boolean;
+  paypalEmail: string;
+  bankTransferEnabled: boolean;
+  bankName: string;
+  bankAccountHolder: string;
+  bankAccountNumber: string;
+  bankSwiftCode: string;
+  /** Absent until the school saves its settings once. */
+  updatedAt?: string;
+}
+
+/**
+ * Write payload for `PUT /schools/{id}/payment-settings`. Secrets are
+ * write-only: leave one empty to keep the value already saved.
+ */
+export type PaymentSettingsUpdate = Omit<PaymentSettings, 'updatedAt' | 'orangeSecretsSet' | 'mtnSecretsSet'> & {
+  orangeClientSecret: string;
+  orangeAuthToken: string;
+  orangePin: string;
+  mtnApiKey: string;
+  mtnSubscriptionKey: string;
+};
