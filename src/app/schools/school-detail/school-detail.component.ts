@@ -19,6 +19,7 @@ import { LocaleDatePipe } from '../../shared/pipes/locale-date.pipe';
 import { AbilityService } from '../../core/services/ability.service';
 import { SchoolEnrollmentsPanelComponent } from '../school-enrollments-panel/school-enrollments-panel.component';
 import { SchoolDocumentRequirementsPanelComponent } from '../school-document-requirements-panel/school-document-requirements-panel.component';
+import { PaymentSettingsPanelComponent } from '../../settings/payment-settings-panel/payment-settings-panel.component';
 import { SchoolMatriculeVerificationPanelComponent } from '../school-matricule-verification-panel/school-matricule-verification-panel.component';
 
 @Component({
@@ -40,6 +41,7 @@ import { SchoolMatriculeVerificationPanelComponent } from '../school-matricule-v
     SchoolEnrollmentsPanelComponent,
     SchoolDocumentRequirementsPanelComponent,
     SchoolMatriculeVerificationPanelComponent,
+    PaymentSettingsPanelComponent,
     EducationTypeColorPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -78,6 +80,11 @@ export class SchoolDetailComponent implements OnInit {
   /** Role *and* scope: a school_admin may only manage their own school's classes. */
   canManageClasses(schoolId: string): boolean {
     return this.abilities.can('manage', 'SchoolClass', { schoolId });
+  }
+
+  /** Staff read the accounts, only an admin edits them (the panel locks itself otherwise). */
+  canViewPaymentSettings(schoolId: string): boolean {
+    return this.abilities.can('read', 'School', { schoolId });
   }
 
   canEditSchool(schoolId: string): boolean {

@@ -170,10 +170,10 @@ mat-card.stat-card {
   .mdc-snackbar__surface {
     background-color: var(--mat-sys-surface-container-lowest);
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-card-hover);
+    box-shadow: none;
     padding: 0;
     overflow: hidden;
-    border: 1px solid var(--mat-sys-outline-variant);
+    border: none;
   }
 
   .mat-mdc-snack-bar-label {

@@ -151,6 +151,10 @@
       <app-school-matricule-verification-panel [schoolId]="s.id" [school]="s" />
     </mat-card>
 
+    @if (canViewPaymentSettings(s.id)) {
+      <app-payment-settings-panel [schoolId]="s.id" />
+    }
+
     <mat-card appearance="outlined" class="page-card">
       <mat-card-content>
         <app-school-enrollments-panel [schoolId]="s.id" />
