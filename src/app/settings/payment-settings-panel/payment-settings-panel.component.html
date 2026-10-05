@@ -53,24 +53,36 @@
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>{{ 'SETTINGS.PAYMENT_ORANGE_CLIENT_SECRET' | translate }}</mat-label>
-                <input matInput type="password" formControlName="clientSecret" autocomplete="new-password"
+                <input matInput [type]="isSecretVisible('clientSecret') ? 'text' : 'password'" formControlName="clientSecret" autocomplete="new-password"
                   [placeholder]="(form.controls.orange.controls.secretsSet.value ? 'SETTINGS.PAYMENT_SECRET_SAVED' : '') | translate" />
+                <button mat-icon-button matSuffix type="button" (click)="toggleSecret('clientSecret')"
+                  [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate">
+                  <mat-icon>{{ isSecretVisible('clientSecret') ? 'visibility' : 'visibility_off' }}</mat-icon>
+                </button>
                 @if (form.controls.orange.controls.clientSecret.hasError('required')) {
                   <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
                 }
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>{{ 'SETTINGS.PAYMENT_ORANGE_AUTH_TOKEN' | translate }}</mat-label>
-                <input matInput type="password" formControlName="authToken" autocomplete="new-password"
+                <input matInput [type]="isSecretVisible('authToken') ? 'text' : 'password'" formControlName="authToken" autocomplete="new-password"
                   [placeholder]="(form.controls.orange.controls.secretsSet.value ? 'SETTINGS.PAYMENT_SECRET_SAVED' : '') | translate" />
+                <button mat-icon-button matSuffix type="button" (click)="toggleSecret('authToken')"
+                  [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate">
+                  <mat-icon>{{ isSecretVisible('authToken') ? 'visibility' : 'visibility_off' }}</mat-icon>
+                </button>
                 @if (form.controls.orange.controls.authToken.hasError('required')) {
                   <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
                 }
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>{{ 'SETTINGS.PAYMENT_ORANGE_PIN' | translate }}</mat-label>
-                <input matInput type="password" formControlName="pin" autocomplete="new-password"
+                <input matInput [type]="isSecretVisible('pin') ? 'text' : 'password'" formControlName="pin" autocomplete="new-password"
                   [placeholder]="(form.controls.orange.controls.secretsSet.value ? 'SETTINGS.PAYMENT_SECRET_SAVED' : '') | translate" />
+                <button mat-icon-button matSuffix type="button" (click)="toggleSecret('pin')"
+                  [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate">
+                  <mat-icon>{{ isSecretVisible('pin') ? 'visibility' : 'visibility_off' }}</mat-icon>
+                </button>
                 @if (form.controls.orange.controls.pin.hasError('required')) {
                   <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
                 } @else if (form.controls.orange.controls.pin.hasError('pattern')) {
@@ -126,16 +138,24 @@
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>{{ 'SETTINGS.PAYMENT_MTN_API_KEY' | translate }}</mat-label>
-                <input matInput type="password" formControlName="apiKey" autocomplete="new-password"
+                <input matInput [type]="isSecretVisible('apiKey') ? 'text' : 'password'" formControlName="apiKey" autocomplete="new-password"
                   [placeholder]="(form.controls.mtn.controls.secretsSet.value ? 'SETTINGS.PAYMENT_SECRET_SAVED' : '') | translate" />
+                <button mat-icon-button matSuffix type="button" (click)="toggleSecret('apiKey')"
+                  [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate">
+                  <mat-icon>{{ isSecretVisible('apiKey') ? 'visibility' : 'visibility_off' }}</mat-icon>
+                </button>
                 @if (form.controls.mtn.controls.apiKey.hasError('required')) {
                   <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
                 }
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>{{ 'SETTINGS.PAYMENT_MTN_SUBSCRIPTION_KEY' | translate }}</mat-label>
-                <input matInput type="password" formControlName="subscriptionKey" autocomplete="new-password"
+                <input matInput [type]="isSecretVisible('subscriptionKey') ? 'text' : 'password'" formControlName="subscriptionKey" autocomplete="new-password"
                   [placeholder]="(form.controls.mtn.controls.secretsSet.value ? 'SETTINGS.PAYMENT_SECRET_SAVED' : '') | translate" />
+                <button mat-icon-button matSuffix type="button" (click)="toggleSecret('subscriptionKey')"
+                  [attr.aria-label]="'AUTH.TOGGLE_PASSWORD' | translate">
+                  <mat-icon>{{ isSecretVisible('subscriptionKey') ? 'visibility' : 'visibility_off' }}</mat-icon>
+                </button>
                 @if (form.controls.mtn.controls.subscriptionKey.hasError('required')) {
                   <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
                 }

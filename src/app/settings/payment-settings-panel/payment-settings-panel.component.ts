@@ -85,6 +85,8 @@ export class PaymentSettingsPanelComponent implements OnInit {
 
   readonly loading = signal(true);
   readonly saving = signal(false);
+  /** Secret fields currently shown in clear text (by control name). */
+  readonly visibleSecrets = signal<ReadonlySet<string>>(new Set());
 
   readonly form = this.fb.nonNullable.group({
     // secretsSet mirrors the API flag (never sent back): it only relaxes the
@@ -139,6 +141,18 @@ export class PaymentSettingsPanelComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
+    });
+  }
+
+  isSecretVisible(name: string): boolean {
+    return this.visibleSecrets().has(name);
+  }
+
+  toggleSecret(name: string): void {
+    this.visibleSecrets.update((current) => {
+      const next = new Set(current);
+      if (!next.delete(name)) next.add(name);
+      return next;
     });
   }
 

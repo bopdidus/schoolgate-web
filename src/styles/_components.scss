@@ -166,7 +166,7 @@ mat-card.stat-card {
 
 // ── Snackbar ────────────────────────────────────────────────────────────────
 
-.app-snackbar-panel {
+.app-snackbar-panel.mat-mdc-snack-bar-container {
   .mdc-snackbar__surface {
     background-color: var(--mat-sys-surface-container-lowest);
     border-radius: var(--radius-md);
@@ -222,7 +222,7 @@ mat-card.stat-card {
   }
 }
 
-.app-snackbar-panel--success {
+.app-snackbar-panel--success.mat-mdc-snack-bar-container {
   .mdc-snackbar__surface {
     border-left: 4px solid var(--sem-success);
   }
@@ -232,7 +232,7 @@ mat-card.stat-card {
   }
 }
 
-.app-snackbar-panel--error {
+.app-snackbar-panel--error.mat-mdc-snack-bar-container {
   .mdc-snackbar__surface {
     border-left: 4px solid var(--sem-danger);
   }
@@ -242,7 +242,7 @@ mat-card.stat-card {
   }
 }
 
-.app-snackbar-panel--info {
+.app-snackbar-panel--info.mat-mdc-snack-bar-container {
   .mdc-snackbar__surface {
     border-left: 4px solid var(--sem-info);
   }
@@ -252,7 +252,7 @@ mat-card.stat-card {
   }
 }
 
-.app-snackbar-panel--warning {
+.app-snackbar-panel--warning.mat-mdc-snack-bar-container {
   .mdc-snackbar__surface {
     border-left: 4px solid var(--sem-warning);
   }
