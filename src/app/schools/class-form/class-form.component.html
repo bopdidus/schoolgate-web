@@ -167,8 +167,11 @@
         <div formGroupName="enrollmentFee" class="form-grid cols-3">
           <mat-form-field appearance="outline">
             <mat-label>{{ 'SCHOOLS.ENROLLMENT_FEE' | translate }}</mat-label>
-            <input matInput type="number" formControlName="amount" min="1" />
+            <input matInput type="number" formControlName="amount" min="1" step="1" />
             <span matTextSuffix>XAF</span>
+            @if (form.controls.enrollmentFee.controls.amount.hasError('pattern')) {
+              <mat-error>{{ 'SCHOOLS.AMOUNT_WHOLE_XAF' | translate }}</mat-error>
+            }
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>{{ 'SCHOOLS.DUE_DATE' | translate }}</mat-label>
@@ -207,8 +210,11 @@
               </div>
               <mat-form-field appearance="outline">
                 <mat-label>{{ 'PAYMENTS.AMOUNT' | translate }}</mat-label>
-                <input matInput type="number" formControlName="amount" min="1" />
+                <input matInput type="number" formControlName="amount" min="1" step="1" />
                 <span matTextSuffix>XAF</span>
+                @if (inst.get('amount')?.hasError('pattern')) {
+                  <mat-error>{{ 'SCHOOLS.AMOUNT_WHOLE_XAF' | translate }}</mat-error>
+                }
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>{{ 'SCHOOLS.DUE_DATE' | translate }}</mat-label>

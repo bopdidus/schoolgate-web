@@ -283,7 +283,8 @@
     },
     "PENDING": "Awaiting validation",
     "VALIDATE": "Validate",
-    "VALIDATED_OK": "School validated: parents can now see it"
+    "VALIDATED_OK": "School validated: parents can now see it",
+    "AMOUNT_WHOLE_XAF": "Whole francs only (no centimes)"
   },
   "ENROLLMENTS": {
     "TITLE": "Enrollments",

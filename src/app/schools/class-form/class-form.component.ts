@@ -210,7 +210,7 @@ export class ClassFormComponent implements OnInit, HasUnsavedChanges {
       totalSeats: [0, [Validators.required, Validators.min(1)]],
       advanceAllowed: [false],
       enrollmentFee: this.fb.nonNullable.group({
-        amount: [0, [Validators.required, Validators.min(1)]],
+        amount: [0, [Validators.required, Validators.min(1), Validators.pattern(/^\d+$/)]],
         dueDate: ['', Validators.required],
         advancePercentage: [{ value: 0, disabled: true }, [Validators.min(1), Validators.max(100)]],
       }),
@@ -221,7 +221,7 @@ export class ClassFormComponent implements OnInit, HasUnsavedChanges {
   createInstallmentGroup(order: number): FormGroup {
     return this.fb.nonNullable.group({
       order: [order],
-      amount: [0, [Validators.required, Validators.min(1)]],
+      amount: [0, [Validators.required, Validators.min(1), Validators.pattern(/^\d+$/)]],
       dueDate: ['', Validators.required],
       // Tuition advance is configured per installment, independently of enrollment-fee advance.
       advanceAllowed: [false],

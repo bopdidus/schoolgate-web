@@ -282,7 +282,8 @@
     },
     "PENDING": "En attente de validation",
     "VALIDATE": "Valider",
-    "VALIDATED_OK": "Établissement validé : il est désormais visible des parents"
+    "VALIDATED_OK": "Établissement validé : il est désormais visible des parents",
+    "AMOUNT_WHOLE_XAF": "Montant en francs entiers (sans centimes)"
   },
   "ENROLLMENTS": {
     "TITLE": "Inscriptions",
