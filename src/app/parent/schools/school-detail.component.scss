@@ -1,0 +1,74 @@
+.section-title {
+  margin: var(--sp-5) 0 var(--sp-3);
+  font-size: 18px;
+}
+
+.class-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
+}
+
+.class-card {
+  display: flex;
+  flex-direction: column;
+
+  mat-card-content {
+    flex: 1;
+  }
+
+  mat-card-actions {
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+
+  a.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}
+
+.fees {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-3);
+
+  dt {
+    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 700;
+  }
+}
+
+.installments {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+
+  li {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: var(--sp-3);
+    padding: 4px 0;
+  }
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: var(--sp-3) 0 0;
+  padding: var(--sp-3);
+  border-radius: var(--radius-md);
+
+  &--warn {
+    background: color-mix(in srgb, var(--sem-warning) 12%, transparent);
+  }
+}

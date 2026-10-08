@@ -63,16 +63,19 @@ export class SchoolsService extends BaseService {
      * @endpoint get /schools
      * @param q 
      * @param status Defaults to active, the only status parents and staff may list. Admins may ask for pending (self-registered, waiting for validation) or inactive schools; anyone else gets 403.
+     * @param cityId Keeps the schools of one city.
+     * @param levelCode Keeps schools offering a class of this level (reference level code, e.g. 6eme).
+     * @param system Keeps schools teaching this system.
      * @param limit 
      * @param offset 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public schoolsGet(q?: string, status?: 'active' | 'pending' | 'inactive', limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SchoolListEnvelopeDto>;
-    public schoolsGet(q?: string, status?: 'active' | 'pending' | 'inactive', limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SchoolListEnvelopeDto>>;
-    public schoolsGet(q?: string, status?: 'active' | 'pending' | 'inactive', limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SchoolListEnvelopeDto>>;
-    public schoolsGet(q?: string, status?: 'active' | 'pending' | 'inactive', limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public schoolsGet(q?: string, status?: 'active' | 'pending' | 'inactive', cityId?: number, levelCode?: string, system?: 'francophone' | 'anglophone', limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SchoolListEnvelopeDto>;
+    public schoolsGet(q?: string, status?: 'active' | 'pending' | 'inactive', cityId?: number, levelCode?: string, system?: 'francophone' | 'anglophone', limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SchoolListEnvelopeDto>>;
+    public schoolsGet(q?: string, status?: 'active' | 'pending' | 'inactive', cityId?: number, levelCode?: string, system?: 'francophone' | 'anglophone', limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SchoolListEnvelopeDto>>;
+    public schoolsGet(q?: string, status?: 'active' | 'pending' | 'inactive', cityId?: number, levelCode?: string, system?: 'francophone' | 'anglophone', limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -89,6 +92,33 @@ export class SchoolsService extends BaseService {
             localVarQueryParameters,
             'status',
             <any>status,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'city_id',
+            <any>cityId,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'level_code',
+            <any>levelCode,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'system',
+            <any>system,
             QueryParamStyle.Form,
             true,
         );

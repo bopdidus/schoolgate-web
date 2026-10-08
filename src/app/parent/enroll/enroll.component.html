@@ -1,0 +1,201 @@
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (failed()) {
+  <app-error-state (retry)="load()" />
+} @else if (school(); as s) {
+  <app-page-header title="PARENT.REQUEST_PLACE" [subtitle]="s.name">
+    <a actions mat-stroked-button [routerLink]="['/parent/schools', s.id]">
+      <mat-icon>arrow_back</mat-icon>
+      {{ 'COMMON.BACK' | translate }}
+    </a>
+  </app-page-header>
+
+  <mat-card appearance="outlined" class="page-card">
+    <mat-card-content>
+      <mat-stepper [linear]="true" #stepper orientation="vertical">
+        <!-- 1. The student -->
+        <mat-step [stepControl]="student" [label]="'PARENT.STEP_STUDENT' | translate">
+          <form [formGroup]="student" class="step-form">
+            @if (children().length > 0) {
+              <mat-button-toggle-group formControlName="mode" class="mode-toggle">
+                <mat-button-toggle value="existing">
+                  <mat-icon>people</mat-icon> {{ 'PARENT.EXISTING_CHILD' | translate }}
+                </mat-button-toggle>
+                <mat-button-toggle value="new">
+                  <mat-icon>person_add</mat-icon> {{ 'PARENT.NEW_CHILD' | translate }}
+                </mat-button-toggle>
+              </mat-button-toggle-group>
+            }
+
+            @if (mode() === 'existing') {
+              <mat-radio-group formControlName="childId" class="child-list">
+                @for (child of children(); track child.id) {
+                  <mat-radio-button [value]="child.id">
+                    {{ child.firstName }} {{ child.lastName }}
+                    @if (child.matricule) {
+                      <span class="text-muted">· {{ child.matricule }}</span>
+                    }
+                  </mat-radio-button>
+                }
+              </mat-radio-group>
+            } @else {
+              <div class="form-grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'PARENT.STUDENT_FIRST_NAME' | translate }}</mat-label>
+                  <input matInput formControlName="firstName" autocomplete="off" />
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'PARENT.STUDENT_LAST_NAME' | translate }}</mat-label>
+                  <input matInput formControlName="lastName" autocomplete="off" />
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                </mat-form-field>
+              </div>
+              <p class="field-label">{{ 'PARENT.STUDENT_GENDER' | translate }}</p>
+              <mat-button-toggle-group formControlName="gender" [attr.aria-label]="'PARENT.STUDENT_GENDER' | translate">
+                <mat-button-toggle value="female">{{ 'PARENT.GENDER_FEMALE' | translate }}</mat-button-toggle>
+                <mat-button-toggle value="male">{{ 'PARENT.GENDER_MALE' | translate }}</mat-button-toggle>
+              </mat-button-toggle-group>
+              @if (student.controls.gender.touched && student.controls.gender.invalid) {
+                <p class="field-error">{{ 'PARENT.GENDER_REQUIRED' | translate }}</p>
+              }
+            }
+
+            <mat-slide-toggle formControlName="returning" class="returning-toggle">
+              {{ 'PARENT.RETURNING_STUDENT' | translate }}
+            </mat-slide-toggle>
+            @if (!returning()) {
+              <p class="hint"><mat-icon>description</mat-icon>{{ 'PARENT.NEW_STUDENT_NOTICE' | translate }}</p>
+            } @else if (s.allowsDirectPayment) {
+              <p class="hint"><mat-icon>bolt</mat-icon>{{ 'PARENT.DIRECT_PAYMENT_NOTICE' | translate }}</p>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'PARENT.MATRICULE' | translate }}</mat-label>
+                <input matInput formControlName="matricule" autocomplete="off" />
+              </mat-form-field>
+            } @else {
+              <p class="hint"><mat-icon>verified_user</mat-icon>{{ 'PARENT.RETURNING_NOTICE' | translate }}</p>
+            }
+
+            <div class="step-actions">
+              <button mat-flat-button color="primary" matStepperNext type="button" (click)="student.markAllAsTouched()">
+                {{ 'COMMON.NEXT' | translate }}
+              </button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- 2. The class -->
+        <mat-step [stepControl]="classStep" [label]="'PARENT.STEP_CLASS' | translate">
+          <form [formGroup]="classStep" class="step-form">
+            @if (openClasses().length === 0) {
+              <p class="hint"><mat-icon>event_busy</mat-icon>{{ 'PARENT.NO_SEATS_ANYWHERE' | translate }}</p>
+            } @else {
+              <mat-radio-group formControlName="classId" class="class-list">
+                @for (c of openClasses(); track c.id) {
+                  <mat-radio-button [value]="c.id">
+                    <span class="class-option">
+                      <strong>{{ c.label }}</strong>
+                      <span class="text-muted">
+                        {{ 'PARENT.SEATS_REMAINING' | translate: { count: c.seatsRemaining } }} ·
+                        {{ 'PARENT.ENROLLMENT_FEE' | translate }} {{ c.enrollmentFeeCents | cents }} ·
+                        {{ 'PARENT.TUITION_TOTAL' | translate }} {{ tuitionTotal(c) | cents }}
+                      </span>
+                    </span>
+                  </mat-radio-button>
+                }
+              </mat-radio-group>
+            }
+            <div class="step-actions">
+              <button mat-button matStepperPrevious type="button">{{ 'COMMON.BACK' | translate }}</button>
+              <button mat-flat-button color="primary" matStepperNext type="button">{{ 'COMMON.NEXT' | translate }}</button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- 3. Documents (new students only) -->
+        @if (!returning()) {
+          <mat-step [label]="'PARENT.STEP_DOCUMENTS' | translate" [optional]="true">
+            <div class="step-form">
+              <p class="hint"><mat-icon>info</mat-icon>{{ 'PARENT.DOCUMENTS_HINT' | translate }}</p>
+              @for (r of enrollmentDocs(); track $index) {
+                <div class="doc-row">
+                  <div class="doc-row__head">
+                    <span>
+                      {{ r.otherLabel || r.documentType.label }}
+                      @if (!r.required) { <span class="text-muted">({{ 'PARENT.OPTIONAL' | translate }})</span> }
+                    </span>
+                    <label class="mat-mdc-button-base upload-btn">
+                      <input type="file" hidden multiple accept=".pdf,.jpg,.jpeg,.png" (change)="onFilesPicked($event, r.documentType.id)" />
+                      <mat-icon>upload_file</mat-icon> {{ 'PARENT.ADD_FILE' | translate }}
+                    </label>
+                  </div>
+                  @for (f of filesFor(r.documentType.id); track f.index) {
+                    <div class="file-chip">
+                      <mat-icon>attach_file</mat-icon>
+                      <span>{{ f.file.name }}</span>
+                      <button mat-icon-button type="button" (click)="removeFile(f.index)" [attr.aria-label]="'COMMON.DELETE' | translate">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
+                  }
+                </div>
+              } @empty {
+                <div class="doc-row">
+                  <div class="doc-row__head">
+                    <span>{{ 'PARENT.SUPPORTING_DOCUMENTS' | translate }}</span>
+                    <label class="mat-mdc-button-base upload-btn">
+                      <input type="file" hidden multiple accept=".pdf,.jpg,.jpeg,.png" (change)="onFilesPicked($event)" />
+                      <mat-icon>upload_file</mat-icon> {{ 'PARENT.ADD_FILE' | translate }}
+                    </label>
+                  </div>
+                  @for (f of filesFor(undefined); track f.index) {
+                    <div class="file-chip">
+                      <mat-icon>attach_file</mat-icon>
+                      <span>{{ f.file.name }}</span>
+                      <button mat-icon-button type="button" (click)="removeFile(f.index)" [attr.aria-label]="'COMMON.DELETE' | translate">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+              <div class="step-actions">
+                <button mat-button matStepperPrevious type="button">{{ 'COMMON.BACK' | translate }}</button>
+                <button mat-flat-button color="primary" matStepperNext type="button">{{ 'COMMON.NEXT' | translate }}</button>
+              </div>
+            </div>
+          </mat-step>
+        }
+
+        <!-- 4. Review -->
+        <mat-step [label]="'PARENT.STEP_REVIEW' | translate">
+          <div class="step-form">
+            <dl class="review">
+              <div><dt>{{ 'PARENT.STUDENT' | translate }}</dt><dd>{{ childName() || '—' }}</dd></div>
+              <div><dt>{{ 'PARENT.SCHOOL' | translate }}</dt><dd>{{ s.name }}</dd></div>
+              <div><dt>{{ 'PARENT.CLASS' | translate }}</dt><dd>{{ selectedClass()?.label || '—' }}</dd></div>
+              <div><dt>{{ 'ENROLLMENTS.ACADEMIC_YEAR' | translate }}</dt><dd>{{ s.academicYear || '—' }}</dd></div>
+              <div>
+                <dt>{{ 'PARENT.STUDENT_TYPE' | translate }}</dt>
+                <dd>{{ (returning() ? 'PARENT.RETURNING' : 'PARENT.NEW') | translate }}</dd>
+              </div>
+              @if (!returning()) {
+                <div><dt>{{ 'PARENT.STEP_DOCUMENTS' | translate }}</dt><dd>{{ files().length }}</dd></div>
+              }
+            </dl>
+            <div class="step-actions">
+              <button mat-button matStepperPrevious type="button">{{ 'COMMON.BACK' | translate }}</button>
+              <button mat-flat-button color="primary" type="button" [disabled]="submitting()" (click)="submit()">
+                @if (submitting()) {
+                  <mat-spinner diameter="20" />
+                } @else {
+                  <ng-container>{{ 'PARENT.SUBMIT_REQUEST' | translate }}</ng-container>
+                }
+              </button>
+            </div>
+          </div>
+        </mat-step>
+      </mat-stepper>
+    </mat-card-content>
+  </mat-card>
+}

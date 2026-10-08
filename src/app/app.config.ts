@@ -1,5 +1,5 @@
 import { ApplicationConfig, importProvidersFrom, provideAppInitializer, inject } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
@@ -29,7 +29,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    // Route params and query params bind to component inputs (parent pages).
+    provideRouter(routes, withComponentInputBinding()),
     provideAnimationsAsync(),
     // Order matters: each interceptor only sees what the ones listed before it let
     // through. mockApiInterceptor (when enabled) short-circuits before any of the real

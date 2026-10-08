@@ -1,0 +1,144 @@
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (failed()) {
+  <app-error-state (retry)="load()" />
+} @else if (school(); as s) {
+  <app-page-header [title]="s.name" [subtitle]="s.city">
+    <a actions mat-stroked-button routerLink="/parent/schools">
+      <mat-icon>arrow_back</mat-icon>
+      {{ 'COMMON.BACK' | translate }}
+    </a>
+  </app-page-header>
+
+  <mat-card appearance="outlined" class="page-card">
+    <mat-card-content>
+      <div class="detail-list cols-3">
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'PARENT.SYSTEM' | translate }}</span>
+          <p class="detail-list__value">{{ ('PARENT.SYSTEM_' + (s.system || 'francophone').toUpperCase()) | translate }}</p>
+        </div>
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'ENROLLMENTS.ACADEMIC_YEAR' | translate }}</span>
+          <p class="detail-list__value">{{ s.academicYear || '—' }}</p>
+        </div>
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'SCHOOLS.ADDRESS' | translate }}</span>
+          <p class="detail-list__value">{{ s.address || '—' }}</p>
+        </div>
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'SCHOOLS.PHONE' | translate }}</span>
+          <p class="detail-list__value">{{ s.phone || '—' }}</p>
+        </div>
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'SCHOOLS.EMAIL' | translate }}</span>
+          <p class="detail-list__value">{{ s.email || '—' }}</p>
+        </div>
+        @if (s.enrollmentDeadline) {
+          <div class="detail-list__item">
+            <span class="detail-list__label">{{ 'PARENT.ENROLLMENT_DEADLINE' | translate }}</span>
+            <p class="detail-list__value">{{ s.enrollmentDeadline | localeDate }}</p>
+          </div>
+        }
+      </div>
+      @if (!enrollmentOpen()) {
+        <p class="notice notice--warn">
+          <mat-icon>event_busy</mat-icon>
+          {{ 'PARENT.ENROLLMENT_CLOSED' | translate }}
+        </p>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <h2 class="section-title">{{ 'PARENT.AVAILABLE_CLASSES' | translate }}</h2>
+  @if (s.classes.length === 0) {
+    <app-empty-state icon="class" title="PARENT.NO_CLASSES" />
+  } @else {
+    <div class="class-grid">
+      @for (c of s.classes; track c.id) {
+        <mat-card appearance="outlined" class="class-card">
+          <mat-card-header>
+            <mat-card-title>{{ c.label }}</mat-card-title>
+            <mat-card-subtitle>
+              @if (c.seatsRemaining > 0) {
+                {{ 'PARENT.SEATS_REMAINING' | translate: { count: c.seatsRemaining } }}
+              } @else {
+                {{ 'PARENT.FULL' | translate }}
+              }
+            </mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <dl class="fees">
+              <div>
+                <dt>{{ 'PARENT.ENROLLMENT_FEE' | translate }}</dt>
+                <dd>{{ c.enrollmentFeeCents | cents }}</dd>
+              </div>
+              <div>
+                <dt>{{ 'PARENT.TUITION_TOTAL' | translate }}</dt>
+                <dd>{{ tuitionTotal(c) | cents }}</dd>
+              </div>
+              @if (c.advanceAllowed) {
+                <div>
+                  <dt>{{ 'PARENT.ADVANCE_ALLOWED' | translate }}</dt>
+                  <dd>{{ c.advancePercentage }} %</dd>
+                </div>
+              }
+            </dl>
+            @if (c.installments.length > 0) {
+              <p class="section-caption">{{ 'PARENT.INSTALLMENTS' | translate }}</p>
+              <ul class="installments">
+                @for (i of c.installments; track i.number) {
+                  <li>
+                    <span>{{ 'PARENT.INSTALLMENT_N' | translate: { n: i.number } }}</span>
+                    <span>{{ i.amountCents | cents }}</span>
+                    <span class="text-muted">{{ i.dueDate | localeDate }}</span>
+                  </li>
+                }
+              </ul>
+            }
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <a mat-stroked-button [routerLink]="['/parent/tuition']" [queryParams]="{ schoolId: s.id }">
+              {{ 'PARENT.PAY_TUITION_RETURNING' | translate }}
+            </a>
+            <a
+              mat-flat-button
+              color="primary"
+              [routerLink]="['/parent/enroll', s.id]"
+              [queryParams]="{ classId: c.id }"
+              [class.disabled]="!enrollmentOpen() || c.seatsRemaining <= 0"
+              [attr.aria-disabled]="!enrollmentOpen() || c.seatsRemaining <= 0"
+            >
+              {{ 'PARENT.REQUEST_PLACE' | translate }}
+            </a>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+
+  @if (requirements().length > 0) {
+    <mat-card appearance="outlined" class="page-card">
+      <mat-card-header>
+        <mat-card-title>{{ 'PARENT.REQUIRED_DOCUMENTS' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (enrollmentDocs().length > 0) {
+          <p class="section-caption">{{ 'PARENT.DOCS_FOR_ENROLLMENT' | translate }}</p>
+          <mat-chip-set>
+            @for (r of enrollmentDocs(); track $index) {
+              <mat-chip>{{ docLabel(r) }}@if (!r.required) { ({{ 'PARENT.OPTIONAL' | translate }}) }</mat-chip>
+            }
+          </mat-chip-set>
+        }
+        @if (tuitionDocs().length > 0) {
+          <p class="section-caption">{{ 'PARENT.DOCS_FOR_TUITION' | translate }}</p>
+          <mat-chip-set>
+            @for (r of tuitionDocs(); track $index) {
+              <mat-chip>{{ docLabel(r) }}@if (!r.required) { ({{ 'PARENT.OPTIONAL' | translate }}) }</mat-chip>
+            }
+          </mat-chip-set>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+}

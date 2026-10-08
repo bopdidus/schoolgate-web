@@ -47,7 +47,7 @@ export class SchoolService {
     const pageSize = filters.pageSize ?? 10;
     const { limit, offset } = pageToOffset(page, pageSize);
     return this.schoolsApi
-      .schoolsGet(filters.search || undefined, filters.status || undefined, limit, offset)
+      .schoolsGet(filters.search || undefined, filters.status || undefined, undefined, undefined, undefined, limit, offset)
       .pipe(
       map((envelope) => {
         const rows = unwrapData(envelope) ?? [];

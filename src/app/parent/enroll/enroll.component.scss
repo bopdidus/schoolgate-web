@@ -1,0 +1,130 @@
+.step-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding-top: var(--sp-2);
+  max-width: 720px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--sp-3);
+}
+
+.mode-toggle {
+  align-self: flex-start;
+  flex-wrap: wrap;
+}
+
+.child-list,
+.class-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.class-option {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.4;
+}
+
+.field-label {
+  margin: 0;
+  font-weight: 600;
+}
+
+.field-error {
+  margin: 0;
+  font-size: 12px;
+  color: var(--mat-sys-error);
+}
+
+.returning-toggle {
+  margin-top: var(--sp-2);
+}
+
+.hint {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: var(--sp-3);
+  border-radius: var(--radius-md);
+  background: var(--mat-sys-surface-container-low);
+  font-size: 14px;
+
+  mat-icon {
+    flex-shrink: 0;
+    color: var(--mat-sys-primary);
+  }
+}
+
+.doc-row {
+  padding: var(--sp-3);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--radius-md);
+}
+
+.doc-row__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  color: var(--mat-sys-primary);
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background: var(--mat-sys-surface-container);
+  }
+}
+
+.file-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+  font-size: 14px;
+
+  span {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.review {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--sp-3);
+  margin: 0;
+
+  dt {
+    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 600;
+  }
+}
+
+.step-actions {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}

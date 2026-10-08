@@ -1,0 +1,97 @@
+<app-page-header title="PARENT.SCHOOLS_TITLE" subtitle="PARENT.SCHOOLS_SUBTITLE" />
+
+<mat-card appearance="outlined" class="filter-card">
+  <mat-card-content>
+    <form [formGroup]="filters" class="filter-grid" (ngSubmit)="load()">
+      <mat-form-field appearance="outline" class="filter-search">
+        <mat-label>{{ 'PARENT.SEARCH_SCHOOL' | translate }}</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput formControlName="q" autocomplete="off" />
+      </mat-form-field>
+      <app-city-autocomplete formControlName="cityId" />
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'PARENT.LEVEL' | translate }}</mat-label>
+        <mat-select formControlName="levelCode">
+          <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
+          @for (level of levels(); track level.code) {
+            <mat-option [value]="level.code">{{ level.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'PARENT.SYSTEM' | translate }}</mat-label>
+        <mat-select formControlName="system">
+          <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
+          <mat-option value="francophone">{{ 'PARENT.SYSTEM_FRANCOPHONE' | translate }}</mat-option>
+          <mat-option value="anglophone">{{ 'PARENT.SYSTEM_ANGLOPHONE' | translate }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'PARENT.SORT_BY' | translate }}</mat-label>
+        <mat-select formControlName="sort">
+          <mat-option value="name">{{ 'PARENT.SORT_NAME' | translate }}</mat-option>
+          <mat-option value="seats">{{ 'PARENT.SORT_SEATS' | translate }}</mat-option>
+          <mat-option value="tuition">{{ 'PARENT.SORT_COST' | translate }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (failed()) {
+  <app-error-state (retry)="load()" />
+} @else if (schools().length === 0) {
+  <app-empty-state
+    icon="school"
+    title="PARENT.NO_SCHOOLS"
+    description="PARENT.NO_SCHOOLS_HINT"
+    actionLabel="PARENT.CLEAR_FILTERS"
+    (actionClick)="resetFilters()"
+  />
+} @else {
+  <div class="school-grid">
+    @for (school of sorted(); track school.id) {
+      <mat-card appearance="outlined" class="school-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="school-card__avatar">school</mat-icon>
+          <mat-card-title>{{ school.name }}</mat-card-title>
+          <mat-card-subtitle>{{ school.city || '—' }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-chip-set>
+            @if (school.system) {
+              <mat-chip>{{ ('PARENT.SYSTEM_' + school.system.toUpperCase()) | translate }}</mat-chip>
+            }
+            <mat-chip>{{ 'PARENT.CLASS_COUNT' | translate: { count: school.classes.length } }}</mat-chip>
+          </mat-chip-set>
+          <dl class="school-card__facts">
+            <div>
+              <dt>{{ 'PARENT.SEATS_LEFT' | translate }}</dt>
+              <dd>{{ seatsLeft(school) }}</dd>
+            </div>
+            @if (lowestYearlyCost(school); as cost) {
+              <div>
+                <dt>{{ 'PARENT.FROM_PER_YEAR' | translate }}</dt>
+                <dd>{{ cost | cents }}</dd>
+              </div>
+            }
+          </dl>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <a mat-flat-button color="primary" [routerLink]="['/parent/schools', school.id]">
+            {{ 'PARENT.VIEW_SCHOOL' | translate }}
+          </a>
+        </mat-card-actions>
+      </mat-card>
+    }
+  </div>
+  <mat-paginator
+    [length]="total()"
+    [pageSize]="pageSize"
+    [pageIndex]="page()"
+    [hidePageSize]="true"
+    (page)="onPage($event)"
+  />
+}
