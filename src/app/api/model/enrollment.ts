@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { EnrollmentBalanceDto } from './enrollmentBalance';
 import { SchoolClassDto } from './schoolClass';
 import { PersonDto } from './person';
 import { DocumentDto } from './document';
@@ -54,6 +55,7 @@ export interface EnrollmentDto {
      * Only populated on GET /enrollments/{id}
      */
     documents?: Array<DocumentDto>;
+    balance?: EnrollmentBalanceDto;
 }
 export namespace EnrollmentDto {
     export const MatriculeVerificationStatusEnum = {

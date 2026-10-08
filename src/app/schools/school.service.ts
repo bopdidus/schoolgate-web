@@ -371,6 +371,7 @@ export class SchoolService {
 
   private mapPaymentSettings(d: PaymentSettingsDto): PaymentSettings {
     return {
+      merchantCredentialsRequired: d.merchant_credentials_required ?? true,
       orangeMoneyEnabled: d.orange_money_enabled ?? false,
       orangeMoneyNumber: d.orange_money_number ?? '',
       orangeMoneyAccountName: d.orange_money_account_name ?? '',

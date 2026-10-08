@@ -53,16 +53,19 @@ export class EnrollmentsService extends BaseService {
      * @param paymentValidated 
      * @param matricule Filters by student matricule (exact) or name (partial, case-insensitive). Parents remain scoped to their own children.
      * @param isReturningStudent Filters by returning (true) vs. new (false) student.
+     * @param academicYear Keeps one academic year (YYYY-YYYY); a malformed value answers 400 VALIDATION_FAILED.
+     * @param schoolClassId Keeps the students of one class.
+     * @param tuitionSettled true keeps students whose validated tuition payments cover every installment of their class; false keeps those who still owe tuition. The enrollment fee is not tuition.
      * @param limit 
      * @param offset 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, isReturningStudent?: boolean, limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<EnrollmentListEnvelopeDto>;
-    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, isReturningStudent?: boolean, limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<EnrollmentListEnvelopeDto>>;
-    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, isReturningStudent?: boolean, limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<EnrollmentListEnvelopeDto>>;
-    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, isReturningStudent?: boolean, limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, isReturningStudent?: boolean, academicYear?: string, schoolClassId?: number, tuitionSettled?: boolean, limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<EnrollmentListEnvelopeDto>;
+    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, isReturningStudent?: boolean, academicYear?: string, schoolClassId?: number, tuitionSettled?: boolean, limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<EnrollmentListEnvelopeDto>>;
+    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, isReturningStudent?: boolean, academicYear?: string, schoolClassId?: number, tuitionSettled?: boolean, limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<EnrollmentListEnvelopeDto>>;
+    public enrollmentsGet(schoolId?: number, paymentValidated?: boolean, matricule?: string, isReturningStudent?: boolean, academicYear?: string, schoolClassId?: number, tuitionSettled?: boolean, limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -97,6 +100,33 @@ export class EnrollmentsService extends BaseService {
             localVarQueryParameters,
             'is_returning_student',
             <any>isReturningStudent,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'academic_year',
+            <any>academicYear,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'school_class_id',
+            <any>schoolClassId,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'tuition_settled',
+            <any>tuitionSettled,
             QueryParamStyle.Form,
             true,
         );

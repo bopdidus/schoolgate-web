@@ -335,7 +335,7 @@ export class PaymentsService extends BaseService {
 
     /**
      * Initiate merchant Mobile Money payment (parent)
-     * Requires enrollment status active. Triggers MTN RequestToPay or Orange Money USSD push.
+     * Requires enrollment status active. Triggers MTN RequestToPay or Orange Money USSD push. The payment is recorded before the operator is called; if the operator refuses to start, it is rejected at once so the line can be retried. Only one payment per fee line (enrollment fee or one installment) may await the operator: an earlier attempt the parent declined or ignored is settled with the operator first, one still pending answers 409. Limited per parent account (429 with Retry-After), since every call pushes a prompt to a phone.
      * @endpoint post /payments
      * @param declarePaymentRequestDto 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.

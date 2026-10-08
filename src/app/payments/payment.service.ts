@@ -35,7 +35,7 @@ export class PaymentService {
       .paymentsGet(
         filters.schoolId ? +filters.schoolId : undefined,
         status,
-        undefined,
+        filters.enrollmentId ? +filters.enrollmentId : undefined,
         undefined,
         limit,
         offset,

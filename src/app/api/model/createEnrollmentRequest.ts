@@ -14,8 +14,26 @@ export interface CreateEnrollmentRequestDto {
     academic_year?: string;
     is_returning_student?: boolean;
     /**
+     * An existing child from the parent\'s saved list. When omitted, the student fields below create a new one.
+     */
+    person_id?: number;
+    student_first_name?: string;
+    student_last_name?: string;
+    /**
+     * Required with the student names (a new child needs it); 400 VALIDATION_FAILED otherwise.
+     */
+    student_gender?: CreateEnrollmentRequestDto.StudentGenderEnum;
+    /**
      * The child\'s matricule from a prior enrollment period. Only used (and only sent to a school\'s configured third party) when is_returning_student is true and the school offers allow_direct_payment_for_returning_students.
      */
     matricule?: string;
 }
+export namespace CreateEnrollmentRequestDto {
+    export const StudentGenderEnum = {
+        Male: 'male',
+        Female: 'female'
+    } as const;
+    export type StudentGenderEnum = typeof StudentGenderEnum[keyof typeof StudentGenderEnum];
+}
+
 

@@ -85,6 +85,8 @@ export class PaymentSettingsPanelComponent implements OnInit {
 
   readonly loading = signal(true);
   readonly saving = signal(false);
+  /** Whether schools enter operator API credentials (false with an aggregator). */
+  readonly credentialsRequired = signal(true);
   /** Secret fields currently shown in clear text (by control name). */
   readonly visibleSecrets = signal<ReadonlySet<string>>(new Set());
 
@@ -156,6 +158,28 @@ export class PaymentSettingsPanelComponent implements OnInit {
     });
   }
 
+  /**
+   * With an aggregator the credential fields are hidden and disabled, so their
+   * "required" validators never block saving (disabled controls skip validation).
+   */
+  private applyCredentialsRequirement(required: boolean): void {
+    this.credentialsRequired.set(required);
+    const { orange, mtn } = this.form.controls;
+    const controls = [
+      orange.controls.clientId,
+      orange.controls.clientSecret,
+      orange.controls.authToken,
+      orange.controls.pin,
+      mtn.controls.apiUser,
+      mtn.controls.apiKey,
+      mtn.controls.subscriptionKey,
+    ];
+    for (const control of controls) {
+      if (!required) control.disable({ emitEvent: false });
+      else if (this.canManage()) control.enable({ emitEvent: false });
+    }
+  }
+
   /** Editors may read these accounts but only an admin decides where money goes. */
   canManage(): boolean {
     return this.abilities.can('update', 'School', { schoolId: this.schoolId() });
@@ -209,6 +233,7 @@ export class PaymentSettingsPanelComponent implements OnInit {
   }
 
   private patch(s: PaymentSettings): void {
+    this.applyCredentialsRequirement(s.merchantCredentialsRequired);
     this.form.setValue({
       // Secret inputs always start empty: the API never returns secrets.
       orange: {

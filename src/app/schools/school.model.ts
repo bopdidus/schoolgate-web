@@ -159,6 +159,11 @@ export interface MatriculeVerificationConfig {
  * A disabled channel keeps its details so it can be switched back on later.
  */
 export interface PaymentSettings {
+  /**
+   * False when an aggregator charges the platform's account: the school then
+   * enters no operator API credentials, only the channel and its number.
+   */
+  merchantCredentialsRequired: boolean;
   orangeMoneyEnabled: boolean;
   orangeMoneyNumber: string;
   orangeMoneyAccountName: string;
@@ -188,7 +193,10 @@ export interface PaymentSettings {
  * Write payload for `PUT /schools/{id}/payment-settings`. Secrets are
  * write-only: leave one empty to keep the value already saved.
  */
-export type PaymentSettingsUpdate = Omit<PaymentSettings, 'updatedAt' | 'orangeSecretsSet' | 'mtnSecretsSet'> & {
+export type PaymentSettingsUpdate = Omit<
+  PaymentSettings,
+  'updatedAt' | 'orangeSecretsSet' | 'mtnSecretsSet' | 'merchantCredentialsRequired'
+> & {
   orangeClientSecret: string;
   orangeAuthToken: string;
   orangePin: string;

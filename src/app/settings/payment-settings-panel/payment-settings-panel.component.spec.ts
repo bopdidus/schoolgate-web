@@ -8,6 +8,7 @@ import { AbilityService } from '../../core/services/ability.service';
 import { PaymentSettings, PaymentSettingsUpdate } from '../../schools/school.model';
 
 const EMPTY: PaymentSettings = {
+  merchantCredentialsRequired: true,
   orangeMoneyEnabled: false,
   orangeMoneyNumber: '',
   orangeMoneyAccountName: '',
@@ -197,6 +198,18 @@ describe('PaymentSettingsPanelComponent', () => {
 
     expect(fixture.componentInstance.form.disabled).toBeTrue();
     expect(fixture.nativeElement.querySelector('button[mat-flat-button]')).toBeNull();
+  });
+  it('with an aggregator, hides operator credentials and saves a channel with its number only', async () => {
+    await setup(true, { ...EMPTY, merchantCredentialsRequired: false });
+    const component = fixture.componentInstance;
+    const mtn = component.form.controls.mtn;
+    mtn.patchValue({ enabled: true, number: '670000000', accountName: 'Lycée X' });
+
+    expect(component.credentialsRequired()).toBeFalse();
+    expect(mtn.controls.apiKey.disabled).toBeTrue();
+    expect(component.form.valid).toBeTrue();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[formControlName="apiUser"]')).toBeNull();
   });
 });
 

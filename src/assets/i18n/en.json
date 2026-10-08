@@ -329,7 +329,24 @@
     "NO_DOCUMENTS": "No documents uploaded yet",
     "DOWNLOAD_DOCUMENT": "Download document",
     "ACCEPT_CONFIRM": "Accept this enrollment request?",
-    "REVIEWED_BY": "Decided by user #{{userId}} on {{date}}"
+    "REVIEWED_BY": "Decided by user #{{userId}} on {{date}}",
+    "GENDER": "Sex",
+    "GENDER_FEMALE": "Girl",
+    "GENDER_MALE": "Boy",
+    "TUITION_TRACKING": "Tuition tracking",
+    "TUITION_TOTAL": "Total tuition",
+    "TUITION_PAID": "Paid",
+    "TUITION_PENDING": "Awaiting confirmation",
+    "TUITION_REMAINING": "Left to pay",
+    "TUITION": "Tuition",
+    "TUITION_SETTLED": "Settled",
+    "TUITION_NOT_SETTLED": "Not settled",
+    "ENROLLMENT_FEE": "Enrollment fee",
+    "FEE_PAID": "Paid",
+    "FEE_PENDING": "Pending",
+    "FEE_UNPAID": "Unpaid",
+    "PENDING_SHORT": "pending",
+    "FEE_PARTIAL": "Partial"
   },
   "PAYMENTS": {
     "TITLE": "Payments",
@@ -445,7 +462,8 @@
     "PAYMENT_PIN_INVALID": "The PIN has 4 to 8 digits",
     "PAYMENT_MTN_API_USER": "API User",
     "PAYMENT_MTN_API_KEY": "API Key",
-    "PAYMENT_MTN_SUBSCRIPTION_KEY": "Subscription key (Collection)"
+    "PAYMENT_MTN_SUBSCRIPTION_KEY": "Subscription key (Collection)",
+    "PAYMENT_AGGREGATOR_HINT": "Parents' payments are collected by SchoolGate, then paid out to the school on this number. No API keys are needed."
   },
   "STATUS": {
     "DECLARED": "Declared",

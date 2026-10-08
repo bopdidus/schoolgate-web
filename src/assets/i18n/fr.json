@@ -328,7 +328,24 @@
     "NO_DOCUMENTS": "Aucun document téléversé",
     "DOWNLOAD_DOCUMENT": "Télécharger le document",
     "ACCEPT_CONFIRM": "Accepter cette demande d'inscription ?",
-    "REVIEWED_BY": "Décidé par user #{{userId}} le {{date}}"
+    "REVIEWED_BY": "Décidé par user #{{userId}} le {{date}}",
+    "GENDER": "Sexe",
+    "GENDER_FEMALE": "Fille",
+    "GENDER_MALE": "Garçon",
+    "TUITION_TRACKING": "Suivi de la scolarité",
+    "TUITION_TOTAL": "Scolarité totale",
+    "TUITION_PAID": "Payé",
+    "TUITION_PENDING": "En attente de confirmation",
+    "TUITION_REMAINING": "Reste à payer",
+    "TUITION": "Scolarité",
+    "TUITION_SETTLED": "Soldée",
+    "TUITION_NOT_SETTLED": "Non soldée",
+    "ENROLLMENT_FEE": "Inscription",
+    "FEE_PAID": "Payée",
+    "FEE_PENDING": "En attente",
+    "FEE_UNPAID": "Non payée",
+    "PENDING_SHORT": "en attente",
+    "FEE_PARTIAL": "Partielle"
   },
   "PAYMENTS": {
     "TITLE": "Paiements",
@@ -444,7 +461,8 @@
     "PAYMENT_PIN_INVALID": "Le code PIN contient 4 à 8 chiffres",
     "PAYMENT_MTN_API_USER": "API User",
     "PAYMENT_MTN_API_KEY": "API Key",
-    "PAYMENT_MTN_SUBSCRIPTION_KEY": "Clé d'abonnement (Collection)"
+    "PAYMENT_MTN_SUBSCRIPTION_KEY": "Clé d'abonnement (Collection)",
+    "PAYMENT_AGGREGATOR_HINT": "Les paiements des parents sont encaissés par SchoolGate puis reversés à l'école sur ce numéro. Aucune clé API n'est nécessaire."
   },
   "STATUS": {
     "DECLARED": "Déclaré",

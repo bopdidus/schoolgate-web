@@ -24,6 +24,7 @@ export interface Payment {
 
 export interface PaymentFilters {
   schoolId?: string;
+  enrollmentId?: string;
   status?: PaymentStatus | '';
   educationType?: EducationType | '';
   specialtyId?: string;

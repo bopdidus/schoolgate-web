@@ -4,6 +4,36 @@
   <mat-card-content>
     <div class="filter-grid">
       <mat-form-field appearance="outline">
+        <mat-label>{{ 'ENROLLMENTS.ACADEMIC_YEAR' | translate }}</mat-label>
+        <mat-select [value]="academicYearFilter()" (selectionChange)="onAcademicYearChange($event.value)">
+          <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
+          @for (year of academicYears; track year) {
+            <mat-option [value]="year">{{ year }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      @if (classes().length > 0) {
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'ENROLLMENTS.CLASS' | translate }}</mat-label>
+          <mat-select [value]="classFilter()" (selectionChange)="onClassChange($event.value)">
+            <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
+            @for (cls of classes(); track cls.id) {
+              <mat-option [value]="cls.id">{{ cls.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+      @if (activeTab() === 0) {
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'ENROLLMENTS.TUITION' | translate }}</mat-label>
+          <mat-select [value]="tuitionSettledFilter()" (selectionChange)="onTuitionSettledChange($event.value)">
+            <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
+            <mat-option value="true">{{ 'ENROLLMENTS.TUITION_SETTLED' | translate }}</mat-option>
+            <mat-option value="false">{{ 'ENROLLMENTS.TUITION_NOT_SETTLED' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      }
+      <mat-form-field appearance="outline">
         <mat-label>{{ 'EDUCATION.TYPE' | translate }}</mat-label>
         <mat-select (selectionChange)="onEducationTypeChange($event.value)">
           <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
@@ -85,6 +115,49 @@
           <ng-container matColumnDef="specialty">
             <th mat-header-cell *matHeaderCellDef>{{ 'EDUCATION.SPECIALTY' | translate }}</th>
             <td mat-cell *matCellDef="let e">{{ e.classSpecialtyLabel || '-' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="enrollmentFee">
+            <th mat-header-cell *matHeaderCellDef>{{ 'ENROLLMENTS.ENROLLMENT_FEE' | translate }}</th>
+            <td mat-cell *matCellDef="let e">
+              @if (e.balance; as b) {
+                <mat-chip [class]="'fee-chip fee-chip--' + b.enrollmentFeeStatus">
+                  {{ ('ENROLLMENTS.FEE_' + b.enrollmentFeeStatus.toUpperCase()) | translate }}
+                </mat-chip>
+                @if (b.enrollmentFeeStatus === 'partial') {
+                  <div class="amount-of">{{ b.enrollmentFeePaid | xafCurrency }} / {{ b.enrollmentFee | xafCurrency }}</div>
+                }
+              } @else {
+                —
+              }
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="tuitionPaid">
+            <th mat-header-cell *matHeaderCellDef>{{ 'ENROLLMENTS.TUITION_PAID' | translate }}</th>
+            <td mat-cell *matCellDef="let e">
+              @if (e.balance; as b) {
+                {{ b.tuitionPaid | xafCurrency }}
+                <span class="amount-of">/ {{ b.tuitionTotal | xafCurrency }}</span>
+                @if (b.tuitionPending > 0) {
+                  <div class="amount-pending">+ {{ b.tuitionPending | xafCurrency }} {{ 'ENROLLMENTS.PENDING_SHORT' | translate }}</div>
+                }
+              } @else {
+                —
+              }
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="tuitionRemaining">
+            <th mat-header-cell *matHeaderCellDef>{{ 'ENROLLMENTS.TUITION_REMAINING' | translate }}</th>
+            <td mat-cell *matCellDef="let e">
+              @if (e.balance; as b) {
+                @if (b.tuitionSettled) {
+                  <mat-chip class="fee-chip fee-chip--paid">{{ 'ENROLLMENTS.TUITION_SETTLED' | translate }}</mat-chip>
+                } @else {
+                  <strong>{{ b.tuitionRemaining | xafCurrency }}</strong>
+                }
+              } @else {
+                —
+              }
+            </td>
           </ng-container>
           <ng-container matColumnDef="date">
             <th mat-header-cell *matHeaderCellDef>{{ 'ENROLLMENTS.DATE' | translate }}</th>

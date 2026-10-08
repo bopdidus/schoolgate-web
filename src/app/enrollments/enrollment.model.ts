@@ -1,3 +1,4 @@
+import { TuitionInstallment } from './tuition-summary';
 import { EnrollmentStatus, EducationSystem, EducationType } from '../shared/models/common.model';
 
 export interface EnrollmentDocument {
@@ -11,6 +12,8 @@ export interface EnrollmentDocument {
 export interface Enrollment {
   id: string;
   studentName: string;
+  /** Student's sex; absent for children saved before it was collected. */
+  studentGender?: 'male' | 'female';
   studentEmail?: string;
   studentPhone?: string;
   schoolId: string;
@@ -24,6 +27,10 @@ export interface Enrollment {
   classSpecialtyLabel?: string;
   classLevelId?: string;
   classLevelLabel?: string;
+  /** Tuition and enrollment-fee standing (amounts in XAF); set on listings. */
+  balance?: EnrollmentBalance;
+  /** Tuition installments of the enrolled class (enrollment fee excluded). */
+  tuitionInstallments?: TuitionInstallment[];
   /** Academic year this enrollment belongs to (e.g. `2025-2026`). */
   academicYear?: string;
   status: EnrollmentStatus;
@@ -41,6 +48,18 @@ export interface Enrollment {
   updatedAt: string;
 }
 
+/** Paid = validated payments; pending ones await the operator and are kept apart. */
+export interface EnrollmentBalance {
+  tuitionTotal: number;
+  tuitionPaid: number;
+  tuitionPending: number;
+  tuitionRemaining: number;
+  tuitionSettled: boolean;
+  enrollmentFee: number;
+  enrollmentFeePaid: number;
+  enrollmentFeeStatus: 'paid' | 'partial' | 'pending' | 'unpaid';
+}
+
 export interface EnrollmentFilters {
   schoolId?: string;
   classId?: string;
@@ -52,6 +71,10 @@ export interface EnrollmentFilters {
   matricule?: string;
   /** true = returning (ancien) student, false = new (nouveau), undefined = all. */
   isReturningStudent?: boolean;
+  /** YYYY-YYYY; undefined = every academic year. */
+  academicYear?: string;
+  /** true = tuition fully paid, false = still owing, undefined = all. */
+  tuitionSettled?: boolean;
   dateFrom?: string;
   dateTo?: string;
   page?: number;

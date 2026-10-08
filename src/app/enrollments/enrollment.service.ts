@@ -10,6 +10,7 @@ import {
   pageToOffset,
   toPaginated,
   unwrapData,
+  fromCents,
 } from '../core/utils/openapi-helpers';
 import {
   Enrollment,
@@ -32,6 +33,9 @@ export class EnrollmentService {
         filters.paymentValidated,
         filters.matricule || undefined,
         filters.isReturningStudent,
+        filters.academicYear || undefined,
+        filters.classId ? +filters.classId : undefined,
+        filters.tuitionSettled,
         limit,
         offset,
       )
@@ -93,6 +97,7 @@ export class EnrollmentService {
     return {
       id: String(dto.id ?? ''),
       studentName: personName,
+      studentGender: dto.person?.gender,
       schoolId: String(school?.id ?? schoolClass?.school_id ?? ''),
       schoolName: String(school?.name ?? ''),
       classId: String(dto.school_class_id ?? schoolClass?.id ?? ''),
@@ -114,6 +119,23 @@ export class EnrollmentService {
       classSpecialtyLabel: specialtyLabel || undefined,
       classLevelId: schoolClass?.level?.id != null ? String(schoolClass.level.id) : undefined,
       classLevelLabel: levelLabel || undefined,
+      balance: dto.balance
+        ? {
+            tuitionTotal: fromCents(dto.balance.tuition_total_cents),
+            tuitionPaid: fromCents(dto.balance.tuition_paid_cents),
+            tuitionPending: fromCents(dto.balance.tuition_pending_cents),
+            tuitionRemaining: fromCents(dto.balance.tuition_remaining_cents),
+            tuitionSettled: Boolean(dto.balance.tuition_settled),
+            enrollmentFee: fromCents(dto.balance.enrollment_fee_cents),
+            enrollmentFeePaid: fromCents(dto.balance.enrollment_fee_paid_cents),
+            enrollmentFeeStatus: dto.balance.enrollment_fee_status ?? 'unpaid',
+          }
+        : undefined,
+      tuitionInstallments: (schoolClass?.installments ?? []).map((inst) => ({
+        number: inst.number ?? 0,
+        amount: fromCents(inst.amount_cents),
+        dueDate: String(inst.due_date ?? ''),
+      })),
       academicYear: dto.academic_year || school?.academic_year || undefined,
       status: (dto.status as Enrollment['status']) ?? 'pending',
       isExistingStudent: Boolean(dto.is_returning_student),

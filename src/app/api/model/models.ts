@@ -26,6 +26,7 @@ export * from './documentRequirementListEnvelope';
 export * from './documentRequirementsRequest';
 export * from './documentType';
 export * from './documentTypeListEnvelope';
+export * from './enrollmentBalance';
 export * from './enrollment';
 export * from './enrollmentListEnvelope';
 export * from './enrollmentsIdDocumentsPost201Response';

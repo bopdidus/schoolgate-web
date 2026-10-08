@@ -26,6 +26,13 @@
         <span matListItemTitle>{{ 'ENROLLMENTS.STUDENT' | translate }}</span>
         <span matListItemLine>{{ data.studentName || '—' }}</span>
       </mat-list-item>
+      @if (data.studentGender) {
+        <mat-list-item>
+          <mat-icon matListItemIcon>wc</mat-icon>
+          <span matListItemTitle>{{ 'ENROLLMENTS.GENDER' | translate }}</span>
+          <span matListItemLine>{{ (data.studentGender === 'female' ? 'ENROLLMENTS.GENDER_FEMALE' : 'ENROLLMENTS.GENDER_MALE') | translate }}</span>
+        </mat-list-item>
+      }
       @if (data.studentPhone) {
         <mat-list-item>
           <mat-icon matListItemIcon>phone</mat-icon>
@@ -123,6 +130,37 @@
       <mat-divider />
       <p><strong>{{ 'ENROLLMENTS.REJECT_REASON' | translate }}</strong></p>
       <p>{{ data.rejectionReason }}</p>
+    }
+
+    @if (tuition(); as t) {
+      <mat-divider />
+      <h3>{{ 'ENROLLMENTS.TUITION_TRACKING' | translate }}</h3>
+      <div class="tuition-totals">
+        <span>{{ 'ENROLLMENTS.TUITION_TOTAL' | translate }}</span>
+        <span>{{ t.total | xafCurrency }}</span>
+        <span>{{ 'ENROLLMENTS.TUITION_PAID' | translate }}</span>
+        <span class="tuition-paid">{{ t.paid | xafCurrency }}</span>
+        @if (t.pending > 0) {
+          <span>{{ 'ENROLLMENTS.TUITION_PENDING' | translate }}</span>
+          <span class="tuition-pending">{{ t.pending | xafCurrency }}</span>
+        }
+        <strong>{{ 'ENROLLMENTS.TUITION_REMAINING' | translate }}</strong>
+        <strong>{{ t.remaining | xafCurrency }}</strong>
+      </div>
+      <mat-progress-bar mode="determinate" [value]="t.total > 0 ? (t.paid / t.total) * 100 : 0" />
+      <ul class="tuition-installments">
+        @for (inst of t.installments; track inst.number) {
+          <li>
+            <mat-icon [class.is-settled]="inst.remaining === 0">
+              {{ inst.remaining === 0 ? 'check_circle' : 'schedule' }}
+            </mat-icon>
+            <span class="tuition-installments__label">
+              {{ 'INVOICES.INSTALLMENT' | translate }} {{ inst.number }} · {{ inst.dueDate | localeDate }}
+            </span>
+            <span>{{ inst.paid | xafCurrency }} / {{ inst.amount | xafCurrency }}</span>
+          </li>
+        }
+      </ul>
     }
 
     <mat-divider />

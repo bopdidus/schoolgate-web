@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   inject,
   OnInit,
   signal,
@@ -19,6 +20,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslateModule } from '@ngx-translate/core';
 import {
   Enrollment,
@@ -27,6 +29,9 @@ import {
 import { EnrollmentService } from '../enrollment.service';
 import { Invoice } from '../../invoices/invoice.model';
 import { InvoiceService } from '../../invoices/invoice.service';
+import { Payment } from '../../payments/payment.model';
+import { PaymentService } from '../../payments/payment.service';
+import { buildTuitionSummary } from '../tuition-summary';
 import { StatusColorPipe } from '../../shared/pipes/status-color.pipe';
 import { LocaleDatePipe } from '../../shared/pipes/locale-date.pipe';
 import { XafCurrencyPipe } from '../../shared/pipes/xaf-currency.pipe';
@@ -56,6 +61,7 @@ export interface EnrollmentDetailDialogData {
     MatDividerModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    MatProgressBarModule,
     TranslateModule,
     StatusColorPipe,
     LocaleDatePipe,
@@ -69,6 +75,7 @@ export class EnrollmentDetailDialogComponent implements OnInit {
   private readonly dialogData = inject<Enrollment | EnrollmentDetailDialogData>(MAT_DIALOG_DATA);
   private readonly enrollmentService = inject(EnrollmentService);
   private readonly invoiceService = inject(InvoiceService);
+  private readonly paymentService = inject(PaymentService);
   private readonly notification = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
@@ -78,6 +85,14 @@ export class EnrollmentDetailDialogComponent implements OnInit {
   readonly loading = signal(true);
   readonly invoices = signal<Invoice[]>([]);
   readonly invoicesLoading = signal(true);
+  /** Null until the student's payments are loaded (or if loading failed). */
+  readonly payments = signal<Payment[] | null>(null);
+  /** Tuition paid / total / remaining; null when unknown or the class has no installments. */
+  readonly tuition = computed(() => {
+    const payments = this.payments();
+    const installments = this.enrollment()?.tuitionInstallments ?? [];
+    return payments && installments.length > 0 ? buildTuitionSummary(installments, payments) : null;
+  });
   readonly actionLoading = signal(false);
   readonly downloadingDocId = signal<string | null>(null);
 
@@ -107,6 +122,11 @@ export class EnrollmentDetailDialogComponent implements OnInit {
         this.loading.set(false);
         this.notification.error('COMMON.ERROR');
       },
+    });
+
+    this.paymentService.getAll({ enrollmentId: id, pageSize: 100 }).subscribe({
+      next: (res) => this.payments.set(res.data),
+      error: () => this.payments.set(null),
     });
 
     this.invoiceService.getAll({ enrollmentId: id, pageSize: 50 }).subscribe({

@@ -15,8 +15,20 @@ export interface PersonDto {
     last_name?: string;
     birth_date?: string;
     /**
+     * Omitted only for persons saved before it was collected.
+     */
+    gender?: PersonDto.GenderEnum;
+    /**
      * Immutable student identifier assigned at first enrollment acceptance
      */
     matricule?: string | null;
 }
+export namespace PersonDto {
+    export const GenderEnum = {
+        Male: 'male',
+        Female: 'female'
+    } as const;
+    export type GenderEnum = typeof GenderEnum[keyof typeof GenderEnum];
+}
+
 

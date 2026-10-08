@@ -1,4 +1,6 @@
 import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { filter, switchMap, take } from 'rxjs';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,6 +15,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
 import { EnrollmentService } from '../enrollment.service';
+import { SchoolService } from '../../schools/school.service';
+import { selectUser } from '../../core/store/auth.reducer';
+import { XafCurrencyPipe } from '../../shared/pipes/xaf-currency.pipe';
+import { academicYearOf, selectableAcademicYears } from '../../shared/utils/academic-year';
 import { Enrollment } from '../enrollment.model';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { SkeletonTableComponent } from '../../shared/components/skeleton-table/skeleton-table.component';
@@ -54,6 +60,7 @@ import {
     ErrorStateComponent,
     StatusColorPipe,
     LocaleDatePipe,
+    XafCurrencyPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './enrollment-list.component.html',
@@ -64,6 +71,8 @@ export class EnrollmentListComponent implements OnInit {
   private readonly notification = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
   private readonly abilities = inject(AbilityService);
+  private readonly schoolService = inject(SchoolService);
+  private readonly store = inject(Store);
 
   readonly loading = signal(true);
   /** Separates a failed request from a genuinely empty list. */
@@ -78,14 +87,46 @@ export class EnrollmentListComponent implements OnInit {
   readonly specialtyFilter = signal('');
   /** '' = all, 'true' = returning (ancien), 'false' = new (nouveau) — server-side filter. */
   readonly returningStudentFilter = signal<'' | 'true' | 'false'>('');
+  /** The current academic year is shown and selected by default; '' = every year. */
+  readonly academicYears = selectableAcademicYears();
+  readonly academicYearFilter = signal(academicYearOf(new Date()));
+  /** Class filter, offered to school staff (their own school's classes). */
+  readonly classes = signal<{ id: string; label: string }[]>([]);
+  readonly classFilter = signal('');
+  /** '' = all, 'true' = tuition fully paid, 'false' = still owing (enrolled tab). */
+  readonly tuitionSettledFilter = signal<'' | 'true' | 'false'>('');
 
-  readonly enrolledColumns = ['student', 'school', 'class', 'academicYear', 'educationType', 'specialty', 'status', 'date', 'actions'];
+  readonly enrolledColumns = ['student', 'school', 'class', 'academicYear', 'educationType', 'specialty', 'enrollmentFee', 'tuitionPaid', 'tuitionRemaining', 'status', 'date', 'actions'];
   readonly requestColumns = ['student', 'school', 'class', 'academicYear', 'educationType', 'specialty', 'status', 'date', 'actions'];
   readonly educationSystemI18n = EDUCATION_SYSTEM_I18N;
   readonly educationTypeI18n = EDUCATION_TYPE_I18N;
 
   ngOnInit(): void {
+    this.loadClasses();
     this.load();
+  }
+
+  /** Staff see their school's classes in the class filter; admins span schools. */
+  private loadClasses(): void {
+    this.store
+      .select(selectUser)
+      .pipe(
+        take(1),
+        filter((user) => !!user?.schoolId),
+        switchMap((user) => this.schoolService.getById(String(user!.schoolId))),
+      )
+      .subscribe({
+        next: (school) =>
+          this.classes.set(
+            school.classes
+              .filter((c) => !!c.id)
+              .map((c) => ({
+                id: String(c.id),
+                label: [c.levelLabel || c.name, c.specialtyOther].filter(Boolean).join(' — '),
+              })),
+          ),
+        error: () => this.classes.set([]),
+      });
   }
 
   onTabChange(index: number): void {
@@ -115,6 +156,12 @@ export class EnrollmentListComponent implements OnInit {
         specialtyId: this.specialtyFilter() || undefined,
         isReturningStudent:
           this.returningStudentFilter() === '' ? undefined : this.returningStudentFilter() === 'true',
+        academicYear: this.academicYearFilter() || undefined,
+        classId: this.classFilter() || undefined,
+        tuitionSettled:
+          isEnrolledTab && this.tuitionSettledFilter() !== ''
+            ? this.tuitionSettledFilter() === 'true'
+            : undefined,
         page: this.page() + 1,
         pageSize: this.pageSize(),
       })
@@ -230,6 +277,24 @@ export class EnrollmentListComponent implements OnInit {
 
   onSpecialtyChange(value: string): void {
     this.specialtyFilter.set(value);
+    this.page.set(0);
+    this.load();
+  }
+
+  onAcademicYearChange(value: string): void {
+    this.academicYearFilter.set(value);
+    this.page.set(0);
+    this.load();
+  }
+
+  onClassChange(value: string): void {
+    this.classFilter.set(value);
+    this.page.set(0);
+    this.load();
+  }
+
+  onTuitionSettledChange(value: '' | 'true' | 'false'): void {
+    this.tuitionSettledFilter.set(value);
     this.page.set(0);
     this.load();
   }

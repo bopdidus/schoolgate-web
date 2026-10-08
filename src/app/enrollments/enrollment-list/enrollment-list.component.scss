@@ -1,0 +1,19 @@
+
+.amount-of {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 12px;
+}
+.amount-pending {
+  color: var(--mat-sys-tertiary);
+  font-size: 12px;
+}
+.fee-chip--paid {
+  --mat-chip-label-text-color: var(--sem-success);
+}
+.fee-chip--partial,
+.fee-chip--pending {
+  --mat-chip-label-text-color: var(--sem-warning);
+}
+.fee-chip--unpaid {
+  --mat-chip-label-text-color: var(--sem-danger);
+}

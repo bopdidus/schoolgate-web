@@ -41,6 +41,7 @@ model/documentRequirementsRequest.ts
 model/documentType.ts
 model/documentTypeListEnvelope.ts
 model/enrollment.ts
+model/enrollmentBalance.ts
 model/enrollmentListEnvelope.ts
 model/enrollmentsIdDocumentsPost201Response.ts
 model/enrollmentsIdGet200Response.ts

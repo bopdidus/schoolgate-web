@@ -10,6 +10,10 @@
 
 
 export interface PaymentSettingsDto { 
+    /**
+     * True when parents are charged into the school\'s own operator account (COLLECTION_MODE=live), so each enabled Mobile Money channel needs the school\'s API credentials. False with an aggregator charging the platform\'s account: schools enter none.
+     */
+    merchant_credentials_required?: boolean;
     orange_money_enabled?: boolean;
     orange_money_number?: string;
     orange_money_account_name?: string;
