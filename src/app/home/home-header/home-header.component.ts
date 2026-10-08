@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { selectUser } from '../../core/store/auth.reducer';
+import { homeRouteFor } from '../../core/auth/home-route';
 import { LanguageService } from '../../core/services/language.service';
 import { BrandLogoComponent } from '../../shared/components/brand-logo/brand-logo.component';
 import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
@@ -27,6 +28,7 @@ export class HomeHeaderComponent {
   private readonly languageService = inject(LanguageService);
 
   readonly user$ = inject(Store).select(selectUser);
+  readonly homeRouteFor = homeRouteFor;
 
   get currentLang(): string {
     return this.languageService.getCurrentLanguage().toUpperCase();

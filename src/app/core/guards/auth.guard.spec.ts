@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router, RouterStateSnapshot, ActivatedRouteSnapshot, UrlTree } from '@angular/router';
 import { Store, Action } from '@ngrx/store';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { authGuard, guestGuard } from './auth.guard';
+import { authGuard, guestGuard, roleGuard } from './auth.guard';
 import { AuthActions } from '../store/auth.actions';
 import { selectInitialized, selectUser } from '../store/auth.reducer';
 import { User } from '../models/auth.model';
@@ -147,6 +147,40 @@ describe('authGuard / guestGuard', () => {
       let resolved: unknown;
       (result as Observable<unknown>).subscribe((v) => (resolved = v));
       expect(resolved).toBe(true);
+    });
+  });
+
+  describe('parent space', () => {
+    const PARENT: User = { ...MOCK_USER, id: '2', role: 'parent', email: 'parent@test.com' };
+
+    function resolve(result: unknown): unknown {
+      let resolved: unknown;
+      (result as Observable<unknown>).subscribe((v) => (resolved = v));
+      return resolved;
+    }
+
+    it('lands a signed-in parent on the parent space, not the dashboard', () => {
+      store.setState(true, PARENT);
+      const resolved = resolve(TestBed.runInInjectionContext(() => guestGuard(route, state)));
+      expect(resolved).toEqual({ commands: ['/parent/schools'], extras: undefined });
+    });
+
+    it('sends a parent who opens a back-office page to the parent space', () => {
+      store.setState(true, PARENT);
+      const guard = roleGuard(['admin', 'school_admin', 'school_editor']);
+      const resolved = resolve(TestBed.runInInjectionContext(() => guard(route, state)));
+      expect(resolved).toEqual({ commands: ['/parent/schools'], extras: undefined });
+    });
+
+    it('sends staff who open the parent space to the dashboard', () => {
+      store.setState(true, MOCK_USER);
+      const resolved = resolve(TestBed.runInInjectionContext(() => roleGuard(['parent'])(route, state)));
+      expect(resolved).toEqual({ commands: ['/dashboard'], extras: undefined });
+    });
+
+    it('lets a parent into the parent space', () => {
+      store.setState(true, PARENT);
+      expect(resolve(TestBed.runInInjectionContext(() => roleGuard(['parent'])(route, state)))).toBeTrue();
     });
   });
 });

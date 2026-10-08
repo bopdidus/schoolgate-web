@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
+import { HttpContext } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { AuthService as OpenApiAuthService, SchoolRegistrationRequestDto } from '../api';
+import { AuthService as OpenApiAuthService, RegisterRequestDto, SchoolRegistrationRequestDto } from '../api';
+import { SKIP_AUTH_REFRESH } from '../core/interceptors/http-context-tokens';
 import { SchoolSystem } from '../shared/models/common.model';
 import { unwrapData } from '../core/utils/openapi-helpers';
 
@@ -20,6 +22,15 @@ export interface SchoolRegistration {
     phone: string;
     password: string;
   };
+}
+
+/** A parent account (role `parent`), as created by the mobile app. */
+export interface ParentRegistration {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
 }
 
 /** `active`: published now; `pending`: waits for a platform admin. */
@@ -62,6 +73,23 @@ export class RegisterService {
         };
       }),
     );
+  }
+
+  /**
+   * Public parent sign-up (`POST /auth/register`). A 401/409 here is about the
+   * form, never about a session, so the refresh-on-401 flow is skipped.
+   */
+  registerParent(data: ParentRegistration): Observable<void> {
+    const body: RegisterRequestDto = {
+      first_name: data.firstName.trim(),
+      last_name: data.lastName.trim(),
+      email: data.email.trim(),
+      phone: blankToUndefined(data.phone),
+      password: data.password,
+    };
+    return this.authApi
+      .authRegisterPost(body, 'body', false, { context: new HttpContext().set(SKIP_AUTH_REFRESH, true) })
+      .pipe(map(() => undefined));
   }
 }
 

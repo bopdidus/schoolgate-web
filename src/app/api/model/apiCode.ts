@@ -49,7 +49,9 @@ export const ApiCodeDto = {
     SchoolRegistered: 'SCHOOL_REGISTERED',
     PasswordResetCodeSent: 'PASSWORD_RESET_CODE_SENT',
     PasswordResetConfirmed: 'PASSWORD_RESET_CONFIRMED',
-    InvalidResetCode: 'INVALID_RESET_CODE'
+    InvalidResetCode: 'INVALID_RESET_CODE',
+    PaymentRefused: 'PAYMENT_REFUSED',
+    PaymentMethodUnavailable: 'PAYMENT_METHOD_UNAVAILABLE'
 } as const;
 export type ApiCodeDto = typeof ApiCodeDto[keyof typeof ApiCodeDto];
 

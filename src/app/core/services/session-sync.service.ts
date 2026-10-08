@@ -69,7 +69,8 @@ export class SessionSyncService implements OnDestroy {
         // Guest tabs (home, register form) and the same account signed in again
         // elsewhere are left alone; only a tab bound to another account follows.
         if (!user || user.id === message.userId) return;
-        window.location.assign('/dashboard');
+        // /login hands over to the new account's own home (guestGuard).
+        window.location.assign('/login');
       });
   }
 }

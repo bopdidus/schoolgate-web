@@ -42,6 +42,9 @@
                     @case ('school_editor') {
                       <mat-chip>{{ 'USERS.SCHOOL_EDITOR' | translate }}</mat-chip>
                     }
+                    @case ('parent') {
+                      <mat-chip>{{ 'USERS.PARENT' | translate }}</mat-chip>
+                    }
                   }
                 </mat-chip-set>
               </div>
@@ -161,6 +164,9 @@
                   @case ('school_editor') {
                     {{ 'USERS.SCHOOL_EDITOR' | translate }}
                   }
+                  @case ('parent') {
+                    {{ 'USERS.PARENT' | translate }}
+                  }
                 }
               </span>
             </span>
@@ -176,10 +182,17 @@
             </span>
           </div>
           <mat-divider />
-          <button mat-menu-item routerLink="/settings">
-            <mat-icon>settings</mat-icon>
-            {{ 'NAV.SETTINGS' | translate }}
-          </button>
+          @if (user.role === 'parent') {
+            <button mat-menu-item routerLink="/parent/profile">
+              <mat-icon>person</mat-icon>
+              {{ 'NAV.PROFILE' | translate }}
+            </button>
+          } @else {
+            <button mat-menu-item routerLink="/settings">
+              <mat-icon>settings</mat-icon>
+              {{ 'NAV.SETTINGS' | translate }}
+            </button>
+          }
         </mat-menu>
 
         <button

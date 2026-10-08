@@ -6,9 +6,9 @@ import { selectInitialized, selectUser } from '../store/auth.reducer';
 import { AuthActions } from '../store/auth.actions';
 import { User } from '../models/auth.model';
 import { UserRole } from '../../shared/models/common.model';
+import { homeRouteFor } from '../auth/home-route';
 
 const LOGIN_ROUTE = '/login';
-const HOME_ROUTE = '/dashboard';
 
 /** Builds a redirect-to-login `UrlTree` that remembers where the user was headed. */
 function redirectToLogin(router: Router, state: RouterStateSnapshot): UrlTree {
@@ -66,7 +66,7 @@ export const guestGuard: CanActivateFn = () => {
   const router = inject(Router);
 
   return ensureAuthInitialized(store).pipe(
-    map((user) => (user ? router.createUrlTree([HOME_ROUTE]) : true)),
+    map((user) => (user ? router.createUrlTree([homeRouteFor(user.role)]) : true)),
   );
 };
 
@@ -75,9 +75,9 @@ export const guestGuard: CanActivateFn = () => {
  * declarative (`canActivate: [roleGuard(['admin'])]`) and new roles never require
  * touching this file — an application of the open/closed principle.
  *
- * Any denied access — whether the user isn't authenticated at all or is authenticated
- * with the wrong role — sends them back to `/login`, so there is a single, predictable
- * destination for "you can't be here".
+ * Without a session, the user is sent to `/login`. Signed in with another role
+ * (a parent on a back-office page, staff in the parent space), they land on
+ * their own home instead of a login page that would bounce them anyway.
  */
 export const roleGuard = (allowedRoles: UserRole[]): CanActivateFn => {
   return (_route, state) => {
@@ -86,9 +86,10 @@ export const roleGuard = (allowedRoles: UserRole[]): CanActivateFn => {
 
     return store.select(selectUser).pipe(
       take(1),
-      map((user) =>
-        user && allowedRoles.includes(user.role) ? true : redirectToLogin(router, state),
-      ),
+      map((user) => {
+        if (!user) return redirectToLogin(router, state);
+        return allowedRoles.includes(user.role) ? true : router.createUrlTree([homeRouteFor(user.role)]);
+      }),
     );
   };
 };

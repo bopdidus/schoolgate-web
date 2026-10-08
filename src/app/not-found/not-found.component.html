@@ -8,9 +8,9 @@
       <mat-icon>arrow_back</mat-icon>
       {{ 'COMMON.BACK' | translate }}
     </button>
-    <a mat-stroked-button routerLink="/dashboard">
-      <mat-icon>dashboard</mat-icon>
-      {{ 'NAV.DASHBOARD' | translate }}
+    <a mat-stroked-button [routerLink]="home$ | async">
+      <mat-icon>home</mat-icon>
+      {{ 'NAV.HOME' | translate }}
     </a>
   </div>
 </section>

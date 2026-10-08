@@ -70,7 +70,12 @@
     "LOGOUT": "Logout",
     "NOTIFICATIONS": "Notifications",
     "NO_NOTIFICATIONS": "No new notifications",
-    "MARK_ALL_READ": "Mark all as read"
+    "MARK_ALL_READ": "Mark all as read",
+    "HOME": "Home",
+    "MY_REQUESTS": "My requests",
+    "MY_STUDENTS": "My students",
+    "PROFILE": "Profile",
+    "SUPPORT": "Support"
   },
   "AUTH": {
     "LOGIN": "Sign In",
@@ -412,7 +417,8 @@
     "GENERATE_PASSWORD": "Generate",
     "COPY_PASSWORD": "Copy password",
     "PASSWORD_COPIED": "Password copied",
-    "PASSWORD_RESET_OK": "Password reset. Pass it on to the user."
+    "PASSWORD_RESET_OK": "Password reset. Pass it on to the user.",
+    "PARENT": "Parent"
   },
   "SETTINGS": {
     "TITLE": "Settings",
@@ -536,6 +542,15 @@
     "DONE_ACTIVE_TEXT": "Sign in to set up your classes and fees: parents can already find your school.",
     "DONE_PENDING_TITLE": "Registration received",
     "DONE_PENDING_TEXT": "Your school will be visible to parents once our team has validated it. You can already sign in and set up your classes and fees.",
-    "GO_TO_LOGIN": "Sign in"
+    "GO_TO_LOGIN": "Sign in",
+    "CHOICE_TITLE": "Create an account",
+    "CHOICE_SUBTITLE": "Choose the type of account.",
+    "CHOICE_PARENT": "I'm a parent",
+    "CHOICE_PARENT_TEXT": "Find a school, request a place for your children, pay tuition and follow every file.",
+    "CHOICE_SCHOOL": "I'm registering my school",
+    "CHOICE_SCHOOL_TEXT": "Manage your classes, enrollment requests and parents' payments.",
+    "PARENT_TITLE": "Create my parent account",
+    "PARENT_SUBTITLE": "The same account works on the mobile app.",
+    "PARENT_SUBMIT": "Create my account"
   }
 }

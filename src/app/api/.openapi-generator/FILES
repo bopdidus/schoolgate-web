@@ -7,6 +7,7 @@ api/enrollments.service.ts
 api/invoices.service.ts
 api/notifications.service.ts
 api/payments.service.ts
+api/persons.service.ts
 api/reference.service.ts
 api/schools.service.ts
 configuration.ts
@@ -25,6 +26,7 @@ model/classLevelListEnvelope.ts
 model/classLevelRef.ts
 model/confirmPasswordResetRequest.ts
 model/createEnrollmentRequest.ts
+model/createPersonRequest.ts
 model/createSchoolUserRequest.ts
 model/dashboardSummary.ts
 model/dashboardSummaryEnrollmentTrendInner.ts
@@ -74,6 +76,8 @@ model/paymentSettingsRequest.ts
 model/paymentsFeePolicyGet200Response.ts
 model/paymentsFeePolicyGet200ResponseAllOfData.ts
 model/person.ts
+model/personListEnvelope.ts
+model/personsPost201Response.ts
 model/refreshRequest.ts
 model/registerDeviceRequest.ts
 model/registerRequest.ts

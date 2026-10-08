@@ -70,7 +70,12 @@
     "LOGOUT": "Déconnexion",
     "NOTIFICATIONS": "Notifications",
     "NO_NOTIFICATIONS": "Aucune nouvelle notification",
-    "MARK_ALL_READ": "Tout marquer comme lu"
+    "MARK_ALL_READ": "Tout marquer comme lu",
+    "HOME": "Accueil",
+    "MY_REQUESTS": "Mes demandes",
+    "MY_STUDENTS": "Mes élèves",
+    "PROFILE": "Profil",
+    "SUPPORT": "Support"
   },
   "AUTH": {
     "LOGIN": "Connexion",
@@ -411,7 +416,8 @@
     "GENERATE_PASSWORD": "Générer",
     "COPY_PASSWORD": "Copier le mot de passe",
     "PASSWORD_COPIED": "Mot de passe copié",
-    "PASSWORD_RESET_OK": "Mot de passe réinitialisé. Transmettez-le à l'utilisateur."
+    "PASSWORD_RESET_OK": "Mot de passe réinitialisé. Transmettez-le à l'utilisateur.",
+    "PARENT": "Parent"
   },
   "SETTINGS": {
     "TITLE": "Paramètres",
@@ -535,6 +541,15 @@
     "DONE_ACTIVE_TEXT": "Connectez-vous pour configurer vos classes et vos frais : les parents peuvent déjà trouver votre école.",
     "DONE_PENDING_TITLE": "Inscription reçue",
     "DONE_PENDING_TEXT": "Votre établissement sera visible des parents une fois validé par notre équipe. Vous pouvez déjà vous connecter et configurer vos classes et vos frais.",
-    "GO_TO_LOGIN": "Se connecter"
+    "GO_TO_LOGIN": "Se connecter",
+    "CHOICE_TITLE": "Créer un compte",
+    "CHOICE_SUBTITLE": "Choisissez le type de compte.",
+    "CHOICE_PARENT": "Je suis parent",
+    "CHOICE_PARENT_TEXT": "Trouvez une école, demandez une place pour vos enfants, payez la scolarité et suivez chaque dossier.",
+    "CHOICE_SCHOOL": "J'inscris mon école",
+    "CHOICE_SCHOOL_TEXT": "Gérez vos classes, les demandes d'inscription et les paiements des parents.",
+    "PARENT_TITLE": "Créer mon compte parent",
+    "PARENT_SUBTITLE": "Le même compte fonctionne sur l'application mobile.",
+    "PARENT_SUBMIT": "Créer mon compte"
   }
 }

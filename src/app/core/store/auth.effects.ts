@@ -8,8 +8,7 @@ import { AuthService } from '../services/auth.service';
 import { NotificationService } from '../services/notification.service';
 import { SessionSyncService } from '../services/session-sync.service';
 import { AuthActions } from './auth.actions';
-
-const DEFAULT_AUTHENTICATED_ROUTE = '/dashboard';
+import { homeRouteFor } from '../auth/home-route';
 const LOGIN_ROUTE = '/login';
 
 @Injectable()
@@ -103,7 +102,7 @@ export class AuthEffects {
         ofType(AuthActions.loginSuccess),
         tap(({ user, returnUrl }) => {
           this.sessionSync.notifyLogin(user.id);
-          void this.router.navigateByUrl(returnUrl || DEFAULT_AUTHENTICATED_ROUTE);
+          void this.router.navigateByUrl(returnUrl || homeRouteFor(user.role));
         }),
       ),
     { dispatch: false },

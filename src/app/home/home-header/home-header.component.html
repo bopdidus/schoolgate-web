@@ -16,8 +16,8 @@
         {{ currentLang }}
       </button>
       <app-theme-toggle />
-      @if (user$ | async) {
-        <a mat-flat-button color="primary" routerLink="/dashboard" class="dashboard-link">
+      @if (user$ | async; as user) {
+        <a mat-flat-button color="primary" [routerLink]="homeRouteFor(user.role)" class="dashboard-link">
           {{ 'HOME.GO_TO_DASHBOARD' | translate }}
         </a>
       } @else {

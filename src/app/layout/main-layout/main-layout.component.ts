@@ -189,6 +189,13 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       route: '/settings',
       roles: ['admin', 'school_admin', 'school_editor'],
     },
+    // Parent space: the mobile app's tabs.
+    { label: 'NAV.SCHOOLS', icon: 'school', route: '/parent/schools', roles: ['parent'] },
+    { label: 'NAV.MY_REQUESTS', icon: 'fact_check', route: '/parent/requests', roles: ['parent'] },
+    { label: 'NAV.MY_STUDENTS', icon: 'groups', route: '/parent/students', roles: ['parent'] },
+    { label: 'NAV.NOTIFICATIONS', icon: 'notifications', route: '/parent/notifications', roles: ['parent'] },
+    { label: 'NAV.PROFILE', icon: 'person', route: '/parent/profile', roles: ['parent'] },
+    { label: 'NAV.SUPPORT', icon: 'support_agent', route: '/parent/support', roles: ['parent'] },
   ];
 
   resolveRoute(item: NavItem, user: User): string {
