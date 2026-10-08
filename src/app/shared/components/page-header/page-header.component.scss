@@ -6,6 +6,16 @@
   gap: 16px;
 }
 
+/* mat-toolbar forbids wrapping: long titles and subtitles must wrap on phones. */
+.page-header-text {
+  min-width: 0;
+  white-space: normal;
+}
+
+.page-header-toolbar {
+  flex-wrap: wrap;
+}
+
 .page-header-text h1 {
   margin: 0;
   font-size: 26px;
