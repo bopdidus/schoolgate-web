@@ -45,4 +45,16 @@ export const PARENT_ROUTES: Routes = [
     path: 'enroll/:schoolId',
     loadComponent: () => import('./enroll/enroll.component').then((m) => m.EnrollComponent),
   },
+  {
+    path: 'notifications',
+    loadComponent: () => import('./notifications/notifications.component').then((m) => m.NotificationsComponent),
+  },
+  {
+    path: 'profile',
+    loadComponent: () => import('./profile/profile.component').then((m) => m.ProfileComponent),
+  },
+  {
+    path: 'support',
+    loadComponent: () => import('./support/support.component').then((m) => m.SupportComponent),
+  },
 ];

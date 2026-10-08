@@ -1,0 +1,39 @@
+<app-page-header title="NAV.NOTIFICATIONS">
+  @if (hasUnread()) {
+    <button actions mat-stroked-button type="button" (click)="markAllRead()">
+      <mat-icon>done_all</mat-icon>
+      {{ 'NAV.MARK_ALL_READ' | translate }}
+    </button>
+  }
+</app-page-header>
+
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (failed()) {
+  <app-error-state (retry)="load()" />
+} @else if (rows().length === 0) {
+  <app-empty-state icon="notifications_none" title="NAV.NO_NOTIFICATIONS" />
+} @else {
+  <mat-card appearance="outlined" class="page-card">
+    <ul class="notif-list">
+      @for (n of rows(); track n.id) {
+        <li>
+          <button type="button" class="notif" [class.notif--unread]="!n.read" (click)="open(n)">
+            <mat-icon class="notif__icon">{{ n.icon }}</mat-icon>
+            <span class="notif__body">
+              @if (n.title) {
+                <strong>{{ n.title }}</strong>
+              }
+              <span>{{ n.message }}</span>
+              <span class="notif__date">{{ n.createdAt | localeDate }}</span>
+            </span>
+            @if (!n.read) {
+              <span class="notif__dot" [attr.aria-label]="'PARENT.UNREAD' | translate"></span>
+            }
+          </button>
+        </li>
+      }
+    </ul>
+  </mat-card>
+  <mat-paginator [length]="total()" [pageSize]="pageSize" [pageIndex]="page()" [hidePageSize]="true" (page)="onPage($event)" />
+}

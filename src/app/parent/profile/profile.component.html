@@ -1,0 +1,47 @@
+<app-page-header title="NAV.PROFILE" />
+
+@if (user$ | async; as user) {
+  <mat-card appearance="outlined" class="page-card identity">
+    <mat-card-content>
+      <span class="identity__avatar" aria-hidden="true">{{ user.name.charAt(0) || '?' }}</span>
+      <div>
+        <h2>{{ user.name }}</h2>
+        <p class="text-muted">{{ user.email }}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}
+
+<mat-card appearance="outlined" class="page-card">
+  <mat-card-content class="settings">
+    <div class="setting">
+      <span>{{ 'SETTINGS.LANGUAGE' | translate }}</span>
+      <mat-button-toggle-group [value]="lang" (change)="language.setLanguage($event.value)">
+        <mat-button-toggle value="fr">Français</mat-button-toggle>
+        <mat-button-toggle value="en">English</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+    <div class="setting">
+      <span>{{ 'PARENT.THEME' | translate }}</span>
+      <mat-button-toggle-group [value]="theme.mode()" (change)="theme.apply($event.value)">
+        <mat-button-toggle value="system">{{ 'PARENT.THEME_SYSTEM' | translate }}</mat-button-toggle>
+        <mat-button-toggle value="light">{{ 'PARENT.THEME_LIGHT' | translate }}</mat-button-toggle>
+        <mat-button-toggle value="dark">{{ 'PARENT.THEME_DARK' | translate }}</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card appearance="outlined" class="page-card">
+  <nav class="links">
+    <a routerLink="/parent/students"><mat-icon>groups</mat-icon>{{ 'NAV.MY_STUDENTS' | translate }}<mat-icon class="chevron">chevron_right</mat-icon></a>
+    <a routerLink="/parent/requests"><mat-icon>fact_check</mat-icon>{{ 'NAV.MY_REQUESTS' | translate }}<mat-icon class="chevron">chevron_right</mat-icon></a>
+    <a routerLink="/parent/notifications"><mat-icon>notifications</mat-icon>{{ 'NAV.NOTIFICATIONS' | translate }}<mat-icon class="chevron">chevron_right</mat-icon></a>
+    <a routerLink="/parent/support"><mat-icon>support_agent</mat-icon>{{ 'NAV.SUPPORT' | translate }}<mat-icon class="chevron">chevron_right</mat-icon></a>
+  </nav>
+</mat-card>
+
+<button mat-stroked-button color="warn" type="button" class="logout" (click)="logout()">
+  <mat-icon>logout</mat-icon>
+  {{ 'NAV.LOGOUT' | translate }}
+</button>

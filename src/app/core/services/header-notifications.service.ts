@@ -28,6 +28,14 @@ export interface HeaderNotification {
 
 const MAX_RECONNECT_DELAY_MS = 30_000;
 
+/** Where a parent lands from a notification: the enrollment concerned, or their students for payments. */
+export function parentNotificationRoute(dto: NotificationDto): string {
+  const enrollmentId = dto.data?.['enrollment_id'];
+  if (enrollmentId != null) return `/parent/enrollments/${enrollmentId}`;
+  if (dto.type?.startsWith('payment_')) return '/parent/students';
+  return '/parent/notifications';
+}
+
 @Injectable({ providedIn: 'root' })
 export class HeaderNotificationsService implements OnDestroy {
   private readonly notificationsApi = inject(NotificationsService);
@@ -264,18 +272,20 @@ export class HeaderNotificationsService implements OnDestroy {
       return true;
     }
     const user = this.currentUser;
-    if (!user || user.role === 'admin') {
+    // Parents are the recipients themselves; admins see every school.
+    if (!user || user.role === 'admin' || user.role === 'parent') {
       return true;
     }
     return user.schoolId != null && String(schoolId) === String(user.schoolId);
   }
 
   private mapNotification(dto: NotificationDto): HeaderNotification | null {
-    // Parent-facing prompt — staff web app ignores it.
-    if (dto.type === 'payment_requested') {
+    const isParent = this.currentUser?.role === 'parent';
+    // Parent-facing prompt — the back office ignores it.
+    if (dto.type === 'payment_requested' && !isParent) {
       return null;
     }
-    const route = this.routeForType(dto.type);
+    const route = isParent ? parentNotificationRoute(dto) : this.routeForType(dto.type);
     if (!route) {
       return null;
     }

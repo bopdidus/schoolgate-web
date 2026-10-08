@@ -1,0 +1,44 @@
+<app-page-header title="NAV.SUPPORT" subtitle="PARENT.SUPPORT_SUBTITLE" />
+
+<div class="support-grid">
+  <section>
+    <h2>{{ 'PARENT.FAQ_TITLE' | translate }}</h2>
+    <mat-accordion>
+      @for (n of faq; track n) {
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ 'PARENT.FAQ_Q' + n | translate }}</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>{{ 'PARENT.FAQ_A' + n | translate }}</p>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  </section>
+
+  <mat-card appearance="outlined" class="page-card contact">
+    <mat-card-content>
+      <h2>{{ 'PARENT.CONTACT_US' | translate }}</h2>
+      <p class="text-muted">
+        <mat-icon class="inline-icon">mail</mat-icon>
+        <a [href]="'mailto:' + email">{{ email }}</a>
+      </p>
+      <form [formGroup]="form" (ngSubmit)="send()" class="contact__form">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'PARENT.SUBJECT' | translate }}</mat-label>
+          <input matInput formControlName="subject" />
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'PARENT.MESSAGE' | translate }}</mat-label>
+          <textarea matInput rows="5" formControlName="message"></textarea>
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+        <button mat-flat-button color="primary" type="submit">
+          <mat-icon>send</mat-icon>
+          {{ 'PARENT.SEND_MESSAGE' | translate }}
+        </button>
+        <p class="text-muted hint">{{ 'PARENT.SEND_MESSAGE_HINT' | translate }}</p>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

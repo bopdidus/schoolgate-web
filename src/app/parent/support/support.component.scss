@@ -1,0 +1,31 @@
+.support-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr);
+  gap: var(--sp-4);
+  align-items: start;
+
+  @media (max-width: 899px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+h2 {
+  margin: 0 0 var(--sp-3);
+  font-size: 17px;
+}
+
+.contact__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.inline-icon {
+  vertical-align: middle;
+  margin-right: var(--sp-1);
+}
+
+.hint {
+  margin: var(--sp-2) 0 0;
+  font-size: 12px;
+}
