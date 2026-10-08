@@ -40,7 +40,9 @@
     "PASSWORD_RESET_CODE_SENT": "If an account exists for this address, a code has been emailed.",
     "PASSWORD_RESET_CONFIRMED": "Password reset successfully.",
     "INVALID_RESET_CODE": "Invalid or expired code",
-    "SCHOOL_REGISTERED": "{{school_name}} signed up ({{name}}, {{email}})"
+    "SCHOOL_REGISTERED": "{{school_name}} signed up ({{name}}, {{email}})",
+    "PAYMENT_REFUSED": "The operator refused the payment. Check the number and try again.",
+    "PAYMENT_METHOD_UNAVAILABLE": "This payment method is not available at the moment."
   },
   "PASSWORD_RESETS": {
     "TITLE": "Password reset requests",

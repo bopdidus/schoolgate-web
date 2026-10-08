@@ -40,7 +40,9 @@
     "PASSWORD_RESET_CODE_SENT": "Si un compte existe pour cette adresse, un code a été envoyé par email.",
     "PASSWORD_RESET_CONFIRMED": "Mot de passe réinitialisé avec succès.",
     "INVALID_RESET_CODE": "Code invalide ou expiré",
-    "SCHOOL_REGISTERED": "{{school_name}} s'est inscrit ({{name}}, {{email}})"
+    "SCHOOL_REGISTERED": "{{school_name}} s'est inscrit ({{name}}, {{email}})",
+    "PAYMENT_REFUSED": "Le paiement a été refusé par l'opérateur. Vérifiez le numéro et réessayez.",
+    "PAYMENT_METHOD_UNAVAILABLE": "Ce moyen de paiement n'est pas disponible pour le moment."
   },
   "PASSWORD_RESETS": {
     "TITLE": "Demandes de réinitialisation",
