@@ -1,0 +1,44 @@
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (failed()) {
+  <app-error-state (retry)="load()" />
+} @else if (enrollment(); as e) {
+  <mat-card appearance="outlined" class="confirmation">
+    <mat-card-content>
+      <span class="confirmation__icon" [class.confirmation__icon--pending]="e.status === 'pending'">
+        <mat-icon>{{ e.status === 'pending' ? 'hourglass_top' : 'check_circle' }}</mat-icon>
+      </span>
+      <h1>{{ (e.status === 'pending' ? 'PARENT.REQUEST_SENT_TITLE' : 'PARENT.PAYMENT_DONE_TITLE') | translate }}</h1>
+      <p class="text-muted">
+        {{ (e.status === 'pending' ? 'PARENT.REQUEST_SENT_TEXT' : 'PARENT.PAYMENT_DONE_TEXT') | translate }}
+      </p>
+
+      <dl class="receipt">
+        <div><dt>{{ 'PARENT.STUDENT' | translate }}</dt><dd>{{ e.child ? e.child.firstName + ' ' + e.child.lastName : '—' }}</dd></div>
+        <div><dt>{{ 'PARENT.SCHOOL' | translate }}</dt><dd>{{ e.schoolName }}</dd></div>
+        <div><dt>{{ 'PARENT.CLASS' | translate }}</dt><dd>{{ e.offering?.label || '—' }}</dd></div>
+        <div><dt>{{ 'ENROLLMENTS.ACADEMIC_YEAR' | translate }}</dt><dd>{{ e.academicYear }}</dd></div>
+        @for (p of payments(); track p.id) {
+          <div>
+            <dt>{{ paymentLabel(p) }}</dt>
+            <dd>
+              {{ p.amountCents + p.feeCents | cents }}
+              <span [class]="p.status | statusColor" class="receipt__status">{{ ('STATUS.' + p.status.toUpperCase()) | translate }}</span>
+            </dd>
+          </div>
+        }
+      </dl>
+
+      <div class="actions">
+        <a mat-flat-button color="primary" routerLink="/parent/schools">
+          <mat-icon>home</mat-icon>
+          {{ 'PARENT.BACK_HOME' | translate }}
+        </a>
+        <a mat-stroked-button [routerLink]="['/parent/enrollments', e.id]">
+          <mat-icon>{{ e.status === 'pending' ? 'hourglass_top' : 'receipt_long' }}</mat-icon>
+          {{ (e.status === 'pending' ? 'PARENT.TRACK_REQUEST' : 'PARENT.VIEW_ENROLLMENT') | translate }}
+        </a>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}

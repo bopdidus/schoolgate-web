@@ -1,0 +1,61 @@
+<app-page-header title="PARENT.TUITION_LOOKUP_TITLE" subtitle="PARENT.TUITION_LOOKUP_SUBTITLE" />
+
+<mat-card appearance="outlined" class="page-card">
+  <mat-card-content>
+    <form class="search" (ngSubmit)="search()">
+      <mat-form-field appearance="outline" class="search__field">
+        <mat-label>{{ 'PARENT.MATRICULE_OR_NAME' | translate }}</mat-label>
+        <mat-icon matPrefix>badge</mat-icon>
+        <input matInput [formControl]="term" autocomplete="off" />
+        @if (term.touched && term.invalid) {
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        }
+      </mat-form-field>
+      <button mat-flat-button color="primary" type="submit" [disabled]="searching()">
+        @if (searching()) {
+          <mat-spinner diameter="20" />
+        } @else {
+          <ng-container>{{ 'COMMON.SEARCH' | translate }}</ng-container>
+        }
+      </button>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+@if (searched()) {
+  @if (results().length === 0) {
+    <p class="text-muted empty">{{ 'PARENT.NO_STUDENT_FOUND' | translate }}</p>
+  } @else {
+    <div class="results">
+      @for (e of results(); track e.id) {
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <div class="result__head">
+              <strong>{{ e.child ? e.child.firstName + ' ' + e.child.lastName : '—' }}</strong>
+              @if (e.child?.matricule; as m) {
+                <mat-chip-set><mat-chip>{{ m }}</mat-chip></mat-chip-set>
+              }
+            </div>
+            <p class="text-muted">{{ e.schoolName }} · {{ e.offering?.label || '—' }} · {{ e.academicYear }}</p>
+            @if (e.balance; as b) {
+              <p>
+                {{ 'ENROLLMENTS.TUITION_REMAINING' | translate }} :
+                <strong>
+                  @if (b.tuitionSettled) { {{ 'ENROLLMENTS.TUITION_SETTLED' | translate }} } @else { {{ b.tuitionRemainingCents | cents }} }
+                </strong>
+              </p>
+            }
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <a mat-button [routerLink]="['/parent/enrollments', e.id]">{{ 'PARENT.VIEW_ENROLLMENT' | translate }}</a>
+            @if (!e.balance?.tuitionSettled) {
+              <a mat-flat-button color="primary" [routerLink]="['/parent/enrollments', e.id, 'pay']" [queryParams]="{ mode: 'tuition' }">
+                {{ 'PARENT.PAY_TUITION' | translate }}
+              </a>
+            }
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+}

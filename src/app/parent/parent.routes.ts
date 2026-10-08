@@ -30,6 +30,18 @@ export const PARENT_ROUTES: Routes = [
       import('./enrollment-detail/enrollment-detail.component').then((m) => m.EnrollmentDetailComponent),
   },
   {
+    path: 'enrollments/:id/pay',
+    loadComponent: () => import('./pay/pay.component').then((m) => m.PayComponent),
+  },
+  {
+    path: 'confirmation/:id',
+    loadComponent: () => import('./confirmation/confirmation.component').then((m) => m.ConfirmationComponent),
+  },
+  {
+    path: 'tuition',
+    loadComponent: () => import('./tuition/tuition-lookup.component').then((m) => m.TuitionLookupComponent),
+  },
+  {
     path: 'enroll/:schoolId',
     loadComponent: () => import('./enroll/enroll.component').then((m) => m.EnrollComponent),
   },

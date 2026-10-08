@@ -1,0 +1,108 @@
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (failed()) {
+  <app-error-state (retry)="load()" />
+} @else if (enrollment(); as e) {
+  <app-page-header
+    title="PARENT.PAY_TITLE"
+    [subtitle]="(e.child ? e.child.firstName + ' ' + e.child.lastName + ' · ' : '') + e.schoolName + ' · ' + (e.offering?.label || '')"
+  >
+    <a actions mat-stroked-button [routerLink]="['/parent/enrollments', e.id]" [class.disabled]="submitting()">
+      <mat-icon>arrow_back</mat-icon>
+      {{ 'COMMON.BACK' | translate }}
+    </a>
+  </app-page-header>
+
+  @if (!resolvedOption()) {
+    <mat-card appearance="outlined" class="page-card">
+      <mat-card-content class="nothing">
+        <mat-icon>verified</mat-icon>
+        <p>{{ 'PARENT.NOTHING_TO_PAY' | translate }}</p>
+        <a mat-flat-button color="primary" [routerLink]="['/parent/enrollments', e.id]">{{ 'PARENT.BACK_TO_ENROLLMENT' | translate }}</a>
+      </mat-card-content>
+    </mat-card>
+  } @else {
+    <div class="pay-grid">
+      <mat-card appearance="outlined" class="page-card">
+        <mat-card-content>
+          <h3>{{ 'PARENT.WHAT_TO_PAY' | translate }}</h3>
+          <mat-radio-group class="options" [value]="resolvedOption()" (change)="option.set($event.value); advance.set(false)" [disabled]="submitting()">
+            @for (o of lines()!.available; track o) {
+              <mat-radio-button [value]="o">
+                <span class="option">
+                  <span>{{ optionTitle(o) }}</span>
+                  <strong>{{ optionTotal(o) | cents }}</strong>
+                </span>
+              </mat-radio-button>
+            }
+          </mat-radio-group>
+          @if (advanceLines().length > 0) {
+            <mat-slide-toggle [checked]="advance()" (change)="advance.set($event.checked)" [disabled]="submitting()">
+              {{ 'PARENT.PAY_ADVANCE' | translate }} — {{ advanceCents() | cents }}
+            </mat-slide-toggle>
+          }
+
+          <h3>{{ 'PARENT.PAYMENT_METHOD' | translate }}</h3>
+          @if (methods().length === 0) {
+            <p class="notice">{{ 'PARENT.NO_ONLINE_PAYMENT' | translate }}</p>
+          } @else {
+            <mat-button-toggle-group [value]="method()" (change)="method.set($event.value)" [disabled]="submitting()">
+              @for (m of methods(); track m) {
+                <mat-button-toggle [value]="m">
+                  <mat-icon>phone_android</mat-icon>
+                  {{ (m === 'mtn' ? 'PARENT.METHOD_MTN' : 'PARENT.METHOD_ORANGE') | translate }}
+                </mat-button-toggle>
+              }
+            </mat-button-toggle-group>
+          }
+
+          <mat-form-field appearance="outline" class="msisdn">
+            <mat-label>{{ 'PARENT.PAYER_NUMBER' | translate }}</mat-label>
+            <mat-icon matPrefix>call</mat-icon>
+            <input matInput type="tel" [formControl]="msisdn" placeholder="6XX XX XX XX" autocomplete="tel" />
+            <mat-hint>{{ 'PARENT.PAYER_NUMBER_HINT' | translate }}</mat-hint>
+            @if (msisdn.hasError('msisdn') || msisdn.hasError('required')) {
+              <mat-error>{{ 'PARENT.PAYER_NUMBER_INVALID' | translate }}</mat-error>
+            }
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined" class="page-card summary">
+        <mat-card-content>
+          <h3>{{ 'PARENT.SUMMARY' | translate }}</h3>
+          <div class="row"><span>{{ 'PARENT.AMOUNT_TO_SCHOOL' | translate }}</span><span>{{ schoolCents() | cents }}</span></div>
+          @if (feePercent() > 0) {
+            <div class="row"><span>{{ 'PARENT.SERVICE_FEE' | translate: { percent: feePercent() } }}</span><span>{{ feeCents() | cents }}</span></div>
+          }
+          <div class="row total"><span>{{ 'PARENT.TOTAL_TO_PAY' | translate }}</span><span>{{ schoolCents() + feeCents() | cents }}</span></div>
+
+          @if (awaitingPhone()) {
+            <div class="waiting" role="status">
+              <mat-spinner diameter="28" />
+              <span>{{ 'PARENT.CONFIRM_ON_PHONE' | translate }}</span>
+            </div>
+          }
+          @if (error(); as err) {
+            <p class="error" role="alert">{{ err }}</p>
+          }
+
+          <button
+            mat-flat-button
+            color="primary"
+            class="pay-btn"
+            type="button"
+            [disabled]="submitting() || !method()"
+            (click)="pay()"
+          >
+            @if (submitting()) {
+              <mat-spinner diameter="20" />
+            } @else {
+              <ng-container>{{ 'PARENT.PAY_AMOUNT' | translate: { amount: (schoolCents() + feeCents() | cents) } }}</ng-container>
+            }
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+}
