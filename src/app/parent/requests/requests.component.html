@@ -1,0 +1,34 @@
+<app-page-header title="NAV.MY_REQUESTS" subtitle="PARENT.REQUESTS_SUBTITLE" />
+
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (failed()) {
+  <app-error-state (retry)="load()" />
+} @else if (requests().length === 0) {
+  <app-empty-state
+    icon="fact_check"
+    title="PARENT.NO_REQUESTS"
+    description="PARENT.NO_REQUESTS_HINT"
+    actionLabel="PARENT.FIND_SCHOOL"
+    (actionClick)="findSchool()"
+  />
+} @else {
+  <div class="request-list">
+    @for (r of requests(); track r.id) {
+      <a class="request" [routerLink]="['/parent/enrollments', r.id]">
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <div class="request__head">
+              <strong>{{ r.child ? r.child.firstName + ' ' + r.child.lastName : '—' }}</strong>
+              <mat-chip-set>
+                <mat-chip [class]="r.status | statusColor">{{ ('PARENT.STATUS_' + r.status.toUpperCase()) | translate }}</mat-chip>
+              </mat-chip-set>
+            </div>
+            <p class="request__meta">{{ r.schoolName }} · {{ r.offering?.label || '—' }} · {{ r.academicYear }}</p>
+            <p class="request__date text-muted">{{ 'PARENT.SENT_ON' | translate }} {{ r.createdAt | localeDate }}</p>
+          </mat-card-content>
+        </mat-card>
+      </a>
+    }
+  </div>
+}

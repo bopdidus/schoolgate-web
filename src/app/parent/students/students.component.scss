@@ -1,0 +1,78 @@
+.tuition-toggle {
+  align-self: center;
+  flex-wrap: wrap;
+}
+
+.student-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--sp-3);
+}
+
+.student {
+  color: inherit;
+  text-decoration: none;
+
+  mat-card {
+    height: 100%;
+    transition: border-color var(--dur-fast);
+  }
+
+  &:hover mat-card,
+  &:focus-visible mat-card {
+    border-color: var(--mat-sys-primary);
+  }
+}
+
+.student__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.student__meta {
+  margin: var(--sp-1) 0 var(--sp-3);
+  font-size: 13px;
+}
+
+.amounts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+  margin: 0;
+
+  dt {
+    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 700;
+  }
+}
+
+.amount-paid {
+  color: var(--mat-sys-primary);
+}
+
+.amount-pending {
+  margin: var(--sp-2) 0 0;
+  font-size: 12px;
+  color: var(--mat-sys-tertiary);
+}
+
+.fee-chip--paid {
+  --mat-chip-label-text-color: var(--sem-success);
+}
+
+.fee-chip--partial,
+.fee-chip--pending {
+  --mat-chip-label-text-color: var(--sem-warning);
+}
+
+.fee-chip--unpaid {
+  --mat-chip-label-text-color: var(--sem-danger);
+}

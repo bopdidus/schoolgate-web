@@ -1,0 +1,127 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--radius-md);
+
+  mat-icon {
+    flex-shrink: 0;
+  }
+
+  &--info {
+    background: color-mix(in srgb, var(--sem-info) 12%, transparent);
+  }
+
+  &--success {
+    background: color-mix(in srgb, var(--sem-success) 12%, transparent);
+  }
+
+  &--warn {
+    background: color-mix(in srgb, var(--sem-warning) 14%, transparent);
+  }
+
+  &--danger {
+    background: color-mix(in srgb, var(--sem-danger) 12%, transparent);
+  }
+}
+
+.money-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
+}
+
+.money-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: 4px 0;
+
+  &.paid span:last-child {
+    color: var(--mat-sys-primary);
+  }
+
+  &.pending span:last-child {
+    color: var(--mat-sys-tertiary);
+  }
+
+  &.total {
+    margin: var(--sp-2) 0;
+    padding-top: var(--sp-2);
+    border-top: 1px solid var(--mat-sys-outline-variant);
+    font-weight: 800;
+  }
+}
+
+.installments,
+.checklist,
+.payments {
+  list-style: none;
+  margin: var(--sp-3) 0 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: 6px 0;
+  }
+
+  mat-icon {
+    flex-shrink: 0;
+    color: var(--mat-sys-on-surface-variant);
+
+    &.done {
+      color: var(--mat-sys-primary);
+    }
+  }
+}
+
+.installments {
+  font-size: 13px;
+}
+
+.installments__label,
+.checklist__label {
+  flex: 1;
+  min-width: 0;
+}
+
+.payments li {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.payments__right {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.inline-icon {
+  vertical-align: middle;
+  margin-right: var(--sp-1);
+}
+
+.upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  color: var(--mat-sys-primary);
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background: var(--mat-sys-surface-container);
+  }
+}

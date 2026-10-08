@@ -1,0 +1,233 @@
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (failed()) {
+  <app-error-state (retry)="load()" />
+} @else if (enrollment(); as e) {
+  <app-page-header
+    [title]="e.child ? e.child.firstName + ' ' + e.child.lastName : 'PARENT.ENROLLMENT'"
+    [subtitle]="e.schoolName + ' · ' + (e.offering?.label || '') + ' · ' + e.academicYear"
+  >
+    <div actions class="flex-row">
+      <a mat-stroked-button routerLink="/parent/requests">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'COMMON.BACK' | translate }}
+      </a>
+      @if (canPay()) {
+        <a mat-flat-button color="primary" [routerLink]="['/parent/enrollments', e.id, 'pay']">
+          <mat-icon>payments</mat-icon>
+          {{ 'PARENT.PAY_NOW' | translate }}
+        </a>
+      }
+    </div>
+  </app-page-header>
+
+  <!-- Status and deadlines -->
+  @switch (e.status) {
+    @case ('pending') {
+      <p class="banner banner--info">
+        <mat-icon>schedule</mat-icon>
+        @if (e.reviewDueAt) {
+          {{ 'PARENT.REVIEW_DUE' | translate: { date: (e.reviewDueAt | localeDate) } }}
+        } @else {
+          {{ 'PARENT.UNDER_REVIEW' | translate }}
+        }
+      </p>
+    }
+    @case ('active') {
+      @if (canPay() && paymentDaysLeft() !== null) {
+        <p class="banner" [class.banner--danger]="paymentDaysLeft()! <= 3" [class.banner--info]="paymentDaysLeft()! > 3">
+          <mat-icon>event</mat-icon>
+          @if (paymentDaysLeft()! < 0) {
+            {{ 'PARENT.PAYMENT_OVERDUE' | translate: { date: (e.paymentDueAt | localeDate) } }}
+          } @else {
+            {{ 'PARENT.PAYMENT_DUE' | translate: { date: (e.paymentDueAt | localeDate), days: paymentDaysLeft() } }}
+          }
+        </p>
+      } @else if (!canPay()) {
+        <p class="banner banner--success">
+          <mat-icon>verified</mat-icon>
+          {{ 'PARENT.ALL_PAID' | translate }}
+        </p>
+      }
+    }
+    @case ('cancelled') {
+      <p class="banner banner--danger">
+        <mat-icon>cancel</mat-icon>
+        {{ 'PARENT.REQUEST_REFUSED' | translate }}
+        @if (rejectionText(e); as reason) { — {{ reason }} }
+      </p>
+    }
+  }
+  @if (e.matriculeVerificationStatus === 'denied' || e.matriculeVerificationStatus === 'unavailable') {
+    <p class="banner banner--warn">
+      <mat-icon>info</mat-icon>
+      {{ 'PARENT.MATRICULE_NOT_CONFIRMED' | translate }}
+    </p>
+  }
+
+  <!-- The student -->
+  <mat-card appearance="outlined" class="page-card">
+    <mat-card-content>
+      <div class="detail-list cols-3">
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'COMMON.STATUS' | translate }}</span>
+          <p class="detail-list__value">
+            <mat-chip-set>
+              <mat-chip [class]="e.status | statusColor">{{ ('PARENT.STATUS_' + e.status.toUpperCase()) | translate }}</mat-chip>
+            </mat-chip-set>
+          </p>
+        </div>
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'PARENT.STUDENT_TYPE' | translate }}</span>
+          <p class="detail-list__value">{{ (e.isReturningStudent ? 'PARENT.RETURNING' : 'PARENT.NEW') | translate }}</p>
+        </div>
+        @if (e.child?.gender; as g) {
+          <div class="detail-list__item">
+            <span class="detail-list__label">{{ 'PARENT.STUDENT_GENDER' | translate }}</span>
+            <p class="detail-list__value">{{ (g === 'female' ? 'PARENT.GENDER_FEMALE' : 'PARENT.GENDER_MALE') | translate }}</p>
+          </div>
+        }
+        @if (e.child?.matricule; as m) {
+          <div class="detail-list__item">
+            <span class="detail-list__label">{{ 'PARENT.MATRICULE' | translate }}</span>
+            <p class="detail-list__value"><strong>{{ m }}</strong></p>
+          </div>
+        }
+        <div class="detail-list__item">
+          <span class="detail-list__label">{{ 'PARENT.SENT_ON' | translate }}</span>
+          <p class="detail-list__value">{{ e.createdAt | localeDate }}</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="money-grid">
+    <!-- Enrollment fee -->
+    @if (fee(); as f) {
+      <mat-card appearance="outlined" class="money-card">
+        <mat-card-header><mat-card-title>{{ 'PARENT.ENROLLMENT_FEE' | translate }}</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <div class="money-row"><span>{{ 'PARENT.AMOUNT' | translate }}</span><span>{{ f.totalCents | cents }}</span></div>
+          <div class="money-row paid"><span>{{ 'ENROLLMENTS.TUITION_PAID' | translate }}</span><span>{{ f.paidCents | cents }}</span></div>
+          @if (f.pendingCents > 0) {
+            <div class="money-row pending"><span>{{ 'ENROLLMENTS.TUITION_PENDING' | translate }}</span><span>{{ f.pendingCents | cents }}</span></div>
+          }
+          <div class="money-row total">
+            <span>{{ 'ENROLLMENTS.TUITION_REMAINING' | translate }}</span>
+            <span>
+              @if (f.settled) { {{ 'PARENT.PAID' | translate }} } @else { {{ f.remainingCents | cents }} }
+            </span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Tuition -->
+    @if (tuition(); as t) {
+      <mat-card appearance="outlined" class="money-card">
+        <mat-card-header><mat-card-title>{{ 'ENROLLMENTS.TUITION_TRACKING' | translate }}</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <div class="money-row"><span>{{ 'ENROLLMENTS.TUITION_TOTAL' | translate }}</span><span>{{ t.total | cents }}</span></div>
+          <div class="money-row paid"><span>{{ 'ENROLLMENTS.TUITION_PAID' | translate }}</span><span>{{ t.paid | cents }}</span></div>
+          @if (t.pending > 0) {
+            <div class="money-row pending"><span>{{ 'ENROLLMENTS.TUITION_PENDING' | translate }}</span><span>{{ t.pending | cents }}</span></div>
+          }
+          <div class="money-row total"><span>{{ 'ENROLLMENTS.TUITION_REMAINING' | translate }}</span><span>{{ t.remaining | cents }}</span></div>
+          <mat-progress-bar mode="determinate" [value]="t.total > 0 ? (t.paid / t.total) * 100 : 0" />
+          <ul class="installments">
+            @for (i of t.installments; track i.number) {
+              <li>
+                <mat-icon [class.done]="i.remaining === 0">{{ i.remaining === 0 ? 'check_circle' : 'schedule' }}</mat-icon>
+                <span class="installments__label">{{ 'PARENT.INSTALLMENT_N' | translate: { n: i.number } }} · {{ i.dueDate | localeDate }}</span>
+                <span>{{ i.paid | cents }} / {{ i.amount | cents }}</span>
+              </li>
+            }
+          </ul>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+
+  <!-- Documents -->
+  @if (checklist().length > 0) {
+    <mat-card appearance="outlined" class="page-card">
+      <mat-card-header><mat-card-title>{{ 'PARENT.DOCUMENTS' | translate }}</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <ul class="checklist">
+          @for (item of checklist(); track item.documentType.id + item.purpose) {
+            <li>
+              <mat-icon [class.done]="item.satisfied">{{ item.satisfied ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+              <span class="checklist__label">
+                {{ item.documentType.label }}
+                @if (!item.required) { <span class="text-muted">({{ 'PARENT.OPTIONAL' | translate }})</span> }
+              </span>
+              @if (!item.satisfied && e.status !== 'cancelled') {
+                @if (uploading() === item.documentType.id) {
+                  <mat-spinner diameter="20" />
+                } @else {
+                  <label class="upload-btn">
+                    <input type="file" hidden multiple accept=".pdf,.jpg,.jpeg,.png" (change)="onFiles($event, item)" />
+                    <mat-icon>upload_file</mat-icon> {{ 'PARENT.ADD_FILE' | translate }}
+                  </label>
+                }
+              }
+            </li>
+          }
+        </ul>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Payments -->
+  <mat-card appearance="outlined" class="page-card">
+    <mat-card-header><mat-card-title>{{ 'PARENT.PAYMENTS' | translate }}</mat-card-title></mat-card-header>
+    <mat-card-content>
+      @if (sortedPayments().length === 0) {
+        <p class="text-muted">{{ 'PARENT.NO_PAYMENTS' | translate }}</p>
+      } @else {
+        <ul class="payments">
+          @for (p of sortedPayments(); track p.id) {
+            <li>
+              <div>
+                <strong>{{ paymentLabel(p) }}</strong>
+                <span class="text-muted">
+                  · {{ p.declaredAt | localeDate }}
+                  @if (p.externalReference) { · {{ p.externalReference }} }
+                </span>
+              </div>
+              <div class="payments__right">
+                <span>{{ p.amountCents + p.feeCents | cents }}</span>
+                <mat-chip-set>
+                  <mat-chip [class]="p.status | statusColor">{{ ('STATUS.' + p.status.toUpperCase()) | translate }}</mat-chip>
+                </mat-chip-set>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Invoices -->
+  @if (invoices().length > 0) {
+    <mat-card appearance="outlined" class="page-card">
+      <mat-card-header><mat-card-title>{{ 'PARENT.INVOICES' | translate }}</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <ul class="payments">
+          @for (inv of invoices(); track inv.id) {
+            <li>
+              <div>
+                <mat-icon class="inline-icon">receipt_long</mat-icon>
+                <strong>{{ inv.amountCents | cents }}</strong>
+                <span class="text-muted">· {{ inv.issuedAt | localeDate }}</span>
+              </div>
+              <a mat-button [routerLink]="['/invoices', inv.id]">
+                {{ 'COMMON.VIEW' | translate }}
+              </a>
+            </li>
+          }
+        </ul>
+      </mat-card-content>
+    </mat-card>
+  }
+}

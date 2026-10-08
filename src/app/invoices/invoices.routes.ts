@@ -16,6 +16,7 @@ export const INVOICE_ROUTES: Routes = [
       import('./invoice-detail/invoice-detail.component').then(
         (m) => m.InvoiceDetailComponent,
       ),
-    canActivate: [roleGuard(['admin', 'school_admin', 'school_editor'])],
+    // Parents open the invoices of their own payments (the API scopes them).
+    canActivate: [roleGuard(['admin', 'school_admin', 'school_editor', 'parent'])],
   },
 ];

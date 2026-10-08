@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -17,7 +18,6 @@ import { BrandLogoComponent } from '../../shared/components/brand-logo/brand-log
   selector: 'app-invoice-detail',
   standalone: true,
   imports: [
-    RouterLink,
     MatButtonModule,
     MatIconModule,
     MatCardModule,
@@ -35,6 +35,7 @@ import { BrandLogoComponent } from '../../shared/components/brand-logo/brand-log
 })
 export class InvoiceDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly location = inject(Location);
   private readonly invoiceService = inject(InvoiceService);
 
   readonly loading = signal(true);
@@ -66,6 +67,11 @@ export class InvoiceDetailComponent implements OnInit {
       },
       error: () => this.verifying.set(false),
     });
+  }
+
+  /** Back to wherever the invoice was opened from (staff list or a parent's enrollment). */
+  back(): void {
+    this.location.back();
   }
 
   print(): void {

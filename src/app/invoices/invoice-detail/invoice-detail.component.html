@@ -3,7 +3,7 @@
 } @else if (invoice(); as inv) {
   <app-page-header title="INVOICES.DETAIL">
     <div actions class="flex-row no-print">
-      <button mat-stroked-button routerLink="/invoices">{{ 'COMMON.BACK' | translate }}</button>
+      <button mat-stroked-button type="button" (click)="back()">{{ 'COMMON.BACK' | translate }}</button>
       <button mat-stroked-button (click)="verify()" [disabled]="verifying()">
         <mat-icon>verified</mat-icon>
         {{ 'INVOICES.VERIFY' | translate }}

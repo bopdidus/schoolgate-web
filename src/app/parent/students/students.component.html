@@ -1,0 +1,93 @@
+<app-page-header title="NAV.MY_STUDENTS" subtitle="PARENT.STUDENTS_SUBTITLE" />
+
+<mat-card appearance="outlined" class="filter-card">
+  <mat-card-content>
+    <div class="filter-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'ENROLLMENTS.ACADEMIC_YEAR' | translate }}</mat-label>
+        <mat-select [value]="year()" (selectionChange)="onYear($event.value)">
+          <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
+          @for (y of years; track y) {
+            <mat-option [value]="y">{{ y }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'PARENT.CLASS' | translate }}</mat-label>
+        <mat-select [value]="classId()" (selectionChange)="classId.set($event.value)">
+          <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
+          @for (c of classes(); track c.id) {
+            <mat-option [value]="c.id">{{ c.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-button-toggle-group
+        class="tuition-toggle"
+        [value]="tuition()"
+        (change)="tuition.set($event.value)"
+        [attr.aria-label]="'ENROLLMENTS.TUITION' | translate"
+      >
+        <mat-button-toggle value="all">{{ 'COMMON.ALL' | translate }}</mat-button-toggle>
+        <mat-button-toggle value="settled">{{ 'ENROLLMENTS.TUITION_SETTLED' | translate }}</mat-button-toggle>
+        <mat-button-toggle value="owing">{{ 'ENROLLMENTS.TUITION_NOT_SETTLED' | translate }}</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (failed()) {
+  <app-error-state (retry)="load()" />
+} @else if (rows().length === 0) {
+  <app-empty-state
+    icon="groups"
+    title="PARENT.NO_STUDENTS"
+    description="PARENT.NO_STUDENTS_HINT"
+    actionLabel="PARENT.FIND_SCHOOL"
+    (actionClick)="findSchool()"
+  />
+} @else {
+  <div class="student-grid">
+    @for (e of rows(); track e.id) {
+      <a class="student" [routerLink]="['/parent/enrollments', e.id]">
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <div class="student__head">
+              <strong>{{ e.child ? e.child.firstName + ' ' + e.child.lastName : '—' }}</strong>
+              @if (e.balance; as b) {
+                <mat-chip-set>
+                  <mat-chip [class]="'fee-chip fee-chip--' + b.enrollmentFeeStatus">
+                    {{ 'ENROLLMENTS.ENROLLMENT_FEE' | translate }} : {{ ('ENROLLMENTS.FEE_' + b.enrollmentFeeStatus.toUpperCase()) | translate }}
+                  </mat-chip>
+                </mat-chip-set>
+              }
+            </div>
+            <p class="text-muted student__meta">{{ e.offering?.label || '—' }} · {{ e.schoolName }} · {{ e.academicYear }}</p>
+            @if (e.balance; as b) {
+              <dl class="amounts">
+                <div>
+                  <dt>{{ 'ENROLLMENTS.TUITION_PAID' | translate }}</dt>
+                  <dd class="amount-paid">{{ b.tuitionPaidCents | cents }} <span class="text-muted">/ {{ b.tuitionTotalCents | cents }}</span></dd>
+                </div>
+                <div>
+                  <dt>{{ 'ENROLLMENTS.TUITION_REMAINING' | translate }}</dt>
+                  <dd class="amount-remaining">
+                    @if (b.tuitionSettled) {
+                      {{ 'ENROLLMENTS.TUITION_SETTLED' | translate }}
+                    } @else {
+                      {{ b.tuitionRemainingCents | cents }}
+                    }
+                  </dd>
+                </div>
+              </dl>
+              @if (b.tuitionPendingCents > 0) {
+                <p class="amount-pending">+ {{ b.tuitionPendingCents | cents }} {{ 'ENROLLMENTS.PENDING_SHORT' | translate }}</p>
+              }
+            }
+          </mat-card-content>
+        </mat-card>
+      </a>
+    }
+  </div>
+}

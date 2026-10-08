@@ -17,6 +17,19 @@ export const PARENT_ROUTES: Routes = [
     loadComponent: () => import('./schools/school-detail.component').then((m) => m.SchoolDetailComponent),
   },
   {
+    path: 'requests',
+    loadComponent: () => import('./requests/requests.component').then((m) => m.RequestsComponent),
+  },
+  {
+    path: 'students',
+    loadComponent: () => import('./students/students.component').then((m) => m.StudentsComponent),
+  },
+  {
+    path: 'enrollments/:id',
+    loadComponent: () =>
+      import('./enrollment-detail/enrollment-detail.component').then((m) => m.EnrollmentDetailComponent),
+  },
+  {
     path: 'enroll/:schoolId',
     loadComponent: () => import('./enroll/enroll.component').then((m) => m.EnrollComponent),
   },
