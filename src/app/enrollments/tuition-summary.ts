@@ -1,6 +1,13 @@
 import { Payment } from '../payments/payment.model';
 
-/** One tuition installment of the student's class (amounts in XAF). */
+/**
+ * The payment fields the summary reads. Units are the caller's: XAF for the
+ * back office (`Payment.amount`), cents for the parent space; installments
+ * must use the same unit.
+ */
+export type TuitionPayment = Pick<Payment, 'type' | 'installmentNumber' | 'status' | 'amount'>;
+
+/** One tuition installment of the student's class (same unit as the payments). */
 export interface TuitionInstallment {
   number: number;
   amount: number;
@@ -32,9 +39,9 @@ export interface TuitionSummary {
  */
 export function buildTuitionSummary(
   installments: TuitionInstallment[],
-  payments: Payment[],
+  payments: TuitionPayment[],
 ): TuitionSummary {
-  const sum = (number: number, status: Payment['status']) =>
+  const sum = (number: number, status: TuitionPayment['status']) =>
     payments
       .filter(
         (p) =>
