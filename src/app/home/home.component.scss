@@ -40,6 +40,10 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
+.home-footer a {
+  color: inherit;
+}
+
 .home-footer__inner {
   display: flex;
   flex-wrap: wrap;

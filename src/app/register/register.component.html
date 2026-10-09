@@ -155,6 +155,11 @@
           }
         </button>
 
+        <p class="privacy-notice">
+          {{ 'REGISTER.PRIVACY_NOTICE' | translate }}
+          <a routerLink="/privacy" target="_blank">{{ 'PRIVACY.LINK_INLINE' | translate }}</a>.
+        </p>
+
         <div class="register-links">
           <span>{{ 'REGISTER.HAVE_ACCOUNT' | translate }}</span>
           <a mat-button routerLink="/login" class="login-link">{{ 'AUTH.LOGIN' | translate }}</a>

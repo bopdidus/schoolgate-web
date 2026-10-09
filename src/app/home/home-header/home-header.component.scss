@@ -10,7 +10,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--sp-4);
+  gap: var(--sp-2);
   min-height: 64px;
 }
 
@@ -37,7 +37,17 @@
 .home-header__actions {
   display: flex;
   align-items: center;
-  gap: var(--sp-2);
+  gap: var(--sp-1);
+
+  @media (min-width: 600px) {
+    gap: var(--sp-2);
+  }
+
+  // Phones (360 px): the language button drops its 64 px minimum so the
+  // header fits without scrolling sideways.
+  .mat-mdc-button {
+    min-width: 0;
+  }
 }
 
 // Small screens keep the hero's buttons as the way in; the header stays light.

@@ -1,0 +1,39 @@
+<app-home-header />
+
+<main class="public-container privacy">
+  <h1 class="privacy__title">{{ 'PRIVACY.TITLE' | translate }}</h1>
+  <p class="privacy__updated">{{ 'PRIVACY.UPDATED' | translate }}</p>
+  <p class="privacy__intro">{{ 'PRIVACY.INTRO' | translate }}</p>
+
+  @for (section of asSections(sections()); track $index) {
+    <section class="privacy__section">
+      <h2>{{ $index + 1 }}. {{ section.title }}</h2>
+      @if (section.items?.length) {
+        <ul>
+          @for (item of section.items; track $index) {
+            <li>{{ item }}</li>
+          }
+        </ul>
+      }
+      @for (p of section.paragraphs ?? []; track $index) {
+        <p>{{ p }}</p>
+      }
+    </section>
+  }
+
+  <section class="privacy__contact">
+    <mat-icon>mail</mat-icon>
+    <div>
+      <h2>{{ 'PRIVACY.CONTACT_TITLE' | translate }}</h2>
+      <p>{{ 'PRIVACY.CONTACT_TEXT' | translate }}</p>
+      <a [href]="'mailto:' + email">{{ email }}</a>
+    </div>
+  </section>
+</main>
+
+<footer class="privacy-footer">
+  <div class="public-container privacy-footer__inner">
+    <span>© {{ year }} Senior Digital Soft</span>
+    <a routerLink="/">{{ 'PRIVACY.BACK_HOME' | translate }}</a>
+  </div>
+</footer>

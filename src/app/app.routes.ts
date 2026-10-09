@@ -10,6 +10,11 @@ export const routes: Routes = [
     loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
   },
   {
+    // Public privacy policy: linked from sign-up, the footer and store listings.
+    path: 'privacy',
+    loadComponent: () => import('./privacy/privacy.component').then((m) => m.PrivacyComponent),
+  },
+  {
     path: 'register',
     loadComponent: () =>
       import('./layout/auth-layout/auth-layout.component').then(

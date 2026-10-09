@@ -233,3 +233,15 @@
   background: var(--mat-sys-primary-container);
   color: var(--mat-sys-on-primary-container);
 }
+
+// Consent line under sign-up forms, linking to /privacy.
+.privacy-notice {
+  margin: var(--sp-3) 0 0;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+
+  a {
+    color: var(--mat-sys-primary);
+  }
+}

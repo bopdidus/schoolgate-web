@@ -552,7 +552,8 @@
     "CHOICE_SCHOOL_TEXT": "Manage your classes, enrollment requests and parents' payments.",
     "PARENT_TITLE": "Create my parent account",
     "PARENT_SUBTITLE": "The same account works on the mobile app.",
-    "PARENT_SUBMIT": "Create my account"
+    "PARENT_SUBMIT": "Create my account",
+    "PRIVACY_NOTICE": "By creating an account, you agree to our"
   },
   "PARENT": {
     "SCHOOLS_TITLE": "Find a school",
@@ -706,5 +707,103 @@
     "SEND_MESSAGE": "Send",
     "SEND_MESSAGE_HINT": "Your mail app opens with the message ready to send.",
     "SUPPORT_SUBJECT_PREFIX": "[SchoolGate]"
+  },
+  "PRIVACY": {
+    "LINK": "Privacy policy",
+    "LINK_INLINE": "privacy policy",
+    "TITLE": "Privacy policy",
+    "UPDATED": "Last updated: October 9, 2026",
+    "INTRO": "SchoolGate lets parents apply for a place at a school, follow their children's enrollments and pay school fees with Mobile Money. This policy explains what data we process, why, who we share it with and how to exercise your rights. It covers both the SchoolGate mobile app and website.",
+    "CONTACT_TITLE": "Contact us",
+    "CONTACT_TEXT": "For any question about your data or to exercise your rights, write to us:",
+    "BACK_HOME": "Back to home",
+    "SECTIONS": [
+      {
+        "title": "Data controller",
+        "paragraphs": [
+          "SchoolGate is published by Senior Digital Soft (Cameroon), which controls the processing of your data. Schools use SchoolGate to handle the requests they receive; they remain responsible for how they use their students' records."
+        ]
+      },
+      {
+        "title": "Data we collect",
+        "items": [
+          "Your account: first and last name, email address, phone number and password (stored only as an irreversible hash, never in plain text).",
+          "Your children: first and last name, date of birth, sex and the student ID assigned by the school.",
+          "Enrollment requests: school, class, school year, request status and the documents you upload (birth certificate, report cards, etc.).",
+          "Payments: amount, fees concerned, operator (MTN Mobile Money or Orange Money), phone number used, transaction reference and status. We never receive your Mobile Money PIN.",
+          "Technical data: your device's notification token (mobile app) and security logs (IP address, sign-in date and time)."
+        ]
+      },
+      {
+        "title": "Why we use it",
+        "items": [
+          "To create your account, sign you in and keep your session secure.",
+          "To send your enrollment requests to the school you choose and tell you its decision.",
+          "To process your payments, issue invoices and track tuition.",
+          "To notify you about your requests and payments.",
+          "To prevent fraud and abuse (for example by limiting sign-in or payment attempts).",
+          "To meet our legal obligations, including accounting."
+        ],
+        "paragraphs": [
+          "This processing relies on providing the service you ask for, on our legal obligations and on our legitimate interest in keeping the platform secure. We do not use your data for advertising and we do not sell it."
+        ]
+      },
+      {
+        "title": "Who we share it with",
+        "items": [
+          "The school you apply to: it only sees the information and documents tied to that request and the payments made to it.",
+          "Notch Pay, MTN Mobile Money and Orange Money, to carry out the payments you start.",
+          "Google Firebase Cloud Messaging, to deliver notifications to your phone.",
+          "Our hosting and database providers, who process data on our behalf only.",
+          "Authorities, when the law requires it."
+        ]
+      },
+      {
+        "title": "Transfers outside Cameroon",
+        "paragraphs": [
+          "Some of our providers (hosting, notifications) store or process data outside Cameroon. We only use providers offering appropriate security and confidentiality safeguards."
+        ]
+      },
+      {
+        "title": "How long we keep it",
+        "items": [
+          "Account and children data: while your account is active, then deleted or anonymized after it is closed.",
+          "Enrollment requests and their documents: for the school year concerned and the handling of any dispute.",
+          "Payments and invoices: for the legal retention period of accounting records (10 years).",
+          "Sign-in sessions: they expire automatically after a few days."
+        ]
+      },
+      {
+        "title": "Security",
+        "paragraphs": [
+          "Traffic is encrypted (HTTPS). Passwords are hashed irreversibly. On the web, the access token stays in memory and the session relies on a secure cookie that scripts cannot read. Access is limited by role: a parent only sees their own children, a school only its own records."
+        ]
+      },
+      {
+        "title": "Cookies and local storage",
+        "paragraphs": [
+          "The website uses a single cookie, strictly needed to keep you signed in. It also stores your preferences (language, theme) and the profile details shown in your browser. We use no advertising cookies and no audience-measurement tools."
+        ]
+      },
+      {
+        "title": "Children's data",
+        "paragraphs": [
+          "Information about minors is entered by their parent or legal guardian, who confirms having the authority to do so. It is only used for the child's enrollment and school follow-up."
+        ]
+      },
+      {
+        "title": "Your rights",
+        "paragraphs": [
+          "Under Cameroonian personal data protection rules, you can access your data, have it corrected, ask for it to be deleted, object to some processing and get a copy of it. You can ask for your account and its data to be deleted at any time by writing to support; some payment records are kept as long as the law requires.",
+          "We reply within 30 days. If you believe your rights are not respected, you can contact the competent data protection authority."
+        ]
+      },
+      {
+        "title": "Changes",
+        "paragraphs": [
+          "We may update this policy. The date at the top shows the latest version; if a change is significant, we will let you know in the app."
+        ]
+      }
+    ]
   }
 }
