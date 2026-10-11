@@ -4,7 +4,9 @@ import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HomeHeaderComponent } from '../home/home-header/home-header.component';
-import { SUPPORT_EMAIL } from '../parent/support/support.component';
+
+/** Address for privacy questions and data-rights requests. */
+export const PRIVACY_EMAIL = 'businessbopda@gmail.com';
 
 /** One heading of the policy, as written in the PRIVACY.SECTIONS translation array. */
 export interface PrivacySection {
@@ -28,7 +30,7 @@ export interface PrivacySection {
   styleUrl: './privacy.component.scss',
 })
 export class PrivacyComponent {
-  readonly email = SUPPORT_EMAIL;
+  readonly email = PRIVACY_EMAIL;
   readonly year = new Date().getFullYear();
 
   readonly sections = toSignal(

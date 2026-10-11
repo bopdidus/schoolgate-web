@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PrivacyComponent } from './privacy.component';
-import { SUPPORT_EMAIL } from '../parent/support/support.component';
+import { PRIVACY_EMAIL, PrivacyComponent } from './privacy.component';
 import { provideTestDefaults } from '../../testing/test-providers';
 
 describe('PrivacyComponent', () => {
@@ -39,9 +38,9 @@ describe('PrivacyComponent', () => {
     expect(el().querySelectorAll('.privacy__section li').length).toBe(2);
   });
 
-  it('gives the support address to exercise one’s rights', () => {
+  it('gives the privacy contact address to exercise one’s rights', () => {
     const link = el().querySelector('.privacy__contact a');
-    expect(link?.getAttribute('href')).toBe(`mailto:${SUPPORT_EMAIL}`);
+    expect(link?.getAttribute('href')).toBe(`mailto:${PRIVACY_EMAIL}`);
   });
 
   it('renders nothing rather than failing while translations are missing', () => {
