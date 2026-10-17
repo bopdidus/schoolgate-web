@@ -26,6 +26,8 @@ export interface DashboardRecentPayment {
   amount: number;
   status: string;
   declaredAt: string;
+  /** Paid by hand to the school: only these can be confirmed or rejected by staff. */
+  manual: boolean;
 }
 
 /**

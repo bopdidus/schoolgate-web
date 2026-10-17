@@ -4,9 +4,10 @@
   <mat-card-content>
     <mat-form-field appearance="outline">
       <mat-label>{{ 'COMMON.STATUS' | translate }}</mat-label>
-      <mat-select (selectionChange)="statusFilter.set($event.value); load()">
+      <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value); page.set(0); load()">
         <mat-option value="">{{ 'COMMON.ALL' | translate }}</mat-option>
         <mat-option value="declared">{{ 'STATUS.DECLARED' | translate }}</mat-option>
+        <mat-option [value]="toConfirm">{{ 'PAYMENTS.TO_CONFIRM' | translate }}</mat-option>
         <mat-option value="validated">{{ 'STATUS.VALIDATED' | translate }}</mat-option>
         <mat-option value="rejected">{{ 'STATUS.REJECTED' | translate }}</mat-option>
       </mat-select>
@@ -66,6 +67,18 @@
         <th mat-header-cell *matHeaderCellDef>{{ 'ENROLLMENTS.STUDENT' | translate }}</th>
         <td mat-cell *matCellDef="let p">{{ p.studentName || '-' }}</td>
       </ng-container>
+      <ng-container matColumnDef="reference">
+        <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENTS.REFERENCE' | translate }}</th>
+        <td mat-cell *matCellDef="let p">
+          <span class="cell-main">{{ 'PAYMENTS.METHOD_' + p.method | translate }}</span>
+          @if (p.manual) {
+            <span class="cell-sub">{{ 'PAYMENTS.MANUAL' | translate }} · {{ p.mobileMoneyReference }}</span>
+          }
+          @if (p.payerMsisdn) {
+            <span class="cell-sub">{{ p.payerMsisdn }}</span>
+          }
+        </td>
+      </ng-container>
       <ng-container matColumnDef="declaredAt">
         <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENTS.DECLARED_AT' | translate }}</th>
         <td mat-cell *matCellDef="let p">{{ p.declaredAt | localeDate }}</td>
@@ -73,7 +86,9 @@
       <ng-container matColumnDef="deadline">
         <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENTS.DEADLINE' | translate }}</th>
         <td mat-cell *matCellDef="let p">
-          @if (p.status === 'declared') {
+          @if (p.status === 'declared' && p.manual) {
+            {{ 'PAYMENTS.WAITING_SCHOOL' | translate }}
+          } @else if (p.status === 'declared') {
             <mat-chip-set>
               <mat-chip [class]="isExpiringSoon(p.deadline) ? 'status-chip status-urgent' : 'status-chip status-soon'">
                 @if (getHoursRemaining(p.deadline) < 24) {
@@ -96,6 +111,20 @@
               {{ ('STATUS.' + p.status.toUpperCase()) | translate }}
             </mat-chip>
           </mat-chip-set>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let p" class="cell-actions">
+          @if (canReview(p)) {
+            <button mat-stroked-button type="button" [disabled]="isBusy(p)" (click)="confirm(p)">
+              <mat-icon>check</mat-icon>
+              {{ 'PAYMENTS.CONFIRM_MANUAL' | translate }}
+            </button>
+            <button mat-button type="button" [disabled]="isBusy(p)" (click)="reject(p)">
+              {{ 'COMMON.REJECT' | translate }}
+            </button>
+          }
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

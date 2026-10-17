@@ -1,0 +1,213 @@
+<mat-card appearance="outlined" class="page-card" id="payment-channels">
+  <mat-card-header>
+    <mat-card-title>{{ 'PAYMENT_CHANNELS.TITLE' | translate }}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p class="text-muted">{{ 'PAYMENT_CHANNELS.HINT' | translate }}</p>
+
+    @if (!loading()) {
+      @for (c of channels(); track c.method) {
+        <section class="channel">
+          <div class="channel__head">
+            <div>
+              <h4 class="channel__title">{{ 'PAYMENT_CHANNELS.METHOD_' + c.method | translate }}</h4>
+              <span class="channel__mode">{{ 'PAYMENT_CHANNELS.MODE_' + c.mode | translate }}</span>
+            </div>
+            <mat-chip-set>
+              <mat-chip
+                class="status-chip"
+                [class.status-validated]="c.status === 'active'"
+                [class.status-pending]="c.status === 'submitted' || c.status === 'approved'"
+                [class.status-rejected]="c.status === 'rejected' || c.status === 'suspended'"
+              >
+                {{ 'PAYMENT_CHANNELS.STATUS_' + c.status | translate }}
+              </mat-chip>
+            </mat-chip-set>
+          </div>
+
+          <p class="text-muted channel__explain">{{ 'PAYMENT_CHANNELS.EXPLAIN_' + c.status | translate }}</p>
+
+          @if (c.reviewNote && (c.status === 'rejected' || c.status === 'suspended')) {
+            <p class="channel__note">
+              <mat-icon inline>info</mat-icon>
+              {{ 'PAYMENT_CHANNELS.REVIEW_NOTE' | translate }} : {{ c.reviewNote }}
+            </p>
+          }
+
+          @if (c.status === 'draft' || c.status === 'rejected' || c.status === 'submitted') {
+            <ul class="checklist">
+              <li [class.checklist__ok]="c.detailsComplete">
+                <mat-icon inline>{{ c.detailsComplete ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                {{ 'PAYMENT_CHANNELS.DETAILS' | translate }}
+              </li>
+              @for (t of c.requiredDocuments; track t) {
+                <li [class.checklist__ok]="!c.missingDocuments.includes(t)">
+                  <mat-icon inline>{{ c.missingDocuments.includes(t) ? 'radio_button_unchecked' : 'check_circle' }}</mat-icon>
+                  {{ 'KYC.TYPE_' + t | translate }}
+                </li>
+              }
+            </ul>
+          }
+
+          @if (c.status === 'active' && c.activatedAt) {
+            <p class="text-muted">{{ 'PAYMENT_CHANNELS.ACTIVE_SINCE' | translate }} {{ c.activatedAt | localeDate }}</p>
+          }
+
+          <!-- School: send to review -->
+          @if (canManage() && (c.status === 'draft' || c.status === 'rejected')) {
+            <div class="channel__actions">
+              <button
+                mat-flat-button
+                type="button"
+                [disabled]="busy() !== null || !c.detailsComplete || c.missingDocuments.length > 0"
+                (click)="submit(c.method)"
+              >
+                <mat-icon>send</mat-icon>
+                {{ 'PAYMENT_CHANNELS.SUBMIT' | translate }}
+              </button>
+            </div>
+          }
+
+          <!-- School: activation test -->
+          @if (canManage() && c.status === 'approved') {
+            <div class="channel__test">
+              <p class="text-muted">{{ 'PAYMENT_CHANNELS.TEST_HINT' | translate: { amount: c.testAmount } }}</p>
+              @if (c.testStatus === 'pending') {
+                <p class="channel__pending">
+                  <mat-icon inline>hourglass_top</mat-icon>
+                  {{ 'PAYMENT_CHANNELS.TEST_PENDING' | translate: { phone: c.testPayerMsisdn } }}
+                </p>
+                <button mat-stroked-button type="button" (click)="syncTest(c.method)">
+                  <mat-icon>refresh</mat-icon>
+                  {{ 'PAYMENT_CHANNELS.TEST_CHECK' | translate }}
+                </button>
+              } @else {
+                @if (c.testStatus === 'failed') {
+                  <p class="channel__note">
+                    <mat-icon inline>error</mat-icon>
+                    {{ 'PAYMENT_CHANNELS.TEST_FAILED' | translate }}
+                  </p>
+                }
+                <div class="channel__test-form">
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'PAYMENT_CHANNELS.TEST_PHONE' | translate }}</mat-label>
+                    <span matTextPrefix>+237&nbsp;</span>
+                    <input
+                      matInput
+                      inputmode="tel"
+                      autocomplete="off"
+                      placeholder="6XX XX XX XX"
+                      [(ngModel)]="testPhone[c.method]"
+                    />
+                  </mat-form-field>
+                  <button mat-flat-button type="button" [disabled]="busy() !== null" (click)="startTest(c.method)">
+                    <mat-icon>play_arrow</mat-icon>
+                    {{ 'PAYMENT_CHANNELS.TEST_START' | translate: { amount: c.testAmount } }}
+                  </button>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Platform admin: decision -->
+          @if (isPlatformAdmin() && (c.status === 'submitted' || c.status === 'approved' || c.status === 'active' || c.status === 'suspended')) {
+            <div class="channel__review">
+              <mat-form-field appearance="outline" class="channel__review-note">
+                <mat-label>{{ 'PAYMENT_CHANNELS.REVIEW_NOTE' | translate }}</mat-label>
+                <input matInput maxlength="1000" [(ngModel)]="reviewNote[c.method]" />
+              </mat-form-field>
+              <div class="channel__actions">
+                @if (c.status === 'submitted') {
+                  <button mat-flat-button type="button" [disabled]="busy() !== null" (click)="review(c.method, 'approve')">
+                    <mat-icon>verified</mat-icon>
+                    {{ 'PAYMENT_CHANNELS.APPROVE' | translate }}
+                  </button>
+                }
+                @if (c.status === 'submitted' || c.status === 'approved') {
+                  <button mat-stroked-button type="button" [disabled]="busy() !== null" (click)="review(c.method, 'reject')">
+                    <mat-icon>block</mat-icon>
+                    {{ 'PAYMENT_CHANNELS.REJECT' | translate }}
+                  </button>
+                }
+                @if (c.status === 'active') {
+                  <button mat-stroked-button type="button" [disabled]="busy() !== null" (click)="review(c.method, 'suspend')">
+                    <mat-icon>pause_circle</mat-icon>
+                    {{ 'PAYMENT_CHANNELS.SUSPEND' | translate }}
+                  </button>
+                }
+                @if (c.status === 'suspended') {
+                  <button mat-flat-button type="button" [disabled]="busy() !== null" (click)="review(c.method, 'reinstate')">
+                    <mat-icon>play_circle</mat-icon>
+                    {{ 'PAYMENT_CHANNELS.REINSTATE' | translate }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </section>
+        <mat-divider />
+      }
+
+      @if (canManage()) {
+        <section class="documents">
+          <h4 class="form-subhead">{{ 'KYC.TITLE' | translate }}</h4>
+          <p class="text-muted">{{ 'KYC.HINT' | translate }}</p>
+
+          @if (documents().length > 0) {
+            <ul class="documents__list">
+              @for (d of documents(); track d.id) {
+                <li class="documents__item">
+                  <mat-icon>description</mat-icon>
+                  <span class="documents__type">{{ 'KYC.TYPE_' + d.type | translate }}</span>
+                  <span class="documents__name">{{ d.filename }}</span>
+                  <mat-chip-set>
+                    <mat-chip class="status-chip" [class.status-validated]="d.status === 'approved'" [class.status-pending]="d.status === 'pending'">
+                      {{ 'KYC.STATUS_' + d.status | translate }}
+                    </mat-chip>
+                  </mat-chip-set>
+                  <button mat-icon-button type="button" [attr.aria-label]="'KYC.OPEN' | translate" (click)="open(d)">
+                    <mat-icon>open_in_new</mat-icon>
+                  </button>
+                  @if (d.status === 'pending') {
+                    <button
+                      mat-icon-button
+                      type="button"
+                      [attr.aria-label]="'COMMON.DELETE' | translate"
+                      [disabled]="busy() !== null"
+                      (click)="remove(d)"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  }
+                </li>
+              }
+            </ul>
+          }
+
+          <div class="documents__upload">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'KYC.DOCUMENT_TYPE' | translate }}</mat-label>
+              <mat-select [(ngModel)]="uploadType">
+                @for (t of documentTypes; track t) {
+                  <mat-option [value]="t">{{ 'KYC.TYPE_' + t | translate }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <input #fileInput type="file" hidden accept="application/pdf,image/jpeg,image/png" (change)="onFileSelected($event)" />
+            <button
+              mat-stroked-button
+              type="button"
+              [disabled]="!uploadType || busy() !== null"
+              (click)="fileInput.click()"
+            >
+              <mat-icon>upload_file</mat-icon>
+              {{ 'KYC.UPLOAD' | translate }}
+            </button>
+          </div>
+          <p class="text-muted documents__formats">{{ 'KYC.FORMATS' | translate }}</p>
+        </section>
+      }
+    }
+  </mat-card-content>
+</mat-card>

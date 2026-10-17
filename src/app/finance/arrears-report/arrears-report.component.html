@@ -1,0 +1,103 @@
+<app-page-header title="ARREARS.TITLE" subtitle="ARREARS.SUBTITLE" />
+
+<div class="filters">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'ARREARS.CLASS' | translate }}</mat-label>
+    <mat-select [value]="classFilter()" (selectionChange)="onClassChange($event.value)">
+      <mat-option value="">{{ 'ARREARS.ALL_CLASSES_LABEL' | translate }}</mat-option>
+      @for (c of classes(); track c.id) {
+        <mat-option [value]="c.id">{{ c.label }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'ARREARS.ACADEMIC_YEAR' | translate }}</mat-label>
+    <mat-select [value]="academicYearFilter()" (selectionChange)="onYearChange($event.value)">
+      @for (y of academicYears; track y) {
+        <mat-option [value]="y">{{ y }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'ARREARS.AS_OF' | translate }}</mat-label>
+    <input matInput type="date" [value]="asOf()" (change)="onAsOfChange($any($event.target).value)" />
+  </mat-form-field>
+  <button mat-flat-button type="button" class="filters__export" [disabled]="exporting() || !report()?.count" (click)="exportExcel()">
+    <mat-icon>download</mat-icon>
+    {{ 'FINANCE.EXPORT' | translate }}
+  </button>
+</div>
+
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (failed()) {
+  <app-error-state (retry)="load()" />
+} @else if (report(); as r) {
+  <p class="summary">
+    <mat-icon inline>warning</mat-icon>
+    {{ 'ARREARS.SUMMARY' | translate: { count: r.count } }}
+    <strong>{{ r.totalOutstanding | xafCurrency }}</strong>
+  </p>
+  @if (r.count === 0) {
+    <app-empty-state icon="verified" title="ARREARS.EMPTY" />
+  } @else {
+    <mat-card appearance="outlined" class="table-card">
+      <div class="scroll-x">
+        <table mat-table [dataSource]="r.rows" [trackBy]="trackById" class="mat-table-full-width table-zebra">
+          <ng-container matColumnDef="student">
+            <th mat-header-cell *matHeaderCellDef>{{ 'ARREARS.STUDENT' | translate }}</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="cell-main">{{ row.studentName || '—' }}</div>
+              @if (row.matricule) {
+                <div class="cell-sub">{{ row.matricule }}</div>
+              }
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="class">
+            <th mat-header-cell *matHeaderCellDef>{{ 'ARREARS.CLASS' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.schoolClassName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="parent">
+            <th mat-header-cell *matHeaderCellDef>{{ 'ARREARS.PARENT' | translate }}</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="cell-main">{{ row.parentName || '—' }}</div>
+              @if (row.parentPhone) {
+                <a class="cell-sub" [href]="'tel:' + row.parentPhone">{{ row.parentPhone }}</a>
+              }
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="installment">
+            <th mat-header-cell *matHeaderCellDef>{{ 'ARREARS.CURRENT_INSTALLMENT' | translate }}</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.currentInstallment ? ('FINANCE.INSTALLMENT' | translate: { n: row.currentInstallment }) : ('FINANCE.ENROLLMENT_FEE' | translate) }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="daysLate">
+            <th mat-header-cell *matHeaderCellDef class="cell-num">{{ 'ARREARS.DAYS_LATE' | translate }}</th>
+            <td mat-cell *matCellDef="let row" class="cell-num">{{ row.daysLate }}</td>
+          </ng-container>
+          <ng-container matColumnDef="due">
+            <th mat-header-cell *matHeaderCellDef class="cell-num">{{ 'ARREARS.DUE' | translate }}</th>
+            <td mat-cell *matCellDef="let row" class="cell-num">{{ row.due | xafCurrency }}</td>
+          </ng-container>
+          <ng-container matColumnDef="paid">
+            <th mat-header-cell *matHeaderCellDef class="cell-num">{{ 'ARREARS.PAID' | translate }}</th>
+            <td mat-cell *matCellDef="let row" class="cell-num">{{ row.paid | xafCurrency }}</td>
+          </ng-container>
+          <ng-container matColumnDef="outstanding">
+            <th mat-header-cell *matHeaderCellDef class="cell-num">{{ 'ARREARS.OUTSTANDING' | translate }}</th>
+            <td mat-cell *matCellDef="let row" class="cell-num"><strong>{{ row.outstanding | xafCurrency }}</strong></td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+        </table>
+      </div>
+      <mat-paginator [length]="r.count" [pageSize]="pageSize()" [pageIndex]="page()" [pageSizeOptions]="[20, 50, 100]" (page)="onPageChange($event)" />
+    </mat-card>
+  }
+}
+
+<a mat-button routerLink=".." queryParamsHandling="preserve" class="back-link">
+  <mat-icon>arrow_back</mat-icon>
+  {{ 'FINANCE.BACK_TO_DASHBOARD' | translate }}
+</a>

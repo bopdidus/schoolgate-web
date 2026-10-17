@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, of, throwError } from 'rxjs';
+import { Observable, map, throwError } from 'rxjs';
 import {
   AuthService as OpenApiAuthService,
   CreateSchoolUserRequestDto,
@@ -73,18 +73,6 @@ export class UserService {
     return this.authApi
       .authSchoolUsersIdPasswordPut(Number(id), { password })
       .pipe(map((envelope) => Number(unwrapData(envelope)?.resolved_requests ?? 0)));
-  }
-
-  /** User activation toggle is not part of the OpenAPI contract. */
-  toggleActive(id: string, isActive: boolean): Observable<User> {
-    return of({
-      id,
-      email: '',
-      name: '',
-      role: 'school_editor',
-      isActive,
-      createdAt: '',
-    });
   }
 
   private mapUser(dto: UserDto): User {

@@ -44,27 +44,65 @@
 
           <h3>{{ 'PARENT.PAYMENT_METHOD' | translate }}</h3>
           @if (methods().length === 0) {
-            <p class="notice">{{ 'PARENT.NO_ONLINE_PAYMENT' | translate }}</p>
+            <p class="notice" role="status">
+              {{ (schoolPhone() ? 'PARENT.NO_PAYMENT_METHOD' : 'PARENT.NO_PAYMENT_METHOD_NO_PHONE') | translate: { phone: schoolPhone() } }}
+            </p>
           } @else {
             <mat-button-toggle-group [value]="method()" (change)="method.set($event.value)" [disabled]="submitting()">
-              @for (m of methods(); track m) {
-                <mat-button-toggle [value]="m">
+              @for (c of methods(); track c.method) {
+                <mat-button-toggle [value]="c.method">
                   <mat-icon>phone_android</mat-icon>
-                  {{ (m === 'mtn' ? 'PARENT.METHOD_MTN' : 'PARENT.METHOD_ORANGE') | translate }}
+                  {{ (c.method === 'mtn' ? 'PARENT.METHOD_MTN' : 'PARENT.METHOD_ORANGE') | translate }}
                 </mat-button-toggle>
               }
             </mat-button-toggle-group>
           }
 
+          @if (channel(); as c) {
+            @if (c.manual) {
+              <div class="manual" role="note">
+                <p class="manual__title">
+                  {{ 'PARENT.MANUAL_PAY_TITLE' | translate: { amount: (schoolCents() + feeCents() | cents), operator: ((c.method === 'mtn' ? 'PARENT.METHOD_MTN' : 'PARENT.METHOD_ORANGE') | translate) } }}
+                </p>
+                <dl>
+                  @if (c.merchantCode) {
+                    <div><dt>{{ 'PARENT.MANUAL_MERCHANT_CODE' | translate }}</dt><dd>{{ c.merchantCode }}</dd></div>
+                  }
+                  @if (c.number) {
+                    <div><dt>{{ 'PARENT.MANUAL_NUMBER' | translate }}</dt><dd>+237 {{ c.number }}</dd></div>
+                  }
+                  @if (c.accountName) {
+                    <div><dt>{{ 'PARENT.MANUAL_ACCOUNT_NAME' | translate }}</dt><dd>{{ c.accountName }}</dd></div>
+                  }
+                </dl>
+                <p class="text-muted">{{ 'PARENT.MANUAL_KEEP_SMS' | translate }}</p>
+              </div>
+            }
+          }
+
           <mat-form-field appearance="outline" class="msisdn">
-            <mat-label>{{ 'PARENT.PAYER_NUMBER' | translate }}</mat-label>
+            <mat-label>{{ (channel()?.manual ? 'PARENT.MANUAL_PAYER_NUMBER' : 'PARENT.PAYER_NUMBER') | translate }}</mat-label>
             <mat-icon matPrefix>call</mat-icon>
             <input matInput type="tel" [formControl]="msisdn" placeholder="6XX XX XX XX" autocomplete="tel" />
-            <mat-hint>{{ 'PARENT.PAYER_NUMBER_HINT' | translate }}</mat-hint>
+            @if (!channel()?.manual) {
+              <mat-hint>{{ 'PARENT.PAYER_NUMBER_HINT' | translate }}</mat-hint>
+            }
             @if (msisdn.hasError('msisdn') || msisdn.hasError('required')) {
               <mat-error>{{ 'PARENT.PAYER_NUMBER_INVALID' | translate }}</mat-error>
             }
           </mat-form-field>
+
+          @if (channel()?.manual) {
+            <mat-form-field appearance="outline" class="msisdn">
+              <mat-label>{{ 'PARENT.TRANSACTION_REFERENCE' | translate }}</mat-label>
+              <mat-icon matPrefix>receipt_long</mat-icon>
+              <input matInput [formControl]="reference" autocomplete="off" />
+              <mat-hint>{{ 'PARENT.TRANSACTION_REFERENCE_HINT' | translate }}</mat-hint>
+              @if (reference.hasError('reference')) {
+                <mat-error>{{ 'PARENT.TRANSACTION_REFERENCE_INVALID' | translate }}</mat-error>
+              }
+            </mat-form-field>
+          }
         </mat-card-content>
       </mat-card>
 
@@ -98,7 +136,7 @@
             @if (submitting()) {
               <mat-spinner diameter="20" />
             } @else {
-              <ng-container>{{ 'PARENT.PAY_AMOUNT' | translate: { amount: (schoolCents() + feeCents() | cents) } }}</ng-container>
+              <ng-container>{{ channel()?.manual ? ('PARENT.DECLARE_MANUAL' | translate) : ('PARENT.PAY_AMOUNT' | translate: { amount: (schoolCents() + feeCents() | cents) }) }}</ng-container>
             }
           </button>
         </mat-card-content>

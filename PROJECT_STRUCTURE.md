@@ -13,7 +13,6 @@ src/
     │   ├── auth/                # app-ability.ts (CASL rules), auth.config.ts
     │   ├── guards/              # auth, role, ability, unsaved-changes
     │   ├── interceptors/        # auth token, token refresh, HTTP error notification
-    │   ├── mock/                # mock API interceptor + data
     │   ├── models/              # auth.model.ts
     │   ├── services/            # auth, auth-api, session timeout, token storage, language, theme, notifications, ref...
     │   ├── store/               # NgRx auth actions / effects / reducer / state

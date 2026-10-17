@@ -13,13 +13,13 @@ export interface ParentInvoice {
   installmentNumber?: number;
 }
 
-/** The parent's invoices (the API scopes them to the caller). */
+/** Invoices of one of the parent's enrollments (the API checks it is theirs). */
 @Injectable({ providedIn: 'root' })
 export class ParentInvoicesService {
   private readonly invoicesApi = inject(InvoicesService);
 
-  list(): Observable<ParentInvoice[]> {
-    return this.invoicesApi.invoicesGet(100, 0).pipe(
+  forEnrollment(enrollmentId: string): Observable<ParentInvoice[]> {
+    return this.invoicesApi.invoicesGet(+enrollmentId, 100, 0).pipe(
       map((envelope) =>
         (unwrapData(envelope) ?? []).map((dto) => ({
           id: String(dto.id ?? ''),

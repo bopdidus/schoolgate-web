@@ -15,7 +15,6 @@ import { AuthEffects } from './core/store/auth.effects';
 import { authTokenInterceptor } from './core/interceptors/auth-token.interceptor';
 import { tokenRefreshInterceptor } from './core/interceptors/token-refresh.interceptor';
 import { httpErrorNotificationInterceptor } from './core/interceptors/http-error-notification.interceptor';
-import { initMockSession, mockApiInterceptor } from './core/mock/mock-api.interceptor';
 import { environment } from '../environments/environment';
 import { provideApi } from './api';
 import { TokenStorage } from './core/services/token-storage';
@@ -33,14 +32,12 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withComponentInputBinding()),
     provideAnimationsAsync(),
     // Order matters: each interceptor only sees what the ones listed before it let
-    // through. mockApiInterceptor (when enabled) short-circuits before any of the real
-    // auth/error handling runs. authTokenInterceptor stamps the request first; the retried
+    // through. authTokenInterceptor stamps the request first; the retried
     // request from tokenRefreshInterceptor re-stamps it manually since it re-enters the
     // chain below that point. httpErrorNotificationInterceptor sits between them so it
     // only reports errors that survived a refresh attempt (401 is handled upstream of it).
     provideHttpClient(
       withInterceptors([
-        ...(environment.useMockApi ? [mockApiInterceptor] : []),
         authTokenInterceptor,
         httpErrorNotificationInterceptor,
         tokenRefreshInterceptor,
@@ -53,7 +50,8 @@ export const appConfig: ApplicationConfig = {
     provideApi({ basePath: environment.apiBaseUrl, withCredentials: true }),
     provideStore({ auth: authReducer }),
     provideEffects([AuthEffects]),
-    provideStoreDevtools({ maxAge: 25, logOnly: false }),
+    // Redux DevTools only in development: in production they would expose the store.
+    ...(environment.production ? [] : [provideStoreDevtools({ maxAge: 25 })]),
     { provide: TokenStorage, useClass: InMemoryTokenStorage },
     importProvidersFrom(
       TranslateModule.forRoot({
@@ -64,11 +62,6 @@ export const appConfig: ApplicationConfig = {
         },
       }),
     ),
-    provideAppInitializer(() => {
-      if (environment.useMockApi) {
-        initMockSession();
-      }
-    }),
     provideAppInitializer(() => inject(LanguageService).init()),
     // Applied before the first paint so the correct theme is never flashed.
     provideAppInitializer(() => inject(ThemeService).init()),

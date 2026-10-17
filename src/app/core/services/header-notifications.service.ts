@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { BehaviorSubject, Observable, of, Subscription, timer } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription, timer } from 'rxjs';
 import { distinctUntilChanged, filter, map, take } from 'rxjs/operators';
 import {
   NotificationsService,
@@ -51,6 +51,12 @@ export class HeaderNotificationsService implements OnDestroy {
   }>({ items: [], unreadCount: 0 });
 
   private socket: WebSocket | null = null;
+  private readonly eventsSubject = new Subject<NotificationDto>();
+  /**
+   * Every live event for the current school, read or not. Screens that
+   * show live figures (finance dashboard) refresh on it instead of polling.
+   */
+  readonly events$: Observable<NotificationDto> = this.eventsSubject.asObservable();
   private started = false;
   private tokenWaitSub: Subscription | null = null;
   private seedSub: Subscription | null = null;
@@ -66,13 +72,6 @@ export class HeaderNotificationsService implements OnDestroy {
    * Fallback: if WS is unavailable, the HTTP snapshot remains the source of truth.
    */
   getNotifications(): Observable<{ items: HeaderNotification[]; unreadCount: number }> {
-    if (environment.useMockApi) {
-      return of({
-        items: MOCK_NOTIFICATIONS,
-        unreadCount: MOCK_NOTIFICATIONS.length,
-      });
-    }
-
     if (!this.started) {
       this.started = true;
       const user$ = this.store.select(selectUser);
@@ -192,7 +191,9 @@ export class HeaderNotificationsService implements OnDestroy {
     this.socket.onmessage = (event) => {
       try {
         const dto = JSON.parse(String(event.data)) as NotificationDto;
-        if (dto.read || !this.isForCurrentSchool(dto)) return;
+        if (!this.isForCurrentSchool(dto)) return;
+        this.eventsSubject.next(dto);
+        if (dto.read) return;
         const mapped = this.mapNotification(dto);
         if (!mapped) return;
         const current = this.state$.value;
@@ -311,6 +312,8 @@ export class HeaderNotificationsService implements OnDestroy {
       case 'payment_failed':
       case 'payment_declared':
         return '/payments';
+      case 'payment_to_confirm':
+        return '/payments?status=to_confirm';
       case 'enrollment_pending':
       case 'enrollment_accepted':
       case 'enrollment_rejected':
@@ -326,30 +329,3 @@ export class HeaderNotificationsService implements OnDestroy {
     }
   }
 }
-
-const MOCK_NOTIFICATIONS: HeaderNotification[] = [
-  {
-    id: 'notif-1',
-    title: 'Place request',
-    message: 'Amina Bello — documents pending review',
-    route: '/enrollments',
-    createdAt: new Date().toISOString(),
-    type: 'enrollment_pending',
-  },
-  {
-    id: 'notif-2',
-    title: 'Payment validated',
-    message: 'Jean Dupont — enrollment fee confirmed',
-    route: '/payments',
-    createdAt: new Date().toISOString(),
-    type: 'payment_validated',
-  },
-  {
-    id: 'notif-3',
-    title: 'Place request',
-    message: 'Paul Essomba — awaiting acceptance',
-    route: '/enrollments',
-    createdAt: new Date().toISOString(),
-    type: 'enrollment_pending',
-  },
-];

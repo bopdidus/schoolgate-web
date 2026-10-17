@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, inject, input, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { forkJoin, of, catchError } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
@@ -50,6 +50,8 @@ export class ConfirmationComponent implements OnInit {
   readonly failed = signal(false);
   readonly enrollment = signal<ParentEnrollment | null>(null);
   readonly payments = signal<ParentPayment[]>([]);
+  /** A manual payment the school has not checked on its account yet. */
+  readonly awaitingSchool = computed(() => this.payments().some((p) => p.manual && p.status === 'declared'));
 
   ngOnInit(): void {
     this.load();

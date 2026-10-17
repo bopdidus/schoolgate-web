@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { filter, switchMap, take } from 'rxjs';
+import { filter, switchMap, take, tap } from 'rxjs';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,12 +13,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { EnrollmentService } from '../enrollment.service';
 import { SchoolService } from '../../schools/school.service';
 import { selectUser } from '../../core/store/auth.reducer';
 import { XafCurrencyPipe } from '../../shared/pipes/xaf-currency.pipe';
 import { academicYearOf, selectableAcademicYears } from '../../shared/utils/academic-year';
+import { fileSlug, saveBlob } from '../../shared/utils/download';
+import { FinanceService } from '../../finance/finance.service';
 import { Enrollment } from '../enrollment.model';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { SkeletonTableComponent } from '../../shared/components/skeleton-table/skeleton-table.component';
@@ -73,6 +75,8 @@ export class EnrollmentListComponent implements OnInit {
   private readonly abilities = inject(AbilityService);
   private readonly schoolService = inject(SchoolService);
   private readonly store = inject(Store);
+  private readonly finance = inject(FinanceService);
+  private readonly translate = inject(TranslateService);
 
   readonly loading = signal(true);
   /** Separates a failed request from a genuinely empty list. */
@@ -95,6 +99,9 @@ export class EnrollmentListComponent implements OnInit {
   readonly classFilter = signal('');
   /** '' = all, 'true' = tuition fully paid, 'false' = still owing (enrolled tab). */
   readonly tuitionSettledFilter = signal<'' | 'true' | 'false'>('');
+  /** School staff export their school's enrolled list; admins span schools and have none. */
+  readonly exportSchoolId = signal<string | null>(null);
+  readonly exporting = signal(false);
 
   readonly enrolledColumns = ['student', 'school', 'class', 'academicYear', 'educationType', 'specialty', 'enrollmentFee', 'tuitionPaid', 'tuitionRemaining', 'status', 'date', 'actions'];
   readonly requestColumns = ['student', 'school', 'class', 'academicYear', 'educationType', 'specialty', 'status', 'date', 'actions'];
@@ -113,6 +120,7 @@ export class EnrollmentListComponent implements OnInit {
       .pipe(
         take(1),
         filter((user) => !!user?.schoolId),
+        tap((user) => this.exportSchoolId.set(String(user!.schoolId))),
         switchMap((user) => this.schoolService.getById(String(user!.schoolId))),
       )
       .subscribe({
@@ -126,6 +134,33 @@ export class EnrollmentListComponent implements OnInit {
               })),
           ),
         error: () => this.classes.set([]),
+      });
+  }
+
+  /** Every enrolled student matching the class, year and tuition filters, with balances. */
+  exportEnrolled(): void {
+    const schoolId = this.exportSchoolId();
+    if (!schoolId) return;
+    this.exporting.set(true);
+    const settled = this.tuitionSettledFilter();
+    const scope =
+      this.classes().find((c) => c.id === this.classFilter())?.label ?? this.translate.instant('ARREARS.ALL_CLASSES');
+    this.finance
+      .exportEnrolled(schoolId, {
+        schoolClassId: this.classFilter() || undefined,
+        academicYear: this.academicYearFilter() || undefined,
+        tuitionSettled: settled === '' ? undefined : settled === 'true',
+      })
+      .subscribe({
+        next: (blob) => {
+          this.exporting.set(false);
+          const year = this.academicYearFilter() || academicYearOf(new Date());
+          saveBlob(blob, `${this.translate.instant('ENROLLMENTS.EXPORT_FILE_NAME')}-${fileSlug(scope)}-${year}.xlsx`);
+        },
+        error: () => {
+          this.exporting.set(false);
+          this.notification.error('FINANCE.EXPORT_ERROR');
+        },
       });
   }
 

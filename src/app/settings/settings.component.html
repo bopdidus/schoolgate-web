@@ -159,6 +159,7 @@
   </mat-card>
 
   @if (schoolId(); as id) {
-    <app-payment-settings-panel class="settings-grid__wide" [schoolId]="id" />
+    <app-payment-settings-panel class="settings-grid__wide" [schoolId]="id" (saved)="channels.reload()" />
+    <app-payment-channels-panel #channels class="settings-grid__wide" [schoolId]="id" />
   }
 </div>

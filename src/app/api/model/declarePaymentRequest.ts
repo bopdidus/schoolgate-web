@@ -16,9 +16,13 @@ export interface DeclarePaymentRequestDto {
     amount_cents: number;
     payment_method: DeclarePaymentRequestDto.PaymentMethodEnum;
     /**
-     * Mobile Money phone number (USSD push target)
+     * Mobile Money phone number (USSD push target, or the number that paid in manual mode)
      */
     payer_msisdn: string;
+    /**
+     * Operator reference of a transfer the parent already made by hand. Required when the school collects the method manually (see /schools/{id}/payment-methods), ignored otherwise. A reference already declared for another payment is refused (PAYMENT_REFERENCE_USED).
+     */
+    transaction_reference?: string;
 }
 export namespace DeclarePaymentRequestDto {
     export const TypeEnum = {

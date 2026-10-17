@@ -101,6 +101,17 @@ export const routes: Routes = [
           import('./password-resets/password-resets.routes').then((m) => m.PASSWORD_RESET_ROUTES),
       },
       {
+        path: 'finance',
+        canActivate: [roleGuard(STAFF_ROLES)],
+        loadChildren: () => import('./finance/finance.routes').then((m) => m.FINANCE_ROUTES),
+      },
+      {
+        path: 'payment-reviews',
+        canActivate: [roleGuard(['admin'])],
+        loadChildren: () =>
+          import('./payment-reviews/payment-reviews.routes').then((m) => m.PAYMENT_REVIEW_ROUTES),
+      },
+      {
         path: 'settings',
         canActivate: [roleGuard(STAFF_ROLES)],
         loadChildren: () =>

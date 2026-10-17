@@ -14,6 +14,9 @@ function payment(partial: Partial<Payment>): Payment {
     schoolName: '',
     studentName: '',
     classEducationType: 'general',
+    method: 'mtn',
+    manual: false,
+    mobileMoneyReference: '',
     ...partial,
   };
 }

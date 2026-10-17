@@ -1,0 +1,46 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-3);
+}
+
+.filters__export {
+  margin-left: auto;
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: 0 0 var(--space-section);
+
+  strong {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.scroll-x {
+  overflow-x: auto;
+}
+
+.cell-main {
+  font-weight: 500;
+}
+
+.cell-sub {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.cell-num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.back-link {
+  margin-top: var(--space-section);
+}

@@ -1,4 +1,11 @@
-<app-page-header title="ENROLLMENTS.TITLE" />
+<app-page-header title="ENROLLMENTS.TITLE">
+  @if (exportSchoolId()) {
+    <button actions mat-stroked-button type="button" [disabled]="exporting()" (click)="exportEnrolled()">
+      <mat-icon>download</mat-icon>
+      {{ 'ENROLLMENTS.EXPORT_ENROLLED' | translate }}
+    </button>
+  }
+</app-page-header>
 
 <mat-card appearance="outlined" class="filter-card">
   <mat-card-content>

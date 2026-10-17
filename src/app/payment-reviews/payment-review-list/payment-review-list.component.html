@@ -1,0 +1,48 @@
+<app-page-header title="PAYMENT_REVIEWS.TITLE" subtitle="PAYMENT_REVIEWS.SUBTITLE" />
+
+<mat-button-toggle-group
+  class="status-filter"
+  [value]="view()"
+  (change)="onViewChange($event.value)"
+  [attr.aria-label]="'COMMON.FILTER' | translate"
+>
+  <mat-button-toggle value="submitted">{{ 'PAYMENT_CHANNELS.STATUS_submitted' | translate }}</mat-button-toggle>
+  <mat-button-toggle value="approved">{{ 'PAYMENT_CHANNELS.STATUS_approved' | translate }}</mat-button-toggle>
+  <mat-button-toggle value="suspended">{{ 'PAYMENT_CHANNELS.STATUS_suspended' | translate }}</mat-button-toggle>
+</mat-button-toggle-group>
+
+@if (loading()) {
+  <app-skeleton-table />
+} @else if (failed()) {
+  <app-error-state (retry)="load()" />
+} @else if (reviews().length === 0) {
+  <app-empty-state icon="verified_user" title="PAYMENT_REVIEWS.EMPTY" />
+} @else {
+  <mat-card appearance="outlined" class="table-card">
+    <table mat-table [dataSource]="reviews()" [trackBy]="trackByKey" class="mat-table-full-width table-zebra">
+      <ng-container matColumnDef="school">
+        <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENT_REVIEWS.SCHOOL' | translate }}</th>
+        <td mat-cell *matCellDef="let r">{{ r.schoolName || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="method">
+        <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENT_REVIEWS.METHOD' | translate }}</th>
+        <td mat-cell *matCellDef="let r">{{ 'PAYMENT_CHANNELS.METHOD_' + r.method | translate }}</td>
+      </ng-container>
+      <ng-container matColumnDef="submittedAt">
+        <th mat-header-cell *matHeaderCellDef>{{ 'PAYMENT_REVIEWS.SUBMITTED_AT' | translate }}</th>
+        <td mat-cell *matCellDef="let r">{{ r.submittedAt ? (r.submittedAt | localeDate) : '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
+        <td mat-cell *matCellDef="let r">
+          <a mat-stroked-button [routerLink]="['/schools', r.schoolId]" fragment="payment-channels">
+            <mat-icon>fact_check</mat-icon>
+            {{ 'PAYMENT_REVIEWS.OPEN' | translate }}
+          </a>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </mat-card>
+}

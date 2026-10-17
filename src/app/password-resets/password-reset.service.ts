@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
 import { AuthService as OpenApiAuthService, PasswordResetRequestRecordDto } from '../api';
 import { PaginatedResponse, UserRole } from '../shared/models/common.model';
-import { pageToOffset, toPaginated, unwrapData } from '../core/utils/openapi-helpers';
+import { pageToOffset, toId, toPaginated, unwrapData } from '../core/utils/openapi-helpers';
 import {
   PasswordResetFilters,
   PasswordResetRequest,
@@ -61,9 +61,4 @@ export class PasswordResetService {
       resolvedAt: dto.resolved_at ?? null,
     };
   }
-}
-
-function toId(id: string | undefined): number | undefined {
-  const n = Number(id);
-  return id && Number.isFinite(n) ? n : undefined;
 }

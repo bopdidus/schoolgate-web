@@ -12,11 +12,15 @@ const EMPTY: PaymentSettings = {
   orangeMoneyEnabled: false,
   orangeMoneyNumber: '',
   orangeMoneyAccountName: '',
+  orangeMode: 'direct',
+  orangeMerchantCode: '',
   orangeClientId: '',
   orangeSecretsSet: false,
   mtnMomoEnabled: false,
   mtnMomoNumber: '',
   mtnMomoAccountName: '',
+  mtnMode: 'direct',
+  mtnMerchantCode: '',
   mtnApiUser: '',
   mtnSecretsSet: false,
   paypalEnabled: false,
@@ -32,6 +36,8 @@ const EMPTY_UPDATE: PaymentSettingsUpdate = {
   orangeMoneyEnabled: false,
   orangeMoneyNumber: '',
   orangeMoneyAccountName: '',
+  orangeMode: 'direct',
+  orangeMerchantCode: '',
   orangeClientId: '',
   orangeClientSecret: '',
   orangeAuthToken: '',
@@ -39,6 +45,8 @@ const EMPTY_UPDATE: PaymentSettingsUpdate = {
   mtnMomoEnabled: false,
   mtnMomoNumber: '',
   mtnMomoAccountName: '',
+  mtnMode: 'direct',
+  mtnMerchantCode: '',
   mtnApiUser: '',
   mtnApiKey: '',
   mtnSubscriptionKey: '',
@@ -90,6 +98,8 @@ describe('PaymentSettingsPanelComponent', () => {
       secretsSet: true,
       number: '690000000',
       accountName: 'Lycée X',
+      mode: 'direct',
+      merchantCode: '',
       clientId: 'client',
       clientSecret: '',
       authToken: '',
@@ -210,6 +220,56 @@ describe('PaymentSettingsPanelComponent', () => {
     expect(component.form.valid).toBeTrue();
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('[formControlName="apiUser"]')).toBeNull();
+  });
+});
+
+describe('PaymentSettingsPanelComponent manual mode', () => {
+  let fixture: ComponentFixture<PaymentSettingsPanelComponent>;
+  let schoolService: jasmine.SpyObj<SchoolService>;
+
+  beforeEach(async () => {
+    schoolService = jasmine.createSpyObj<SchoolService>('SchoolService', ['getPaymentSettings', 'setPaymentSettings']);
+    schoolService.getPaymentSettings.and.returnValue(of(EMPTY));
+    schoolService.setPaymentSettings.and.returnValue(of(EMPTY));
+    await TestBed.configureTestingModule({
+      imports: [PaymentSettingsPanelComponent],
+      providers: [
+        ...provideTestDefaults(),
+        { provide: SchoolService, useValue: schoolService },
+        { provide: AbilityService, useValue: { can: () => true } },
+      ],
+    }).compileComponents();
+    fixture = TestBed.createComponent(PaymentSettingsPanelComponent);
+    fixture.componentRef.setInput('schoolId', '1');
+    fixture.detectChanges();
+  });
+
+  it('needs no API credentials: a merchant account alone is enough', () => {
+    const orange = fixture.componentInstance.form.controls.orange;
+    orange.patchValue({ enabled: true, number: '690000000', accountName: 'Lycée X' });
+    expect(orange.valid).toBeFalse(); // Direct mode still wants the credentials.
+
+    orange.controls.mode.setValue('manual');
+    orange.controls.merchantCode.setValue('12 3456');
+    expect(orange.controls.clientSecret.disabled).toBeTrue();
+    expect(fixture.componentInstance.form.valid).toBeTrue();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[formControlName="clientId"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[formControlName="merchantCode"]')).not.toBeNull();
+
+    fixture.componentInstance.save();
+    expect(schoolService.setPaymentSettings).toHaveBeenCalledWith(
+      '1',
+      jasmine.objectContaining({ orangeMoneyEnabled: true, orangeMode: 'manual', orangeMerchantCode: '123456' }),
+    );
+  });
+
+  it('checks the merchant code is digits', () => {
+    const code = fixture.componentInstance.form.controls.mtn.controls.merchantCode;
+    code.setValue('AB12');
+    expect(code.hasError('merchantCode')).toBeTrue();
+    code.setValue('4512');
+    expect(code.valid).toBeTrue();
   });
 });
 

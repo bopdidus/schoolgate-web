@@ -96,3 +96,31 @@ a.disabled {
   pointer-events: none;
   opacity: 0.5;
 }
+
+.manual {
+  margin: var(--sp-3) 0;
+  padding: var(--sp-3);
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container);
+
+  dl {
+    margin: var(--sp-2) 0;
+  }
+
+  dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-3);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 600;
+    user-select: all;
+  }
+}
+
+.manual__title {
+  margin: 0;
+  font-weight: 600;
+}

@@ -109,7 +109,7 @@ export class EnrollmentDetailComponent implements OnInit {
       enrollment: this.enrollmentsService.getById(this.id()),
       payments: this.paymentsService.forEnrollment(this.id()).pipe(catchError(() => of([] as ParentPayment[]))),
       checklist: this.enrollmentsService.checklist(this.id()).pipe(catchError(() => of([] as ChecklistItem[]))),
-      invoices: this.invoicesService.list().pipe(catchError(() => of([] as ParentInvoice[]))),
+      invoices: this.invoicesService.forEnrollment(this.id()).pipe(catchError(() => of([] as ParentInvoice[]))),
     }).subscribe({
       next: ({ enrollment, payments, checklist, invoices }) => {
         this.enrollment.set(enrollment);

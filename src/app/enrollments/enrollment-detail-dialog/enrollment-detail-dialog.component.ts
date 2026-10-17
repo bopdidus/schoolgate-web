@@ -129,7 +129,7 @@ export class EnrollmentDetailDialogComponent implements OnInit {
       error: () => this.payments.set(null),
     });
 
-    this.invoiceService.getAll({ enrollmentId: id, pageSize: 50 }).subscribe({
+    this.invoiceService.listForEnrollment(id).subscribe({
       next: (res) => {
         this.invoices.set(res.data);
         this.invoicesLoading.set(false);

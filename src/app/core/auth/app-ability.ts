@@ -52,7 +52,7 @@ export type AppAbility = MongoAbility<AppAbilities>;
  * every mutation, so a stale or tampered ability here grants nothing.
  */
 export function defineAbilityFor(user: User | null): AppAbility {
-  const { can, build } = new AbilityBuilder<AppAbility>(createMongoAbility);
+  const { can, cannot, build } = new AbilityBuilder<AppAbility>(createMongoAbility);
 
   if (!user) {
     return build();
@@ -60,6 +60,9 @@ export function defineAbilityFor(user: User | null): AppAbility {
 
   if (user.role === 'admin') {
     can('manage', 'all');
+    // ConfirmManualPayment: only the school sees its own account, so a
+    // platform admin cannot vouch for a transfer on it.
+    cannot('decide', 'Payment');
     return build();
   }
 
@@ -81,7 +84,8 @@ export function defineAbilityFor(user: User | null): AppAbility {
     // CanAccessSchool / CanDecideEnrollment: both staff roles, own school only.
     can('read', 'School', { schoolId });
     can(['read', 'decide'], 'Enrollment', { schoolId });
-    can('read', 'Payment', { schoolId });
+    // ConfirmManualPayment / RejectManualPayment: school staff only.
+    can(['read', 'decide'], 'Payment', { schoolId });
   }
 
   return build();

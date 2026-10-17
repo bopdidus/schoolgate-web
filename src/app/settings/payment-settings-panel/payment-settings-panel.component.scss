@@ -14,6 +14,18 @@
   margin-top: var(--sp-5);
 }
 
+.channel__mode {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: var(--sp-2) 0 var(--sp-4);
+}
+
+.channel__mode-label {
+  color: var(--mat-sys-on-surface-variant);
+}
+
 .channel__hint {
   margin: 0 0 var(--sp-3);
 }

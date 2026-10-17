@@ -3,6 +3,12 @@
 } @else {
   @if (school(); as s) {
     <app-page-header title="SCHOOLS.DETAIL">
+      @if (isPlatformAdmin()) {
+        <a actions mat-stroked-button routerLink="/finance" [queryParams]="{ school_id: s.id }">
+          <mat-icon>account_balance_wallet</mat-icon>
+          {{ 'NAV.FINANCE' | translate }}
+        </a>
+      }
       @if (canEditSchool(s.id)) {
         <button actions mat-flat-button color="primary" [routerLink]="['/schools', s.id, 'edit']">
           <mat-icon>edit</mat-icon>
@@ -152,7 +158,8 @@
     </mat-card>
 
     @if (canViewPaymentSettings(s.id)) {
-      <app-payment-settings-panel [schoolId]="s.id" />
+      <app-payment-settings-panel [schoolId]="s.id" (saved)="channels.reload()" />
+      <app-payment-channels-panel #channels [schoolId]="s.id" />
     }
 
     <mat-card appearance="outlined" class="page-card">

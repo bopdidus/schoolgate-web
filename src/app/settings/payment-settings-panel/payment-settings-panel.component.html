@@ -36,10 +36,30 @@
                 }
               </mat-form-field>
             </div>
-            @if (!credentialsRequired()) {
+            <div class="channel__mode">
+              <span class="channel__mode-label" id="orange-mode-label">{{ 'SETTINGS.PAYMENT_MODE' | translate }}</span>
+              <mat-button-toggle-group formControlName="mode" aria-labelledby="orange-mode-label">
+                <mat-button-toggle value="direct">{{ 'SETTINGS.PAYMENT_MODE_DIRECT' | translate }}</mat-button-toggle>
+                <mat-button-toggle value="manual">{{ 'SETTINGS.PAYMENT_MODE_MANUAL' | translate }}</mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+            @if (form.controls.orange.controls.mode.value === 'manual') {
+              <p class="text-muted channel__hint">{{ 'SETTINGS.PAYMENT_MANUAL_HINT' | translate }}</p>
+              <div class="form-grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'SETTINGS.PAYMENT_MERCHANT_CODE' | translate }}</mat-label>
+                  <input matInput formControlName="merchantCode" inputmode="numeric" autocomplete="off" />
+                  <mat-hint>{{ 'SETTINGS.PAYMENT_ORANGE_CODE_HINT' | translate }}</mat-hint>
+                  @if (form.controls.orange.controls.merchantCode.hasError('merchantCode')) {
+                    <mat-error>{{ 'SETTINGS.PAYMENT_MERCHANT_CODE_INVALID' | translate }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            }
+            @if (!credentialsRequired() && form.controls.orange.controls.mode.value === 'direct') {
               <p class="text-muted channel__hint">{{ 'SETTINGS.PAYMENT_AGGREGATOR_HINT' | translate }}</p>
             }
-            @if (credentialsRequired()) {
+            @if (needsCredentials('orange')) {
               <h4 class="form-subhead channel__subhead">{{ 'SETTINGS.PAYMENT_API_CREDENTIALS' | translate }}</h4>
               <p class="text-muted channel__hint">
                 {{ 'SETTINGS.PAYMENT_ORANGE_API_HINT' | translate }}
@@ -126,10 +146,30 @@
                 }
               </mat-form-field>
             </div>
-            @if (!credentialsRequired()) {
+            <div class="channel__mode">
+              <span class="channel__mode-label" id="mtn-mode-label">{{ 'SETTINGS.PAYMENT_MODE' | translate }}</span>
+              <mat-button-toggle-group formControlName="mode" aria-labelledby="mtn-mode-label">
+                <mat-button-toggle value="direct">{{ 'SETTINGS.PAYMENT_MODE_DIRECT' | translate }}</mat-button-toggle>
+                <mat-button-toggle value="manual">{{ 'SETTINGS.PAYMENT_MODE_MANUAL' | translate }}</mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+            @if (form.controls.mtn.controls.mode.value === 'manual') {
+              <p class="text-muted channel__hint">{{ 'SETTINGS.PAYMENT_MANUAL_HINT' | translate }}</p>
+              <div class="form-grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'SETTINGS.PAYMENT_MERCHANT_CODE' | translate }}</mat-label>
+                  <input matInput formControlName="merchantCode" inputmode="numeric" autocomplete="off" />
+                  <mat-hint>{{ 'SETTINGS.PAYMENT_MTN_CODE_HINT' | translate }}</mat-hint>
+                  @if (form.controls.mtn.controls.merchantCode.hasError('merchantCode')) {
+                    <mat-error>{{ 'SETTINGS.PAYMENT_MERCHANT_CODE_INVALID' | translate }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            }
+            @if (!credentialsRequired() && form.controls.mtn.controls.mode.value === 'direct') {
               <p class="text-muted channel__hint">{{ 'SETTINGS.PAYMENT_AGGREGATOR_HINT' | translate }}</p>
             }
-            @if (credentialsRequired()) {
+            @if (needsCredentials('mtn')) {
               <h4 class="form-subhead channel__subhead">{{ 'SETTINGS.PAYMENT_API_CREDENTIALS' | translate }}</h4>
               <p class="text-muted channel__hint">
                 {{ 'SETTINGS.PAYMENT_MTN_API_HINT' | translate }}

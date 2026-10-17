@@ -16,7 +16,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { SkeletonTableComponent } from '../../shared/components/skeleton-table/skeleton-table.component';
 import { CentsPipe } from '../shared/cents.pipe';
-import { MobileMoneyMethod, ParentEnrollment, ParentPayment } from '../domain/models';
+import { AcceptedChannel, MobileMoneyMethod, ParentEnrollment, ParentPayment } from '../domain/models';
 import { serviceFeeCents } from '../domain/money';
 import { PayableLines, PaymentOption } from '../domain/payable-lines';
 import { ParentEnrollmentsService } from '../services/parent-enrollments.service';
@@ -37,6 +37,13 @@ export function normalizeMsisdn(raw: string): string {
 }
 
 const MSISDN_PATTERN = /^6\d{8}$/;
+
+/** Operator references: 6 to 40 letters, digits, dots, dashes (spaces dropped). */
+export function normalizeReference(raw: string): string {
+  return raw.replace(/\s/g, '').toUpperCase();
+}
+
+const REFERENCE_PATTERN = /^[A-Z0-9._-]{6,40}$/;
 
 /**
  * Pay by Mobile Money (mobile merchant payment screen): the lines still owed
@@ -88,12 +95,18 @@ export class PayComponent implements OnInit {
   readonly enrollment = signal<ParentEnrollment | null>(null);
   private readonly payments = signal<ParentPayment[]>([]);
   readonly feePercent = signal(0);
-  readonly methods = signal<MobileMoneyMethod[]>([]);
+  readonly methods = signal<AcceptedChannel[]>([]);
+  /** The school's phone, shown when it set up no payment method. */
+  readonly schoolPhone = signal('');
 
   readonly option = signal<PaymentOption>('combined');
   readonly advance = signal(false);
   readonly method = signal<MobileMoneyMethod | null>(null);
   readonly msisdn = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  readonly reference = new FormControl('', { nonNullable: true });
+
+  /** The picked channel: manual ones are paid by hand, then declared. */
+  readonly channel = computed(() => this.methods().find((c) => c.method === this.method()) ?? null);
 
   readonly submitting = signal(false);
   readonly awaitingPhone = signal(false);
@@ -147,11 +160,12 @@ export class PayComponent implements OnInit {
         this.feePercent.set(feePercent);
         this.schoolsService
           .paymentMethods(enrollment.schoolId)
-          .pipe(catchError(() => of([] as MobileMoneyMethod[])))
+          .pipe(catchError(() => of([] as AcceptedChannel[])))
           .subscribe((methods) => {
             this.methods.set(methods);
-            this.method.set(methods[0] ?? null);
+            this.method.set(methods[0]?.method ?? null);
             this.loading.set(false);
+            if (methods.length === 0) this.loadSchoolPhone(enrollment.schoolId);
           });
       },
       error: () => {
@@ -160,6 +174,13 @@ export class PayComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  private loadSchoolPhone(schoolId: string): void {
+    this.schoolsService
+      .getById(schoolId)
+      .pipe(catchError(() => of(null)))
+      .subscribe((school) => this.schoolPhone.set(school?.phone?.trim() ?? ''));
   }
 
   optionTitle(option: PaymentOption): string {
@@ -191,6 +212,10 @@ export class PayComponent implements OnInit {
       return;
     }
     if (!method || this.items().length === 0) return;
+    if (this.channel()?.manual) {
+      await this.declareManual(method, msisdn);
+      return;
+    }
 
     this.submitting.set(true);
     this.error.set(null);
@@ -211,6 +236,33 @@ export class PayComponent implements OnInit {
       this.error.set(e instanceof Error && !('status' in e) ? e.message : null);
       this.submitting.set(false);
       this.awaitingPhone.set(false);
+    }
+  }
+
+  /**
+   * Manual mode: the parent already paid the school by USSD. Every selected
+   * line is declared with the same reference (one transfer); the school then
+   * confirms it, so there is nothing to follow.
+   */
+  private async declareManual(method: MobileMoneyMethod, msisdn: string): Promise<void> {
+    const reference = normalizeReference(this.reference.value);
+    if (!REFERENCE_PATTERN.test(reference)) {
+      this.reference.setErrors({ reference: true });
+      this.reference.markAsTouched();
+      return;
+    }
+    this.submitting.set(true);
+    this.error.set(null);
+    try {
+      for (const item of this.items()) {
+        await lastValueFrom(this.paymentsService.declare(this.id(), item, method, msisdn, reference));
+      }
+      void this.router.navigate(['/parent/confirmation', this.id()]);
+    } catch (e) {
+      if (this.destroyed) return;
+      // API errors (e.g. a reference already used) come from the interceptor.
+      this.error.set(e instanceof Error && !('status' in e) ? e.message : null);
+      this.submitting.set(false);
     }
   }
 

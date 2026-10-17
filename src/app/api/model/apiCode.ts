@@ -44,6 +44,7 @@ export const ApiCodeDto = {
     PaymentValidated: 'PAYMENT_VALIDATED',
     PaymentRejected: 'PAYMENT_REJECTED',
     PaymentFailed: 'PAYMENT_FAILED',
+    PaymentToConfirm: 'PAYMENT_TO_CONFIRM',
     PasswordResetRequestAccepted: 'PASSWORD_RESET_REQUEST_ACCEPTED',
     PasswordResetRequested: 'PASSWORD_RESET_REQUESTED',
     SchoolRegistered: 'SCHOOL_REGISTERED',
@@ -51,7 +52,8 @@ export const ApiCodeDto = {
     PasswordResetConfirmed: 'PASSWORD_RESET_CONFIRMED',
     InvalidResetCode: 'INVALID_RESET_CODE',
     PaymentRefused: 'PAYMENT_REFUSED',
-    PaymentMethodUnavailable: 'PAYMENT_METHOD_UNAVAILABLE'
+    PaymentMethodUnavailable: 'PAYMENT_METHOD_UNAVAILABLE',
+    PaymentReferenceUsed: 'PAYMENT_REFERENCE_USED'
 } as const;
 export type ApiCodeDto = typeof ApiCodeDto[keyof typeof ApiCodeDto];
 

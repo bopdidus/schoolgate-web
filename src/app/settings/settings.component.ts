@@ -20,6 +20,7 @@ import { NotificationService } from '../core/services/notification.service';
 import { ThemeService, ThemeMode } from '../core/services/theme.service';
 import { matchesControl } from '../shared/validators/matches-control.validator';
 import { PaymentSettingsPanelComponent } from './payment-settings-panel/payment-settings-panel.component';
+import { PaymentChannelsPanelComponent } from './payment-channels-panel/payment-channels-panel.component';
 
 @Component({
   selector: 'app-settings',
@@ -36,6 +37,7 @@ import { PaymentSettingsPanelComponent } from './payment-settings-panel/payment-
     TranslateModule,
     PageHeaderComponent,
     PaymentSettingsPanelComponent,
+    PaymentChannelsPanelComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './settings.component.html',

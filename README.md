@@ -19,22 +19,16 @@ npm start
 
 API base URL: `src/environments/environment.ts` → `http://localhost:8080/api/v1`
 
-### Test without backend (mock mode)
+The app always talks to SchoolGateApi: start it locally (`docker compose up` in
+SchoolGateApi) and sign in with the administrator created by `go run ./cmd/seed`
+(`ADMIN_EMAIL` / `ADMIN_PASSWORD`).
 
-Set `useMockApi: true` in `src/environments/environment.ts` (enabled by default in dev), then:
+### Tests
 
 ```bash
-npm start
+npm test -- --watch=false   # unit tests + coverage gate (70 % statements, 60 % branches)
+npm run build               # production build
 ```
-
-Demo logins:
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | `admin@schoolgate.cm` | `demo` |
-| School | `ecole@schoolgate.cm` | `demo` |
-
-To use the real Go API, set `useMockApi: false`.
 
 ## Project Structure
 

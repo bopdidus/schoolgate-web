@@ -24,6 +24,8 @@ import { EnrollmentsIdPaymentsGet200ResponseDto } from '../model/enrollmentsIdPa
 import { PaymentListEnvelopeDto } from '../model/paymentListEnvelope';
 // @ts-ignore
 import { PaymentsFeePolicyGet200ResponseDto } from '../model/paymentsFeePolicyGet200Response';
+// @ts-ignore
+import { PaymentsIdRejectPostRequestDto } from '../model/paymentsIdRejectPostRequest';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -163,16 +165,17 @@ export class PaymentsService extends BaseService {
      * @param status 
      * @param enrollmentId 
      * @param paymentValidated 
+     * @param manual true keeps manual payments only (paid by hand, confirmed by the school); false keeps operator ones.
      * @param limit 
      * @param offset 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public paymentsGet(schoolId?: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentListEnvelopeDto>;
-    public paymentsGet(schoolId?: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentListEnvelopeDto>>;
-    public paymentsGet(schoolId?: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentListEnvelopeDto>>;
-    public paymentsGet(schoolId?: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public paymentsGet(schoolId?: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, manual?: boolean, limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentListEnvelopeDto>;
+    public paymentsGet(schoolId?: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, manual?: boolean, limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentListEnvelopeDto>>;
+    public paymentsGet(schoolId?: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, manual?: boolean, limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentListEnvelopeDto>>;
+    public paymentsGet(schoolId?: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, manual?: boolean, limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -207,6 +210,15 @@ export class PaymentsService extends BaseService {
             localVarQueryParameters,
             'payment_validated',
             <any>paymentValidated,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'manual',
+            <any>manual,
             QueryParamStyle.Form,
             true,
         );
@@ -264,6 +276,138 @@ export class PaymentsService extends BaseService {
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters.toHttpParams(),
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Confirm a manual payment found on the school\&#39;s account
+     * Roles &#x60;school_admin&#x60;, &#x60;school_editor&#x60; of the paid school. Validates a manual payment still awaiting the school: reserves the seat, issues the invoice and notifies the parent. Refused with NO_SEATS when the class filled up meanwhile: reject it and pay the parent back.
+     * @endpoint post /payments/{id}/confirm
+     * @param id 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public paymentsIdConfirmPost(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public paymentsIdConfirmPost(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public paymentsIdConfirmPost(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public paymentsIdConfirmPost(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling paymentsIdConfirmPost.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/payments/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/confirm`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Reject a manual payment the school did not receive
+     * Roles &#x60;school_admin&#x60;, &#x60;school_editor&#x60; of the paid school. The reason is shown to the parent, who can declare the payment again.
+     * @endpoint post /payments/{id}/reject
+     * @param id 
+     * @param paymentsIdRejectPostRequestDto 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public paymentsIdRejectPost(id: number, paymentsIdRejectPostRequestDto: PaymentsIdRejectPostRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public paymentsIdRejectPost(id: number, paymentsIdRejectPostRequestDto: PaymentsIdRejectPostRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public paymentsIdRejectPost(id: number, paymentsIdRejectPostRequestDto: PaymentsIdRejectPostRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public paymentsIdRejectPost(id: number, paymentsIdRejectPostRequestDto: PaymentsIdRejectPostRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling paymentsIdRejectPost.');
+        }
+        if (paymentsIdRejectPostRequestDto === null || paymentsIdRejectPostRequestDto === undefined) {
+            throw new Error('Required parameter paymentsIdRejectPostRequestDto was null or undefined when calling paymentsIdRejectPost.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/payments/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/reject`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: paymentsIdRejectPostRequestDto,
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
@@ -409,16 +553,17 @@ export class PaymentsService extends BaseService {
      * @param status 
      * @param enrollmentId 
      * @param paymentValidated 
+     * @param manual true keeps manual payments only (paid by hand, confirmed by the school); false keeps operator ones.
      * @param limit 
      * @param offset 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public schoolsIdPaymentsGet(id: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentListEnvelopeDto>;
-    public schoolsIdPaymentsGet(id: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentListEnvelopeDto>>;
-    public schoolsIdPaymentsGet(id: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentListEnvelopeDto>>;
-    public schoolsIdPaymentsGet(id: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public schoolsIdPaymentsGet(id: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, manual?: boolean, limit?: number, offset?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentListEnvelopeDto>;
+    public schoolsIdPaymentsGet(id: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, manual?: boolean, limit?: number, offset?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentListEnvelopeDto>>;
+    public schoolsIdPaymentsGet(id: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, manual?: boolean, limit?: number, offset?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentListEnvelopeDto>>;
+    public schoolsIdPaymentsGet(id: number, status?: 'declared' | 'validated' | 'rejected' | 'expired', enrollmentId?: number, paymentValidated?: boolean, manual?: boolean, limit?: number, offset?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling schoolsIdPaymentsGet.');
         }
@@ -447,6 +592,15 @@ export class PaymentsService extends BaseService {
             localVarQueryParameters,
             'payment_validated',
             <any>paymentValidated,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'manual',
+            <any>manual,
             QueryParamStyle.Form,
             true,
         );

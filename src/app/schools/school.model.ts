@@ -167,6 +167,10 @@ export interface PaymentSettings {
   orangeMoneyEnabled: boolean;
   orangeMoneyNumber: string;
   orangeMoneyAccountName: string;
+  /** direct: charged through the operator API; manual: parents pay by USSD and the school confirms. */
+  orangeMode: PaymentChannelMode;
+  /** Optional merchant code parents dial in manual mode. */
+  orangeMerchantCode: string;
   /** Orange merchant API OAuth client id (not secret). */
   orangeClientId: string;
   /** Client secret, X-AUTH-TOKEN and PIN are saved; the API never returns them. */
@@ -174,6 +178,8 @@ export interface PaymentSettings {
   mtnMomoEnabled: boolean;
   mtnMomoNumber: string;
   mtnMomoAccountName: string;
+  mtnMode: PaymentChannelMode;
+  mtnMerchantCode: string;
   /** MTN MoMo Collection API user (not secret). */
   mtnApiUser: string;
   /** API key and subscription key are saved; the API never returns them. */
@@ -203,3 +209,48 @@ export type PaymentSettingsUpdate = Omit<
   mtnApiKey: string;
   mtnSubscriptionKey: string;
 };
+
+export type PaymentChannelMethod = 'orange' | 'mtn';
+export type PaymentChannelMode = 'direct' | 'manual';
+export type PaymentChannelStatus = 'draft' | 'submitted' | 'approved' | 'active' | 'rejected' | 'suspended';
+export type PaymentChannelReviewAction = 'approve' | 'reject' | 'suspend' | 'reinstate';
+export type KycDocumentType =
+  | 'rccm'
+  | 'niu'
+  | 'autorisation_ouverture'
+  | 'cni_representant'
+  | 'rib'
+  | 'contrat_marchand_orange'
+  | 'contrat_mtn';
+
+/** Onboarding of one payment method: only an active channel lets parents pay. */
+export interface PaymentChannel {
+  method: PaymentChannelMethod;
+  mode: PaymentChannelMode;
+  status: PaymentChannelStatus;
+  /** The payment settings hold the number, account name and credentials a review needs. */
+  detailsComplete: boolean;
+  requiredDocuments: KycDocumentType[];
+  missingDocuments: KycDocumentType[];
+  submittedAt: string | null;
+  reviewedAt: string | null;
+  reviewNote: string;
+  testStatus: 'pending' | 'passed' | 'failed' | null;
+  testPayerMsisdn: string;
+  testAmount: number;
+  activatedAt: string | null;
+}
+
+export interface PaymentChannelReview extends PaymentChannel {
+  schoolId: string;
+  schoolName: string;
+}
+
+export interface KycDocument {
+  id: string;
+  type: KycDocumentType;
+  filename: string;
+  sizeBytes: number;
+  status: 'pending' | 'approved';
+  createdAt: string;
+}

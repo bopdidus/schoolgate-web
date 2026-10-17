@@ -8,17 +8,16 @@ import {
   toPaginated,
   unwrapData,
 } from '../core/utils/openapi-helpers';
-import { Invoice, InvoiceFilters, InvoiceVerification } from './invoice.model';
+import { Invoice, InvoiceVerification } from './invoice.model';
 
 @Injectable({ providedIn: 'root' })
 export class InvoiceService {
   private readonly invoicesApi = inject(InvoicesService);
 
-  getAll(filters: InvoiceFilters): Observable<PaginatedResponse<Invoice>> {
-    const page = filters.page ?? 1;
-    const pageSize = filters.pageSize ?? 10;
+  /** Invoices of one enrollment (the API lists them per enrollment only). */
+  listForEnrollment(enrollmentId: string, page = 1, pageSize = 50): Observable<PaginatedResponse<Invoice>> {
     const { limit, offset } = pageToOffset(page, pageSize);
-    return this.invoicesApi.invoicesGet(limit, offset).pipe(
+    return this.invoicesApi.invoicesGet(+enrollmentId, limit, offset).pipe(
       map((envelope) => {
         const rows = unwrapData(envelope) ?? [];
         return toPaginated(

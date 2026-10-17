@@ -184,6 +184,18 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       roles: ['admin'],
     },
     {
+      label: 'NAV.PAYMENT_REVIEWS',
+      icon: 'verified_user',
+      route: '/payment-reviews',
+      roles: ['admin'],
+    },
+    {
+      label: 'NAV.FINANCE',
+      icon: 'account_balance_wallet',
+      route: '/finance',
+      roles: ['school_admin', 'school_editor'],
+    },
+    {
       label: 'NAV.SETTINGS',
       icon: 'settings',
       route: '/settings',

@@ -1,0 +1,14 @@
+.cell-main {
+  display: block;
+}
+
+.cell-sub {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.cell-actions {
+  white-space: nowrap;
+  text-align: right;
+}

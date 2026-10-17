@@ -3,7 +3,6 @@ import { Router, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
@@ -13,7 +12,6 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { SkeletonTableComponent } from '../../shared/components/skeleton-table/skeleton-table.component';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
-import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-user-list',
@@ -23,7 +21,6 @@ import { NotificationService } from '../../core/services/notification.service';
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatSlideToggleModule,
     MatCardModule,
     TranslateModule,
     PageHeaderComponent,
@@ -37,7 +34,6 @@ import { NotificationService } from '../../core/services/notification.service';
 })
 export class UserListComponent implements OnInit {
   private readonly userService = inject(UserService);
-  private readonly notification = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
 
@@ -45,7 +41,7 @@ export class UserListComponent implements OnInit {
   /** Separates a failed request from a genuinely empty list. */
   readonly failed = signal(false);
   readonly users = signal<User[]>([]);
-  readonly displayedColumns = ['name', 'email', 'role', 'school', 'active'];
+  readonly displayedColumns = ['name', 'email', 'role', 'school'];
 
   ngOnInit(): void {
     this.load();
@@ -79,15 +75,6 @@ export class UserListComponent implements OnInit {
         .subscribe((created) => {
           if (created) this.load();
         });
-    });
-  }
-
-  toggleActive(user: User): void {
-    this.userService.toggleActive(user.id, !user.isActive).subscribe({
-      next: () => {
-        this.notification.success('USERS.UPDATED_OK');
-        this.load();
-      },
     });
   }
 

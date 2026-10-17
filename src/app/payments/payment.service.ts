@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, throwError } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { PaymentsService, PaymentDto } from '../api';
 import { PaginatedResponse } from '../shared/models/common.model';
 import {
@@ -8,13 +8,7 @@ import {
   toPaginated,
   unwrapData,
 } from '../core/utils/openapi-helpers';
-import {
-  Payment,
-  PaymentFilters,
-  RejectPaymentRequest,
-  SchoolCommissionSummary,
-  ValidatePaymentRequest,
-} from './payment.model';
+import { Payment, PaymentFilters } from './payment.model';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
@@ -37,6 +31,7 @@ export class PaymentService {
         status,
         filters.enrollmentId ? +filters.enrollmentId : undefined,
         undefined,
+        filters.manual,
         limit,
         offset,
       )
@@ -65,37 +60,17 @@ export class PaymentService {
       );
   }
 
-  /** Not exposed by the OpenAPI contract — kept for admin UI compatibility. */
-  getCommissionSummary(): Observable<SchoolCommissionSummary[]> {
-    return this.getAll({ status: 'validated', page: 1, pageSize: 100 }).pipe(
-      map((page) => {
-        const bySchool = new Map<string, SchoolCommissionSummary>();
-        for (const payment of page.data) {
-          const key = payment.schoolId || 'unknown';
-          const existing = bySchool.get(key) ?? {
-            schoolId: key,
-            schoolName: payment.schoolName || key,
-            city: '',
-            commissionCount: 0,
-            totalCommissionAmount: 0,
-          };
-          existing.commissionCount += 1;
-          existing.totalCommissionAmount += payment.amount * 0.05;
-          bySchool.set(key, existing);
-        }
-        return [...bySchool.values()];
-      }),
-    );
+  /**
+   * The school found this manual payment on its own account: validates it,
+   * reserves the seat and issues the invoice. Operator payments settle alone.
+   */
+  confirm(paymentId: string): Observable<void> {
+    return this.paymentsApi.paymentsIdConfirmPost(+paymentId).pipe(map(() => undefined));
   }
 
-  /** Manual validate/reject were removed; payments now sync via Mobile Money providers. */
-  validate(_data: ValidatePaymentRequest): Observable<void> {
-    return throwError(() => new Error('Payment validation is no longer available via this API'));
-  }
-
-  /** Manual validate/reject were removed; payments now sync via Mobile Money providers. */
-  reject(_data: RejectPaymentRequest): Observable<void> {
-    return throwError(() => new Error('Payment rejection is no longer available via this API'));
+  /** No matching transfer reached the school: the parent sees the reason and may declare again. */
+  reject(paymentId: string, reason: string): Observable<void> {
+    return this.paymentsApi.paymentsIdRejectPost(+paymentId, { reason }).pipe(map(() => undefined));
   }
 
   private mapPayment(dto: PaymentDto): Payment {
@@ -135,6 +110,9 @@ export class PaymentService {
       rejectionReason: dto.rejection_reason ?? undefined,
       payerMsisdn: dto.payer_msisdn ?? undefined,
       externalReference: dto.external_reference ?? undefined,
+      method: (dto.payment_method as Payment['method']) ?? 'mtn',
+      manual: dto.manual ?? false,
+      mobileMoneyReference: dto.mobile_money_reference ?? '',
     };
   }
 }

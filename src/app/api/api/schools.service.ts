@@ -21,7 +21,19 @@ import { DocumentRequirementListEnvelopeDto } from '../model/documentRequirement
 // @ts-ignore
 import { DocumentRequirementsRequestDto } from '../model/documentRequirementsRequest';
 // @ts-ignore
+import { KycDocumentTypeDto } from '../model/kycDocumentType';
+// @ts-ignore
 import { MatriculeVerificationConfigRequestDto } from '../model/matriculeVerificationConfigRequest';
+// @ts-ignore
+import { PaymentChannelEnvelopeDto } from '../model/paymentChannelEnvelope';
+// @ts-ignore
+import { PaymentChannelReviewRequestDto } from '../model/paymentChannelReviewRequest';
+// @ts-ignore
+import { PaymentChannelReviewsGet200ResponseDto } from '../model/paymentChannelReviewsGet200Response';
+// @ts-ignore
+import { PaymentChannelStatusDto } from '../model/paymentChannelStatus';
+// @ts-ignore
+import { PaymentChannelTestRequestDto } from '../model/paymentChannelTestRequest';
 // @ts-ignore
 import { PaymentSettingsEnvelopeDto } from '../model/paymentSettingsEnvelope';
 // @ts-ignore
@@ -34,6 +46,12 @@ import { SchoolListEnvelopeDto } from '../model/schoolListEnvelope';
 import { SchoolRequestDto } from '../model/schoolRequest';
 // @ts-ignore
 import { SchoolsIdDelete200ResponseDto } from '../model/schoolsIdDelete200Response';
+// @ts-ignore
+import { SchoolsIdKycDocumentsGet200ResponseDto } from '../model/schoolsIdKycDocumentsGet200Response';
+// @ts-ignore
+import { SchoolsIdKycDocumentsPost201ResponseDto } from '../model/schoolsIdKycDocumentsPost201Response';
+// @ts-ignore
+import { SchoolsIdPaymentChannelsGet200ResponseDto } from '../model/schoolsIdPaymentChannelsGet200Response';
 // @ts-ignore
 import { SchoolsIdPaymentMethodsGet200ResponseDto } from '../model/schoolsIdPaymentMethodsGet200Response';
 // @ts-ignore
@@ -55,6 +73,75 @@ export class SchoolsService extends BaseService {
 
     constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string|string[], @Optional() configuration?: Configuration) {
         super(basePath, configuration);
+    }
+
+    /**
+     * Admin queue of payment methods by status
+     * Role &#x60;admin&#x60;. Submitted channels by default, oldest submission first.
+     * @endpoint get /payment-channel-reviews
+     * @param status 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public paymentChannelReviewsGet(status?: PaymentChannelStatusDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentChannelReviewsGet200ResponseDto>;
+    public paymentChannelReviewsGet(status?: PaymentChannelStatusDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentChannelReviewsGet200ResponseDto>>;
+    public paymentChannelReviewsGet(status?: PaymentChannelStatusDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentChannelReviewsGet200ResponseDto>>;
+    public paymentChannelReviewsGet(status?: PaymentChannelStatusDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'status',
+            <any>status,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/payment-channel-reviews`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<PaymentChannelReviewsGet200ResponseDto>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                params: localVarQueryParameters.toHttpParams(),
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
     }
 
     /**
@@ -440,6 +527,276 @@ export class SchoolsService extends BaseService {
     }
 
     /**
+     * Delete a pending legal document
+     * Roles &#x60;admin&#x60;, &#x60;school_admin&#x60;. An approved document answers 409 CONFLICT.
+     * @endpoint delete /schools/{id}/kyc-documents/{docId}
+     * @param id 
+     * @param docId 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public schoolsIdKycDocumentsDocIdDelete(id: number, docId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public schoolsIdKycDocumentsDocIdDelete(id: number, docId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public schoolsIdKycDocumentsDocIdDelete(id: number, docId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public schoolsIdKycDocumentsDocIdDelete(id: number, docId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling schoolsIdKycDocumentsDocIdDelete.');
+        }
+        if (docId === null || docId === undefined) {
+            throw new Error('Required parameter docId was null or undefined when calling schoolsIdKycDocumentsDocIdDelete.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/kyc-documents/${this.configuration.encodeParam({name: "docId", value: docId, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Download a legal document
+     * Roles &#x60;admin&#x60;, &#x60;school_admin&#x60; (own school).
+     * @endpoint get /schools/{id}/kyc-documents/{docId}
+     * @param id 
+     * @param docId 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public schoolsIdKycDocumentsDocIdGet(id: number, docId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/octet-stream', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
+    public schoolsIdKycDocumentsDocIdGet(id: number, docId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/octet-stream', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
+    public schoolsIdKycDocumentsDocIdGet(id: number, docId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/octet-stream', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
+    public schoolsIdKycDocumentsDocIdGet(id: number, docId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/octet-stream', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling schoolsIdKycDocumentsDocIdGet.');
+        }
+        if (docId === null || docId === undefined) {
+            throw new Error('Required parameter docId was null or undefined when calling schoolsIdKycDocumentsDocIdGet.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/octet-stream'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/kyc-documents/${this.configuration.encodeParam({name: "docId", value: docId, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: "blob",
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Legal documents the school uploaded
+     * Roles &#x60;admin&#x60;, &#x60;school_admin&#x60; (own school).
+     * @endpoint get /schools/{id}/kyc-documents
+     * @param id 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public schoolsIdKycDocumentsGet(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SchoolsIdKycDocumentsGet200ResponseDto>;
+    public schoolsIdKycDocumentsGet(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SchoolsIdKycDocumentsGet200ResponseDto>>;
+    public schoolsIdKycDocumentsGet(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SchoolsIdKycDocumentsGet200ResponseDto>>;
+    public schoolsIdKycDocumentsGet(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling schoolsIdKycDocumentsGet.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/kyc-documents`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<SchoolsIdKycDocumentsGet200ResponseDto>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Upload a legal document (PDF, JPEG or PNG, 5 MB max)
+     * Roles &#x60;admin&#x60;, &#x60;school_admin&#x60;. The format is checked from the file bytes.
+     * @endpoint post /schools/{id}/kyc-documents
+     * @param id 
+     * @param file 
+     * @param type 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public schoolsIdKycDocumentsPost(id: number, file: Blob, type: KycDocumentTypeDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SchoolsIdKycDocumentsPost201ResponseDto>;
+    public schoolsIdKycDocumentsPost(id: number, file: Blob, type: KycDocumentTypeDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SchoolsIdKycDocumentsPost201ResponseDto>>;
+    public schoolsIdKycDocumentsPost(id: number, file: Blob, type: KycDocumentTypeDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SchoolsIdKycDocumentsPost201ResponseDto>>;
+    public schoolsIdKycDocumentsPost(id: number, file: Blob, type: KycDocumentTypeDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling schoolsIdKycDocumentsPost.');
+        }
+        if (file === null || file === undefined) {
+            throw new Error('Required parameter file was null or undefined when calling schoolsIdKycDocumentsPost.');
+        }
+        if (type === null || type === undefined) {
+            throw new Error('Required parameter type was null or undefined when calling schoolsIdKycDocumentsPost.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'multipart/form-data'
+        ];
+
+        const canConsumeForm = this.canConsumeForm(consumes);
+
+        let localVarFormParams: { append(param: string, value: any): any; };
+        let localVarUseForm = false;
+        let localVarConvertFormParamsToString = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
+        localVarUseForm = canConsumeForm;
+        if (localVarUseForm) {
+            localVarFormParams = new FormData();
+        } else {
+            localVarFormParams = new HttpParams({encoder: this.encoder});
+        }
+
+        if (file !== undefined) {
+            localVarFormParams = localVarFormParams.append('file', <any>file) as any || localVarFormParams;
+        }
+        if (type !== undefined) {
+            localVarFormParams = localVarFormParams.append('type', <any>type) as any || localVarFormParams;
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/kyc-documents`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<SchoolsIdKycDocumentsPost201ResponseDto>('post', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * Configure the direct-payment bypass for returning students
      * Roles &#x60;admin&#x60;, &#x60;school_admin&#x60;. Deliberately a dedicated endpoint, separate from PUT /schools/{id}: the API key is never echoed back in any response, so a routine school edit through the main form can never accidentally wipe it.
      * @endpoint put /schools/{id}/matricule-verification
@@ -601,8 +958,352 @@ export class SchoolsService extends BaseService {
     }
 
     /**
+     * Onboarding state of each payment method
+     * Roles &#x60;admin&#x60;, &#x60;school_admin&#x60;, &#x60;school_editor&#x60; (own school). One entry per onboardable method (orange, mtn). Only an &#x60;active&#x60; channel lets parents pay. Flow: draft -&gt; submitted (school) -&gt; approved or rejected (admin) -&gt; active once a test payment of &#x60;test_amount_cents&#x60; succeeds. Changing the number or credentials of a channel sends it back to draft.
+     * @endpoint get /schools/{id}/payment-channels
+     * @param id 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public schoolsIdPaymentChannelsGet(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SchoolsIdPaymentChannelsGet200ResponseDto>;
+    public schoolsIdPaymentChannelsGet(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SchoolsIdPaymentChannelsGet200ResponseDto>>;
+    public schoolsIdPaymentChannelsGet(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SchoolsIdPaymentChannelsGet200ResponseDto>>;
+    public schoolsIdPaymentChannelsGet(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling schoolsIdPaymentChannelsGet.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/payment-channels`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<SchoolsIdPaymentChannelsGet200ResponseDto>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Admin decision on a payment method
+     * Role &#x60;admin&#x60;. approve (submitted -&gt; approved, also approves the required documents), reject (note required), suspend an active channel (note required), reinstate a suspended one.
+     * @endpoint post /schools/{id}/payment-channels/{method}/review
+     * @param id 
+     * @param method 
+     * @param paymentChannelReviewRequestDto 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public schoolsIdPaymentChannelsMethodReviewPost(id: number, method: 'orange' | 'mtn', paymentChannelReviewRequestDto: PaymentChannelReviewRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentChannelEnvelopeDto>;
+    public schoolsIdPaymentChannelsMethodReviewPost(id: number, method: 'orange' | 'mtn', paymentChannelReviewRequestDto: PaymentChannelReviewRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodReviewPost(id: number, method: 'orange' | 'mtn', paymentChannelReviewRequestDto: PaymentChannelReviewRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodReviewPost(id: number, method: 'orange' | 'mtn', paymentChannelReviewRequestDto: PaymentChannelReviewRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling schoolsIdPaymentChannelsMethodReviewPost.');
+        }
+        if (method === null || method === undefined) {
+            throw new Error('Required parameter method was null or undefined when calling schoolsIdPaymentChannelsMethodReviewPost.');
+        }
+        if (paymentChannelReviewRequestDto === null || paymentChannelReviewRequestDto === undefined) {
+            throw new Error('Required parameter paymentChannelReviewRequestDto was null or undefined when calling schoolsIdPaymentChannelsMethodReviewPost.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/payment-channels/${this.configuration.encodeParam({name: "method", value: method, in: "path", style: "simple", explode: false, dataType: "'orange' | 'mtn'", dataFormat: undefined})}/review`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<PaymentChannelEnvelopeDto>('post', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: paymentChannelReviewRequestDto,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Send a payment method to admin review
+     * Roles &#x60;admin&#x60;, &#x60;school_admin&#x60;. Needs complete account details (400 VALIDATION_FAILED otherwise) and every required document (MISSING_DOCUMENTS). Allowed from draft or rejected (INVALID_STATUS otherwise).
+     * @endpoint post /schools/{id}/payment-channels/{method}/submit
+     * @param id 
+     * @param method 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public schoolsIdPaymentChannelsMethodSubmitPost(id: number, method: 'orange' | 'mtn', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentChannelEnvelopeDto>;
+    public schoolsIdPaymentChannelsMethodSubmitPost(id: number, method: 'orange' | 'mtn', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodSubmitPost(id: number, method: 'orange' | 'mtn', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodSubmitPost(id: number, method: 'orange' | 'mtn', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling schoolsIdPaymentChannelsMethodSubmitPost.');
+        }
+        if (method === null || method === undefined) {
+            throw new Error('Required parameter method was null or undefined when calling schoolsIdPaymentChannelsMethodSubmitPost.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/payment-channels/${this.configuration.encodeParam({name: "method", value: method, in: "path", style: "simple", explode: false, dataType: "'orange' | 'mtn'", dataFormat: undefined})}/submit`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<PaymentChannelEnvelopeDto>('post', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Start the activation test payment
+     * Roles &#x60;admin&#x60;, &#x60;school_admin&#x60;. The channel must be approved. Charges &#x60;test_amount_cents&#x60; from &#x60;payer_msisdn&#x60; into the school\&#39;s own account. A refusal by the operator shows test_status failed and can be retried.
+     * @endpoint post /schools/{id}/payment-channels/{method}/test
+     * @param id 
+     * @param method 
+     * @param paymentChannelTestRequestDto 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public schoolsIdPaymentChannelsMethodTestPost(id: number, method: 'orange' | 'mtn', paymentChannelTestRequestDto: PaymentChannelTestRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentChannelEnvelopeDto>;
+    public schoolsIdPaymentChannelsMethodTestPost(id: number, method: 'orange' | 'mtn', paymentChannelTestRequestDto: PaymentChannelTestRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodTestPost(id: number, method: 'orange' | 'mtn', paymentChannelTestRequestDto: PaymentChannelTestRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodTestPost(id: number, method: 'orange' | 'mtn', paymentChannelTestRequestDto: PaymentChannelTestRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling schoolsIdPaymentChannelsMethodTestPost.');
+        }
+        if (method === null || method === undefined) {
+            throw new Error('Required parameter method was null or undefined when calling schoolsIdPaymentChannelsMethodTestPost.');
+        }
+        if (paymentChannelTestRequestDto === null || paymentChannelTestRequestDto === undefined) {
+            throw new Error('Required parameter paymentChannelTestRequestDto was null or undefined when calling schoolsIdPaymentChannelsMethodTestPost.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/payment-channels/${this.configuration.encodeParam({name: "method", value: method, in: "path", style: "simple", explode: false, dataType: "'orange' | 'mtn'", dataFormat: undefined})}/test`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<PaymentChannelEnvelopeDto>('post', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: paymentChannelTestRequestDto,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Ask the operator how the test payment went
+     * Roles &#x60;admin&#x60;, &#x60;school_admin&#x60;. Success activates the channel; a failure or no answer within 10 minutes marks the test failed.
+     * @endpoint post /schools/{id}/payment-channels/{method}/test/sync
+     * @param id 
+     * @param method 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public schoolsIdPaymentChannelsMethodTestSyncPost(id: number, method: 'orange' | 'mtn', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentChannelEnvelopeDto>;
+    public schoolsIdPaymentChannelsMethodTestSyncPost(id: number, method: 'orange' | 'mtn', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodTestSyncPost(id: number, method: 'orange' | 'mtn', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodTestSyncPost(id: number, method: 'orange' | 'mtn', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling schoolsIdPaymentChannelsMethodTestSyncPost.');
+        }
+        if (method === null || method === undefined) {
+            throw new Error('Required parameter method was null or undefined when calling schoolsIdPaymentChannelsMethodTestSyncPost.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        // authentication (bearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('bearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/payment-channels/${this.configuration.encodeParam({name: "method", value: method, in: "path", style: "simple", explode: false, dataType: "'orange' | 'mtn'", dataFormat: undefined})}/test/sync`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<PaymentChannelEnvelopeDto>('post', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * Methods a parent can pay this school with
-     * Any authenticated role. Online methods the school switched on (mtn, orange); never reveals the accounts behind them.
+     * Any authenticated role. Online methods the school switched on (mtn, orange). &#x60;channels&#x60; adds how each one is collected; for a manual channel only, it carries the number, account name and merchant code the parent pays to. API credentials are never returned.
      * @endpoint get /schools/{id}/payment-methods
      * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.

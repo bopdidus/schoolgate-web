@@ -20,6 +20,7 @@ import { AbilityService } from '../../core/services/ability.service';
 import { SchoolEnrollmentsPanelComponent } from '../school-enrollments-panel/school-enrollments-panel.component';
 import { SchoolDocumentRequirementsPanelComponent } from '../school-document-requirements-panel/school-document-requirements-panel.component';
 import { PaymentSettingsPanelComponent } from '../../settings/payment-settings-panel/payment-settings-panel.component';
+import { PaymentChannelsPanelComponent } from '../../settings/payment-channels-panel/payment-channels-panel.component';
 import { SchoolMatriculeVerificationPanelComponent } from '../school-matricule-verification-panel/school-matricule-verification-panel.component';
 
 @Component({
@@ -42,6 +43,7 @@ import { SchoolMatriculeVerificationPanelComponent } from '../school-matricule-v
     SchoolDocumentRequirementsPanelComponent,
     SchoolMatriculeVerificationPanelComponent,
     PaymentSettingsPanelComponent,
+    PaymentChannelsPanelComponent,
     EducationTypeColorPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -85,6 +87,11 @@ export class SchoolDetailComponent implements OnInit {
   /** Staff read the accounts, only an admin edits them (the panel locks itself otherwise). */
   canViewPaymentSettings(schoolId: string): boolean {
     return this.abilities.can('read', 'School', { schoolId });
+  }
+
+  /** Only a platform admin holds the unscoped rule. */
+  isPlatformAdmin(): boolean {
+    return this.abilities.can('update', 'School');
   }
 
   canEditSchool(schoolId: string): boolean {

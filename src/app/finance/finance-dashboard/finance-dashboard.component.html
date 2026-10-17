@@ -1,0 +1,92 @@
+<app-page-header title="FINANCE.TITLE" subtitle="FINANCE.SUBTITLE" />
+
+@if (loading()) {
+  <div class="loading-center">
+    <mat-spinner diameter="48" />
+  </div>
+} @else if (failed()) {
+  <app-error-state (retry)="load()" />
+} @else if (summary(); as s) {
+  <div class="stats-grid">
+    <app-stat-card label="FINANCE.TODAY" icon="today" tone="success" [value]="s.today | xafCurrency" />
+    <app-stat-card label="FINANCE.THIS_WEEK" icon="date_range" [value]="s.week | xafCurrency" />
+    <app-stat-card label="FINANCE.THIS_MONTH" icon="calendar_month" [value]="s.month | xafCurrency" />
+    <app-stat-card
+      label="FINANCE.PENDING"
+      icon="hourglass_top"
+      hint="FINANCE.PENDING_HINT"
+      [tone]="s.pending > 0 ? 'warning' : 'primary'"
+      [value]="s.pending | xafCurrency"
+    />
+  </div>
+
+  <mat-card appearance="outlined" class="page-card">
+    <mat-card-header class="chart-header">
+      <mat-card-title>{{ 'FINANCE.COLLECTED_BY_LINE' | translate }}</mat-card-title>
+      <div class="chart-header__actions">
+        <mat-button-toggle-group
+          [value]="period()"
+          (change)="onPeriodChange($event.value)"
+          [attr.aria-label]="'FINANCE.PERIOD' | translate"
+        >
+          <mat-button-toggle value="day">{{ 'FINANCE.DAY' | translate }}</mat-button-toggle>
+          <mat-button-toggle value="week">{{ 'FINANCE.WEEK' | translate }}</mat-button-toggle>
+          <mat-button-toggle value="month">{{ 'FINANCE.MONTH' | translate }}</mat-button-toggle>
+        </mat-button-toggle-group>
+        <button mat-stroked-button type="button" [disabled]="exporting()" (click)="exportExcel()">
+          <mat-icon>download</mat-icon>
+          {{ 'FINANCE.EXPORT' | translate }}
+        </button>
+        <a mat-flat-button routerLink="arrears" queryParamsHandling="preserve">
+          <mat-icon>person_search</mat-icon>
+          {{ 'FINANCE.ARREARS_LINK' | translate }}
+        </a>
+      </div>
+    </mat-card-header>
+    <mat-card-content>
+      <p class="period-total">
+        {{ 'FINANCE.PERIOD_TOTAL' | translate }} <strong>{{ s.total | xafCurrency }}</strong>
+        <span class="live-badge"><mat-icon inline>bolt</mat-icon>{{ 'FINANCE.LIVE' | translate }}</span>
+      </p>
+      @if (hasData()) {
+        <div class="chart-box">
+          <canvas baseChart type="bar" [data]="chartData" [options]="chartOptions"></canvas>
+        </div>
+      } @else {
+        <p class="chart-empty">{{ 'FINANCE.NO_COLLECTION' | translate }}</p>
+      }
+
+      <button mat-button type="button" class="table-toggle" (click)="showTable.set(!showTable())">
+        <mat-icon>{{ showTable() ? 'expand_less' : 'table_rows' }}</mat-icon>
+        {{ (showTable() ? 'FINANCE.HIDE_TABLE' : 'FINANCE.SHOW_TABLE') | translate }}
+      </button>
+      @if (showTable()) {
+        <div class="scroll-x">
+          <table class="figures">
+            <thead>
+              <tr>
+                <th scope="col">{{ 'FINANCE.PERIOD' | translate }}</th>
+                <th scope="col">{{ lineLabel(null) }}</th>
+                @for (n of s.installmentNumbers; track n) {
+                  <th scope="col">{{ lineLabel(n) }}</th>
+                }
+                <th scope="col">{{ 'FINANCE.TOTAL' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (b of s.series; track b.start) {
+                <tr>
+                  <th scope="row">{{ bucketLabel(b.start) }}</th>
+                  @for (l of b.lines; track $index) {
+                    <td>{{ l.amount | xafCurrency }}</td>
+                  }
+                  <td><strong>{{ b.total | xafCurrency }}</strong></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+}

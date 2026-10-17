@@ -37,6 +37,7 @@ export class DashboardService {
         amount: fromCents(row.amount_cents),
         status: String(row.status ?? ''),
         declaredAt: String(row.declared_at ?? ''),
+        manual: row.manual ?? false,
       })),
       enrollmentTrend: (dto.enrollment_trend ?? []).map((row) => ({
         date: String(row.date ?? ''),

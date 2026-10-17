@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit, signal, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { Component, inject, input, output, OnInit, signal, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
@@ -17,9 +17,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { TranslateModule } from '@ngx-translate/core';
 import { SchoolService } from '../../schools/school.service';
-import { PaymentSettings } from '../../schools/school.model';
+import { PaymentChannelMode, PaymentSettings } from '../../schools/school.model';
 import { NotificationService } from '../../core/services/notification.service';
 import { AbilityService } from '../../core/services/ability.service';
 
@@ -51,6 +52,9 @@ const cameroonMobile: ValidatorFn = (control) =>
 const bankAccount: ValidatorFn = (control) =>
   !control.value || /^[A-Z0-9]{10,34}$/.test(normalizeBankAccount(control.value)) ? null : { bankAccount: true };
 
+const merchantCode: ValidatorFn = (control) =>
+  !control.value || /^\d{3,12}$/.test(String(control.value).replace(/\s/g, '')) ? null : { merchantCode: true };
+
 const swiftCode: ValidatorFn = (control) =>
   !control.value || /^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(control.value.trim().toUpperCase())
     ? null
@@ -68,6 +72,7 @@ const swiftCode: ValidatorFn = (control) =>
     MatInputModule,
     MatIconModule,
     MatDividerModule,
+    MatButtonToggleModule,
     TranslateModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -76,6 +81,8 @@ const swiftCode: ValidatorFn = (control) =>
 })
 export class PaymentSettingsPanelComponent implements OnInit {
   readonly schoolId = input.required<string>();
+  /** Emitted after a save: a changed account sends its channel back to draft. */
+  readonly saved = output<void>();
 
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
@@ -98,6 +105,8 @@ export class PaymentSettingsPanelComponent implements OnInit {
       secretsSet: false,
       number: ['', [requiredWhenEnabled, cameroonMobile]],
       accountName: ['', [requiredWhenEnabled, Validators.maxLength(150)]],
+      mode: 'direct' as PaymentChannelMode,
+      merchantCode: ['', merchantCode],
       clientId: ['', [requiredWhenEnabled, Validators.maxLength(255)]],
       clientSecret: ['', [requiredSecretWhenEnabled, Validators.maxLength(500)]],
       authToken: ['', [requiredSecretWhenEnabled, Validators.maxLength(500)]],
@@ -108,6 +117,8 @@ export class PaymentSettingsPanelComponent implements OnInit {
       secretsSet: false,
       number: ['', [requiredWhenEnabled, cameroonMobile]],
       accountName: ['', [requiredWhenEnabled, Validators.maxLength(150)]],
+      mode: 'direct' as PaymentChannelMode,
+      merchantCode: ['', merchantCode],
       apiUser: ['', [requiredWhenEnabled, Validators.maxLength(64)]],
       apiKey: ['', [requiredSecretWhenEnabled, Validators.maxLength(500)]],
       subscriptionKey: ['', [requiredSecretWhenEnabled, Validators.maxLength(500)]],
@@ -135,6 +146,13 @@ export class PaymentSettingsPanelComponent implements OnInit {
       });
     }
 
+    // Manual mode needs no API credentials: their fields are hidden and disabled.
+    for (const group of [this.form.controls.orange, this.form.controls.mtn]) {
+      group.controls.mode.valueChanges
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => this.applyCredentialsRequirement(this.credentialsRequired()));
+    }
+
     if (!this.canManage()) this.form.disable();
 
     this.schoolService.getPaymentSettings(this.schoolId()).subscribe({
@@ -158,25 +176,29 @@ export class PaymentSettingsPanelComponent implements OnInit {
     });
   }
 
+  /** Whether a channel collects through the operator API (and so needs its credentials). */
+  needsCredentials(channel: 'orange' | 'mtn'): boolean {
+    return this.credentialsRequired() && this.form.controls[channel].controls.mode.value === 'direct';
+  }
+
   /**
-   * With an aggregator the credential fields are hidden and disabled, so their
-   * "required" validators never block saving (disabled controls skip validation).
+   * With an aggregator, or in manual mode, the credential fields are hidden
+   * and disabled, so their "required" validators never block saving
+   * (disabled controls skip validation).
    */
   private applyCredentialsRequirement(required: boolean): void {
     this.credentialsRequired.set(required);
     const { orange, mtn } = this.form.controls;
-    const controls = [
-      orange.controls.clientId,
-      orange.controls.clientSecret,
-      orange.controls.authToken,
-      orange.controls.pin,
-      mtn.controls.apiUser,
-      mtn.controls.apiKey,
-      mtn.controls.subscriptionKey,
-    ];
-    for (const control of controls) {
-      if (!required) control.disable({ emitEvent: false });
-      else if (this.canManage()) control.enable({ emitEvent: false });
+    const byChannel = {
+      orange: [orange.controls.clientId, orange.controls.clientSecret, orange.controls.authToken, orange.controls.pin],
+      mtn: [mtn.controls.apiUser, mtn.controls.apiKey, mtn.controls.subscriptionKey],
+    };
+    for (const [channel, controls] of Object.entries(byChannel) as ['orange' | 'mtn', AbstractControl[]][]) {
+      const needed = this.needsCredentials(channel);
+      for (const control of controls) {
+        if (!needed) control.disable({ emitEvent: false });
+        else if (this.canManage()) control.enable({ emitEvent: false });
+      }
     }
   }
 
@@ -197,6 +219,8 @@ export class PaymentSettingsPanelComponent implements OnInit {
         orangeMoneyEnabled: v.orange.enabled,
         orangeMoneyNumber: v.orange.number,
         orangeMoneyAccountName: v.orange.accountName,
+        orangeMode: v.orange.mode,
+        orangeMerchantCode: v.orange.merchantCode.replace(/\s/g, ''),
         orangeClientId: v.orange.clientId,
         orangeClientSecret: v.orange.clientSecret,
         orangeAuthToken: v.orange.authToken,
@@ -204,6 +228,8 @@ export class PaymentSettingsPanelComponent implements OnInit {
         mtnMomoEnabled: v.mtn.enabled,
         mtnMomoNumber: v.mtn.number,
         mtnMomoAccountName: v.mtn.accountName,
+        mtnMode: v.mtn.mode,
+        mtnMerchantCode: v.mtn.merchantCode.replace(/\s/g, ''),
         mtnApiUser: v.mtn.apiUser,
         mtnApiKey: v.mtn.apiKey,
         mtnSubscriptionKey: v.mtn.subscriptionKey,
@@ -221,6 +247,7 @@ export class PaymentSettingsPanelComponent implements OnInit {
           this.patch(settings);
           this.saving.set(false);
           this.notification.success('SETTINGS.PAYMENT_SAVED');
+          this.saved.emit();
         },
         error: (err: unknown) => {
           this.saving.set(false);
@@ -233,7 +260,6 @@ export class PaymentSettingsPanelComponent implements OnInit {
   }
 
   private patch(s: PaymentSettings): void {
-    this.applyCredentialsRequirement(s.merchantCredentialsRequired);
     this.form.setValue({
       // Secret inputs always start empty: the API never returns secrets.
       orange: {
@@ -241,6 +267,8 @@ export class PaymentSettingsPanelComponent implements OnInit {
         secretsSet: s.orangeSecretsSet,
         number: s.orangeMoneyNumber,
         accountName: s.orangeMoneyAccountName,
+        mode: s.orangeMode,
+        merchantCode: s.orangeMerchantCode,
         clientId: s.orangeClientId,
         clientSecret: '',
         authToken: '',
@@ -251,6 +279,8 @@ export class PaymentSettingsPanelComponent implements OnInit {
         secretsSet: s.mtnSecretsSet,
         number: s.mtnMomoNumber,
         accountName: s.mtnMomoAccountName,
+        mode: s.mtnMode,
+        merchantCode: s.mtnMerchantCode,
         apiUser: s.mtnApiUser,
         apiKey: '',
         subscriptionKey: '',
@@ -264,6 +294,7 @@ export class PaymentSettingsPanelComponent implements OnInit {
         swiftCode: s.bankSwiftCode,
       },
     });
+    this.applyCredentialsRequirement(s.merchantCredentialsRequired);
     this.form.markAsPristine();
   }
 }

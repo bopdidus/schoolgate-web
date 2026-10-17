@@ -34,6 +34,14 @@ export interface PaymentDto {
     mobile_money_reference?: string;
     payer_msisdn?: string;
     external_reference?: string;
+    /**
+     * Paid by hand to the school; its staff confirm or reject it.
+     */
+    manual?: boolean;
+    /**
+     * Staff member who confirmed or rejected a manual payment.
+     */
+    reviewed_by?: number;
     declared_at?: string;
     validation_deadline?: string;
     validated_at?: string;

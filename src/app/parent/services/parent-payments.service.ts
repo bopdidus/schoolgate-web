@@ -21,8 +21,18 @@ export class ParentPaymentsService {
     return this.paymentsApi.paymentsFeePolicyGet().pipe(map((envelope) => unwrapData(envelope)?.percent ?? 0));
   }
 
-  /** Starts one Mobile Money payment: the operator pushes a prompt to `payerMsisdn`. */
-  declare(enrollmentId: string, item: PaymentLineItem, method: MobileMoneyMethod, payerMsisdn: string): Observable<ParentPayment> {
+  /**
+   * Starts one Mobile Money payment: the operator pushes a prompt to
+   * `payerMsisdn`. With `transactionReference`, declares a transfer already
+   * made by hand to a school collecting manually (the school confirms it).
+   */
+  declare(
+    enrollmentId: string,
+    item: PaymentLineItem,
+    method: MobileMoneyMethod,
+    payerMsisdn: string,
+    transactionReference?: string,
+  ): Observable<ParentPayment> {
     const body: DeclarePaymentRequestDto = {
       enrollment_id: +enrollmentId,
       type: item.type,
@@ -30,6 +40,7 @@ export class ParentPaymentsService {
       amount_cents: item.amountCents,
       payment_method: method,
       payer_msisdn: payerMsisdn,
+      transaction_reference: transactionReference,
     };
     return this.paymentsApi.paymentsPost(body).pipe(map(unwrapPayment));
   }

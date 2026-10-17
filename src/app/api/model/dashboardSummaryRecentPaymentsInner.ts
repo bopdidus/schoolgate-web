@@ -15,5 +15,9 @@ export interface DashboardSummaryRecentPaymentsInnerDto {
     amount_cents?: number;
     status?: string;
     declared_at?: string;
+    /**
+     * Paid by hand to the school; its staff confirm or reject it.
+     */
+    manual?: boolean;
 }
 

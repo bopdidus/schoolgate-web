@@ -7,10 +7,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { AcceptedPaymentMethodDto } from './acceptedPaymentMethod';
 
 
 export interface SchoolsIdPaymentMethodsGet200ResponseAllOfDataDto { 
     methods?: Array<SchoolsIdPaymentMethodsGet200ResponseAllOfDataDto.MethodsEnum>;
+    channels?: Array<AcceptedPaymentMethodDto>;
 }
 export namespace SchoolsIdPaymentMethodsGet200ResponseAllOfDataDto {
     export const MethodsEnum = {

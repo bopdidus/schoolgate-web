@@ -12,15 +12,6 @@ export function unwrapData<T>(envelope: { data?: T; error?: { message?: string }
   return envelope.data;
 }
 
-export function unwrapDataOrNull<T>(
-  envelope: { data?: T; error?: { message?: string } | null },
-): T | null {
-  if (envelope.error != null) {
-    throw new Error(envelope.error.message ?? 'API error');
-  }
-  return envelope.data ?? null;
-}
-
 export function pageToOffset(page = 1, pageSize = 10): { limit: number; offset: number } {
   const safePage = Math.max(1, page);
   const limit = Math.max(1, pageSize);
@@ -39,6 +30,12 @@ export function toPaginated<T>(
     page: meta?.limit ? Math.floor((meta.offset ?? 0) / meta.limit) + 1 : page,
     page_size: meta?.limit ?? pageSize,
   };
+}
+
+/** A route or form id as the numeric id the API expects; undefined when absent or not a number. */
+export function toId(id: string | undefined): number | undefined {
+  const n = Number(id);
+  return id && Number.isFinite(n) ? n : undefined;
 }
 
 /** Convert API cents → display major units. */

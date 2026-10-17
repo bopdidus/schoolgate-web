@@ -17,6 +17,8 @@ export interface PaymentSettingsDto {
     orange_money_enabled?: boolean;
     orange_money_number?: string;
     orange_money_account_name?: string;
+    orange_mode?: PaymentSettingsDto.OrangeModeEnum;
+    orange_merchant_code?: string;
     orange_client_id?: string;
     /**
      * Client secret, X-AUTH-TOKEN and PIN are saved (never returned).
@@ -25,6 +27,8 @@ export interface PaymentSettingsDto {
     mtn_momo_enabled?: boolean;
     mtn_momo_number?: string;
     mtn_momo_account_name?: string;
+    mtn_mode?: PaymentSettingsDto.MtnModeEnum;
+    mtn_merchant_code?: string;
     mtn_api_user?: string;
     /**
      * API key and subscription key are saved (never returned).
@@ -45,4 +49,17 @@ export interface PaymentSettingsDto {
      */
     updated_at?: string;
 }
+export namespace PaymentSettingsDto {
+    export const OrangeModeEnum = {
+        Direct: 'direct',
+        Manual: 'manual'
+    } as const;
+    export type OrangeModeEnum = typeof OrangeModeEnum[keyof typeof OrangeModeEnum];
+    export const MtnModeEnum = {
+        Direct: 'direct',
+        Manual: 'manual'
+    } as const;
+    export type MtnModeEnum = typeof MtnModeEnum[keyof typeof MtnModeEnum];
+}
+
 

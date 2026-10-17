@@ -3,6 +3,8 @@ import { Observable, map } from 'rxjs';
 import {
   DocumentRequirementDto,
   DocumentRequirementInputDto,
+  KycDocumentDto,
+  PaymentChannelDto,
   PaymentSettingsDto,
   SchoolClassDto,
   SchoolClassRequestDto,
@@ -27,9 +29,16 @@ import { toUtcMidnightIso } from './school-form.validation';
 import {
   CreateSchoolRequest,
   DocumentRequirement,
+  KycDocument,
+  KycDocumentType,
   MatriculeVerificationConfig,
   MatriculeVerificationInfo,
   MatriculeVerificationMode,
+  PaymentChannel,
+  PaymentChannelMethod,
+  PaymentChannelReview,
+  PaymentChannelReviewAction,
+  PaymentChannelStatus,
   PaymentSettings,
   PaymentSettingsUpdate,
   School,
@@ -163,6 +172,8 @@ export class SchoolService {
         orange_money_enabled: settings.orangeMoneyEnabled,
         orange_money_number: settings.orangeMoneyNumber,
         orange_money_account_name: settings.orangeMoneyAccountName,
+        orange_mode: settings.orangeMode,
+        orange_merchant_code: settings.orangeMerchantCode,
         orange_client_id: settings.orangeClientId,
         orange_client_secret: settings.orangeClientSecret,
         orange_auth_token: settings.orangeAuthToken,
@@ -170,6 +181,8 @@ export class SchoolService {
         mtn_momo_enabled: settings.mtnMomoEnabled,
         mtn_momo_number: settings.mtnMomoNumber,
         mtn_momo_account_name: settings.mtnMomoAccountName,
+        mtn_mode: settings.mtnMode,
+        mtn_merchant_code: settings.mtnMerchantCode,
         mtn_api_user: settings.mtnApiUser,
         mtn_api_key: settings.mtnApiKey,
         mtn_subscription_key: settings.mtnSubscriptionKey,
@@ -182,6 +195,105 @@ export class SchoolService {
         bank_swift_code: settings.bankSwiftCode,
       })
       .pipe(map((envelope) => this.mapPaymentSettings(unwrapData(envelope))));
+  }
+
+  getPaymentChannels(schoolId: string): Observable<PaymentChannel[]> {
+    return this.schoolsApi
+      .schoolsIdPaymentChannelsGet(+schoolId)
+      .pipe(map((envelope) => (unwrapData(envelope)?.channels ?? []).map((c) => this.mapPaymentChannel(c))));
+  }
+
+  /** Sends a method to admin review once its details and documents are complete. */
+  submitPaymentChannel(schoolId: string, method: PaymentChannelMethod): Observable<PaymentChannel> {
+    return this.schoolsApi
+      .schoolsIdPaymentChannelsMethodSubmitPost(+schoolId, method)
+      .pipe(map((envelope) => this.mapPaymentChannel(unwrapData(envelope))));
+  }
+
+  reviewPaymentChannel(
+    schoolId: string,
+    method: PaymentChannelMethod,
+    action: PaymentChannelReviewAction,
+    note = '',
+  ): Observable<PaymentChannel> {
+    return this.schoolsApi
+      .schoolsIdPaymentChannelsMethodReviewPost(+schoolId, method, { action, note })
+      .pipe(map((envelope) => this.mapPaymentChannel(unwrapData(envelope))));
+  }
+
+  /** Charges the test amount from payerMsisdn into the school's own account. */
+  startPaymentChannelTest(schoolId: string, method: PaymentChannelMethod, payerMsisdn: string): Observable<PaymentChannel> {
+    return this.schoolsApi
+      .schoolsIdPaymentChannelsMethodTestPost(+schoolId, method, { payer_msisdn: payerMsisdn })
+      .pipe(map((envelope) => this.mapPaymentChannel(unwrapData(envelope))));
+  }
+
+  syncPaymentChannelTest(schoolId: string, method: PaymentChannelMethod): Observable<PaymentChannel> {
+    return this.schoolsApi
+      .schoolsIdPaymentChannelsMethodTestSyncPost(+schoolId, method)
+      .pipe(map((envelope) => this.mapPaymentChannel(unwrapData(envelope))));
+  }
+
+  /** Admin queue of channels in status (submitted by default on the API). */
+  getPaymentChannelReviews(status?: PaymentChannelStatus): Observable<PaymentChannelReview[]> {
+    return this.schoolsApi.paymentChannelReviewsGet(status).pipe(
+      map((envelope) =>
+        (unwrapData(envelope)?.reviews ?? []).map((r) => ({
+          ...this.mapPaymentChannel(r),
+          schoolId: String(r.school_id ?? ''),
+          schoolName: r.school_name ?? '',
+        })),
+      ),
+    );
+  }
+
+  getKycDocuments(schoolId: string): Observable<KycDocument[]> {
+    return this.schoolsApi
+      .schoolsIdKycDocumentsGet(+schoolId)
+      .pipe(map((envelope) => (unwrapData(envelope)?.documents ?? []).map((d) => this.mapKycDocument(d))));
+  }
+
+  uploadKycDocument(schoolId: string, type: KycDocumentType, file: File): Observable<KycDocument> {
+    return this.schoolsApi
+      .schoolsIdKycDocumentsPost(+schoolId, file, type)
+      .pipe(map((envelope) => this.mapKycDocument(unwrapData(envelope))));
+  }
+
+  downloadKycDocument(schoolId: string, documentId: string): Observable<Blob> {
+    return this.schoolsApi.schoolsIdKycDocumentsDocIdGet(+schoolId, +documentId);
+  }
+
+  deleteKycDocument(schoolId: string, documentId: string): Observable<void> {
+    return this.schoolsApi.schoolsIdKycDocumentsDocIdDelete(+schoolId, +documentId).pipe(map(() => undefined));
+  }
+
+  private mapPaymentChannel(d: PaymentChannelDto): PaymentChannel {
+    return {
+      method: (d.method ?? 'orange') as PaymentChannelMethod,
+      mode: d.mode === 'manual' ? 'manual' : 'direct',
+      status: (d.status ?? 'draft') as PaymentChannelStatus,
+      detailsComplete: d.details_complete ?? false,
+      requiredDocuments: (d.required_documents ?? []) as KycDocumentType[],
+      missingDocuments: (d.missing_documents ?? []) as KycDocumentType[],
+      submittedAt: d.submitted_at ?? null,
+      reviewedAt: d.reviewed_at ?? null,
+      reviewNote: d.review_note ?? '',
+      testStatus: d.test_status ?? null,
+      testPayerMsisdn: d.test_payer_msisdn ?? '',
+      testAmount: fromCents(d.test_amount_cents ?? 0),
+      activatedAt: d.activated_at ?? null,
+    };
+  }
+
+  private mapKycDocument(d: KycDocumentDto): KycDocument {
+    return {
+      id: String(d.id ?? ''),
+      type: (d.type ?? 'rccm') as KycDocumentType,
+      filename: d.filename ?? '',
+      sizeBytes: d.size_bytes ?? 0,
+      status: d.status === 'approved' ? 'approved' : 'pending',
+      createdAt: d.created_at ?? '',
+    };
   }
 
   uploadMatriculeRoster(schoolId: string, file: File): Observable<School> {
@@ -375,11 +487,15 @@ export class SchoolService {
       orangeMoneyEnabled: d.orange_money_enabled ?? false,
       orangeMoneyNumber: d.orange_money_number ?? '',
       orangeMoneyAccountName: d.orange_money_account_name ?? '',
+      orangeMode: d.orange_mode === 'manual' ? 'manual' : 'direct',
+      orangeMerchantCode: d.orange_merchant_code ?? '',
       orangeClientId: d.orange_client_id ?? '',
       orangeSecretsSet: d.orange_secrets_set ?? false,
       mtnMomoEnabled: d.mtn_momo_enabled ?? false,
       mtnMomoNumber: d.mtn_momo_number ?? '',
       mtnMomoAccountName: d.mtn_momo_account_name ?? '',
+      mtnMode: d.mtn_mode === 'manual' ? 'manual' : 'direct',
+      mtnMerchantCode: d.mtn_merchant_code ?? '',
       mtnApiUser: d.mtn_api_user ?? '',
       mtnSecretsSet: d.mtn_secrets_set ?? false,
       paypalEnabled: d.paypal_enabled ?? false,

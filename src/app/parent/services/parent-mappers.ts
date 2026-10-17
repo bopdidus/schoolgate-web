@@ -160,6 +160,8 @@ export function mapPayment(dto: PaymentDto): ParentPayment {
     externalReference: dto.external_reference || dto.mobile_money_reference,
     declaredAt: dto.declared_at,
     validatedAt: dto.validated_at,
+    manual: dto.manual ?? false,
+    rejectionReason: dto.rejection_reason,
   };
 }
 

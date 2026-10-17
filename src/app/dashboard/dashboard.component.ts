@@ -26,7 +26,8 @@ import {
   EnrollmentTrend,
   DashboardRecentPayment,
 } from './dashboard.model';
-import { PaymentService } from '../payments/payment.service';
+import { ManualPaymentReview } from '../payments/manual-payment-review.service';
+import { AbilityService } from '../core/services/ability.service';
 import { PageHeaderComponent } from '../shared/components/page-header/page-header.component';
 import { StatCardComponent } from '../shared/components/stat-card/stat-card.component';
 import { ErrorStateComponent } from '../shared/components/error-state/error-state.component';
@@ -34,7 +35,6 @@ import { XafCurrencyPipe } from '../shared/pipes/xaf-currency.pipe';
 import { StatusColorPipe } from '../shared/pipes/status-color.pipe';
 import { LocaleDatePipe } from '../shared/pipes/locale-date.pipe';
 import { selectUser } from '../core/store/auth.reducer';
-import { NotificationService } from '../core/services/notification.service';
 import { ThemeService } from '../core/services/theme.service';
 import { resolveCssColor, withAlpha } from '../core/utils/css-color.util';
 
@@ -64,8 +64,8 @@ import { resolveCssColor, withAlpha } from '../core/utils/css-color.util';
 })
 export class DashboardComponent implements OnInit {
   private readonly dashboardService = inject(DashboardService);
-  private readonly paymentService = inject(PaymentService);
-  private readonly notification = inject(NotificationService);
+  private readonly manualReview = inject(ManualPaymentReview);
+  private readonly abilities = inject(AbilityService);
   private readonly translate = inject(TranslateService);
   private readonly theme = inject(ThemeService);
   private readonly store = inject(Store);
@@ -218,22 +218,19 @@ export class DashboardComponent implements OnInit {
 
   // ── Actions ───────────────────────────────────────────────────────────────
 
-  validatePayment(payment: DashboardRecentPayment): void {
-    this.paymentService.validate({ payment_ids: [payment.id] }).subscribe({
-      next: () => {
-        this.notification.success('PAYMENTS.VALIDATED_OK');
-        this.loadDashboard();
-      },
-    });
+  /** Manual payments awaiting the school, for its own staff only. */
+  canReview(payment: DashboardRecentPayment): boolean {
+    return payment.manual && payment.status === 'declared' && this.abilities.can('decide', 'Payment');
   }
 
+  /** The school found the transfer on its account. */
+  validatePayment(payment: DashboardRecentPayment): void {
+    this.manualReview.confirm(payment.id).subscribe(() => this.loadDashboard());
+  }
+
+  /** No matching transfer reached the school. */
   rejectPayment(payment: DashboardRecentPayment): void {
-    this.paymentService.reject({ payment_ids: [payment.id] }).subscribe({
-      next: () => {
-        this.notification.success('PAYMENTS.REJECTED_OK');
-        this.loadDashboard();
-      },
-    });
+    this.manualReview.reject(payment.id).subscribe(() => this.loadDashboard());
   }
 
   trackById(_: number, p: DashboardRecentPayment): string {

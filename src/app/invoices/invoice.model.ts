@@ -20,12 +20,3 @@ export interface InvoiceVerification {
   message: string;
 }
 
-export interface InvoiceFilters {
-  schoolId?: string;
-  enrollmentId?: string;
-  status?: InvoiceStatus | '';
-  dateFrom?: string;
-  dateTo?: string;
-  page?: number;
-  pageSize?: number;
-}

@@ -14,6 +14,14 @@ export interface PaymentSettingsRequestDto {
     orange_money_number?: string;
     orange_money_account_name?: string;
     /**
+     * direct charges through the school\'s operator API (credentials required); manual lets parents pay by USSD and declare the transaction reference, which school staff confirm. Empty means direct.
+     */
+    orange_mode?: PaymentSettingsRequestDto.OrangeModeEnum;
+    /**
+     * Optional merchant code parents dial in manual mode (digits).
+     */
+    orange_merchant_code?: string;
+    /**
      * Orange merchant API OAuth client id.
      */
     orange_client_id?: string;
@@ -32,6 +40,14 @@ export interface PaymentSettingsRequestDto {
     mtn_momo_enabled?: boolean;
     mtn_momo_number?: string;
     mtn_momo_account_name?: string;
+    /**
+     * direct charges through the school\'s operator API (credentials required); manual lets parents pay by USSD and declare the transaction reference, which school staff confirm. Empty means direct.
+     */
+    mtn_mode?: PaymentSettingsRequestDto.MtnModeEnum;
+    /**
+     * Optional merchant code parents dial in manual mode (digits).
+     */
+    mtn_merchant_code?: string;
     /**
      * MTN MoMo Collection API user (UUID).
      */
@@ -55,4 +71,17 @@ export interface PaymentSettingsRequestDto {
     bank_account_number?: string;
     bank_swift_code?: string;
 }
+export namespace PaymentSettingsRequestDto {
+    export const OrangeModeEnum = {
+        Direct: 'direct',
+        Manual: 'manual'
+    } as const;
+    export type OrangeModeEnum = typeof OrangeModeEnum[keyof typeof OrangeModeEnum];
+    export const MtnModeEnum = {
+        Direct: 'direct',
+        Manual: 'manual'
+    } as const;
+    export type MtnModeEnum = typeof MtnModeEnum[keyof typeof MtnModeEnum];
+}
+
 

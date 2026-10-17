@@ -10,6 +10,19 @@ export type ParentPaymentStatus = 'declared' | 'validated' | 'rejected' | 'refun
 
 export type MobileMoneyMethod = 'mtn' | 'orange';
 
+/**
+ * One way a school accepts payment. In manual mode the school has a merchant
+ * account but no operator API: the parent pays by hand (USSD) to the number
+ * or merchant code, then declares the SMS reference and the school confirms.
+ */
+export interface AcceptedChannel {
+  method: MobileMoneyMethod;
+  manual: boolean;
+  number: string;
+  accountName: string;
+  merchantCode: string;
+}
+
 export type Gender = 'male' | 'female';
 
 export interface ParentPayment {
@@ -27,6 +40,9 @@ export interface ParentPayment {
   externalReference?: string;
   declaredAt?: string;
   validatedAt?: string;
+  /** Paid by hand to the school: its staff confirm it, no operator does. */
+  manual?: boolean;
+  rejectionReason?: string;
 }
 
 export interface ClassInstallment {

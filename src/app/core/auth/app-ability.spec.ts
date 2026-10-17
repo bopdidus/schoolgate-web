@@ -64,6 +64,13 @@ describe('defineAbilityFor', () => {
     expect(canOn(ability, 'read', 'School', '1')).toBe(false);
   });
 
+  it('lets only school staff vouch for a manual payment, never an admin', () => {
+    expect(canOn(defineAbilityFor(userWith('school_editor', '2')), 'decide', 'Payment', '2')).toBe(true);
+    expect(canOn(defineAbilityFor(userWith('school_editor', '2')), 'decide', 'Payment', '1')).toBe(false);
+    expect(canOn(defineAbilityFor(userWith('admin')), 'decide', 'Payment', '2')).toBe(false);
+    expect(canOn(defineAbilityFor(userWith('admin')), 'read', 'Payment', '2')).toBe(true);
+  });
+
   it('refuses school creation to anyone but an admin', () => {
     expect(defineAbilityFor(userWith('admin')).can('create', 'School')).toBe(true);
     expect(defineAbilityFor(userWith('school_admin', '2')).can('create', 'School')).toBe(false);

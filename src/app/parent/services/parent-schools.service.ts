@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { ReferenceService, SchoolsService } from '../../api';
 import { pageToOffset, unwrapData } from '../../core/utils/openapi-helpers';
-import { DocumentRequirement, LabelRef, MobileMoneyMethod, ParentSchool } from '../domain/models';
+import { AcceptedChannel, DocumentRequirement, LabelRef, MobileMoneyMethod, ParentSchool } from '../domain/models';
 import { mapRequirement, mapSchool } from './parent-mappers';
 
 export interface SchoolSearch {
@@ -64,10 +64,20 @@ export class ParentSchoolsService {
       .pipe(map((envelope) => (unwrapData(envelope) ?? []).map(mapRequirement)));
   }
 
-  /** Mobile Money channels the school accepts (and can actually charge). */
-  paymentMethods(schoolId: string): Observable<MobileMoneyMethod[]> {
-    return this.schoolsApi
-      .schoolsIdPaymentMethodsGet(+schoolId)
-      .pipe(map((envelope) => (unwrapData(envelope)?.methods ?? []) as MobileMoneyMethod[]));
+  /** Mobile Money channels the school accepts, and how each one is collected. */
+  paymentMethods(schoolId: string): Observable<AcceptedChannel[]> {
+    return this.schoolsApi.schoolsIdPaymentMethodsGet(+schoolId).pipe(
+      map((envelope) => {
+        return (unwrapData(envelope).channels ?? [])
+          .filter((c) => c.method === 'mtn' || c.method === 'orange')
+          .map((c) => ({
+            method: c.method as MobileMoneyMethod,
+            manual: c.mode === 'manual',
+            number: c.number ?? '',
+            accountName: c.account_name ?? '',
+            merchantCode: c.merchant_code ?? '',
+          }));
+      }),
+    );
   }
 }
