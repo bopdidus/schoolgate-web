@@ -9,7 +9,7 @@ import { HomeBenefitsComponent } from './home-benefits/home-benefits.component';
 
 /**
  * Public landing page (`/`): what SchoolGate — by Senior Digital Soft — does
- * and how, with the ways in: sign in or register a school.
+ * and how, with the ways in: sign in or sign up (school or parent).
  */
 @Component({
   selector: 'app-home',

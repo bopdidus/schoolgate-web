@@ -20,7 +20,7 @@ describe('HomeComponent', () => {
   const hrefs = (selector: string): (string | null)[] =>
     Array.from(el().querySelectorAll(selector)).map((a) => a.getAttribute('href'));
 
-  it('offers a way to sign in and a way to register a school', () => {
+  it('offers a way to sign in and a way to sign up', () => {
     expect(hrefs('a.login-link')).toContain('/login');
     expect(hrefs('a.register-link')).toContain('/register');
   });

@@ -473,7 +473,7 @@
   },
   "HOME": {
     "NAV_LABEL": "Access",
-    "REGISTER": "Register my school",
+    "REGISTER": "Sign up",
     "GO_TO_DASHBOARD": "Dashboard",
     "EYEBROW": "Online school enrollment",
     "HERO_TITLE": "School enrollment and fees, made simple.",
@@ -708,8 +708,8 @@
     "LINK": "Privacy policy",
     "LINK_INLINE": "privacy policy",
     "TITLE": "Privacy policy",
-    "UPDATED": "Last updated: October 9, 2026",
-    "INTRO": "SchoolGate lets parents apply for a place at a school, follow their children's enrollments and pay school fees with Mobile Money. This policy explains what data we process, why, who we share it with and how to exercise your rights. It covers both the SchoolGate mobile app and website.",
+    "UPDATED": "Last updated: October 18, 2026",
+    "INTRO": "SchoolGate lets parents apply for a place at a school, follow their children's enrollments and pay school fees with Mobile Money. This policy explains what data we process, why, who we share it with and how to exercise your rights. It covers both the SchoolGate mobile app and website, for parents and school staff alike.",
     "CONTACT_TITLE": "Contact us",
     "CONTACT_TEXT": "For any question about your data or to exercise your rights, write to us:",
     "BACK_HOME": "Back to home",
@@ -726,7 +726,8 @@
           "Your account: first and last name, email address, phone number and password (stored only as an irreversible hash, never in plain text).",
           "Your children: first and last name, date of birth, sex and the student ID assigned by the school.",
           "Enrollment requests: school, class, school year, request status and the documents you upload (birth certificate, report cards, etc.).",
-          "Payments: amount, fees concerned, operator (MTN Mobile Money or Orange Money), phone number used, transaction reference and status. We never receive your Mobile Money PIN.",
+          "Payments: amount, fees concerned, operator (MTN Mobile Money or Orange Money), phone number used, transaction reference and status. When you pay the school's number or merchant code directly, the reference of the confirmation SMS you declare. We never receive your Mobile Money PIN.",
+          "Schools: contact details of the school and its staff members, Mobile Money numbers and merchant accounts, and the legal documents provided to enable payment collection (trade register, tax ID, operating licence, legal representative's ID, bank details, merchant contracts).",
           "Technical data: your device's notification token (mobile app) and security logs (IP address, sign-in date and time)."
         ]
       },
@@ -736,7 +737,8 @@
           "To create your account, sign you in and keep your session secure.",
           "To send your enrollment requests to the school you choose and tell you its decision.",
           "To process your payments, issue invoices and track tuition.",
-          "To notify you about your requests and payments.",
+          "To check a school's legal documents before allowing it to collect payments.",
+          "To notify you about your requests and payments, in the app and by email, and to send password reset codes.",
           "To prevent fraud and abuse (for example by limiting sign-in or payment attempts).",
           "To meet our legal obligations, including accounting."
         ],
@@ -747,9 +749,10 @@
       {
         "title": "Who we share it with",
         "items": [
-          "The school you apply to: it only sees the information and documents tied to that request and the payments made to it.",
-          "Notch Pay, MTN Mobile Money and Orange Money, to carry out the payments you start.",
+          "The school you apply to: it only sees the information and documents tied to that request and the payments made to it, including whether tuition is settled. If the school checks student IDs against its own system, the ID you enter is sent to it for that check.",
+          "MTN Mobile Money and Orange Money, to carry out the payments you start. The money goes straight to the school's merchant account: SchoolGate never holds the funds.",
           "Google Firebase Cloud Messaging, to deliver notifications to your phone.",
+          "Mailjet, to send emails (notifications and password reset codes).",
           "Our hosting and database providers, who process data on our behalf only.",
           "Authorities, when the law requires it."
         ]
@@ -757,7 +760,7 @@
       {
         "title": "Transfers outside Cameroon",
         "paragraphs": [
-          "Some of our providers (hosting, notifications) store or process data outside Cameroon. We only use providers offering appropriate security and confidentiality safeguards."
+          "Some of our providers (hosting, notifications, email) store or process data outside Cameroon. We only use providers offering appropriate security and confidentiality safeguards."
         ]
       },
       {
@@ -766,13 +769,14 @@
           "Account and children data: while your account is active, then deleted or anonymized after it is closed.",
           "Enrollment requests and their documents: for the school year concerned and the handling of any dispute.",
           "Payments and invoices: for the legal retention period of accounting records (10 years).",
-          "Sign-in sessions: they expire automatically after a few days."
+          "Schools' legal documents: while the school collects payments through SchoolGate, then as long as needed to settle any dispute.",
+          "Sign-in sessions and password reset codes: they expire automatically."
         ]
       },
       {
         "title": "Security",
         "paragraphs": [
-          "Traffic is encrypted (HTTPS). Passwords are hashed irreversibly. On the web, the access token stays in memory and the session relies on a secure cookie that scripts cannot read. Access is limited by role: a parent only sees their own children, a school only its own records."
+          "Traffic is encrypted (HTTPS). Passwords are hashed irreversibly. On the web, the access token stays in memory and the session relies on a secure cookie that scripts cannot read. Access is limited by role: a parent only sees their own children, a school only its own records. A school's legal documents are only visible to its administrators and to the SchoolGate administrators who review them."
         ]
       },
       {

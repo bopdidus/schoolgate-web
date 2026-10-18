@@ -472,7 +472,7 @@
   },
   "HOME": {
     "NAV_LABEL": "Accès",
-    "REGISTER": "Inscrire mon établissement",
+    "REGISTER": "S'enregistrer",
     "GO_TO_DASHBOARD": "Tableau de bord",
     "EYEBROW": "Inscriptions scolaires en ligne",
     "HERO_TITLE": "Les inscriptions et la pension scolaire, simplement.",
@@ -707,8 +707,8 @@
     "LINK": "Politique de confidentialité",
     "LINK_INLINE": "politique de confidentialité",
     "TITLE": "Politique de confidentialité",
-    "UPDATED": "Dernière mise à jour : 9 octobre 2026",
-    "INTRO": "SchoolGate permet aux parents de demander une place dans une école, de suivre les inscriptions de leurs enfants et de payer les frais scolaires par Mobile Money. Cette politique explique quelles données nous traitons, pourquoi, avec qui nous les partageons et comment exercer vos droits. Elle s'applique à l'application mobile et au site web SchoolGate.",
+    "UPDATED": "Dernière mise à jour : 18 octobre 2026",
+    "INTRO": "SchoolGate permet aux parents de demander une place dans une école, de suivre les inscriptions de leurs enfants et de payer les frais scolaires par Mobile Money. Cette politique explique quelles données nous traitons, pourquoi, avec qui nous les partageons et comment exercer vos droits. Elle s'applique à l'application mobile et au site web SchoolGate, pour les parents comme pour le personnel des établissements.",
     "CONTACT_TITLE": "Nous contacter",
     "CONTACT_TEXT": "Pour toute question sur vos données ou pour exercer vos droits, écrivez-nous :",
     "BACK_HOME": "Retour à l'accueil",
@@ -725,7 +725,8 @@
           "Votre compte : nom, prénom, adresse e-mail, numéro de téléphone et mot de passe (conservé uniquement sous forme chiffrée irréversible, jamais en clair).",
           "Vos enfants : nom, prénom, date de naissance, sexe et matricule attribué par l'école.",
           "Les demandes d'inscription : école, classe, année scolaire, statut de la demande et documents que vous téléversez (acte de naissance, bulletins, etc.).",
-          "Les paiements : montant, frais concernés, opérateur (MTN Mobile Money ou Orange Money), numéro utilisé, référence et statut de la transaction. Nous ne recevons jamais votre code secret Mobile Money.",
+          "Les paiements : montant, frais concernés, opérateur (MTN Mobile Money ou Orange Money), numéro utilisé, référence et statut de la transaction. Lorsque vous payez directement au numéro ou au code marchand de l'école, la référence du SMS de confirmation que vous déclarez. Nous ne recevons jamais votre code secret Mobile Money.",
+          "Les établissements : coordonnées de l'école et des membres de son personnel, numéros et comptes marchands Mobile Money, et documents légaux fournis pour activer l'encaissement (RCCM, NIU, autorisation d'ouverture, pièce d'identité du représentant légal, RIB, contrats marchands).",
           "Les données techniques : identifiant de notification de votre appareil (application mobile) et journaux de sécurité (adresse IP, date et heure des connexions)."
         ]
       },
@@ -735,7 +736,8 @@
           "Créer votre compte, vous authentifier et sécuriser votre session.",
           "Transmettre vos demandes d'inscription à l'école que vous choisissez et vous informer de sa décision.",
           "Exécuter vos paiements, émettre les factures et tenir le suivi de la scolarité.",
-          "Vous envoyer des notifications sur vos demandes et vos paiements.",
+          "Vérifier les documents légaux d'un établissement avant de l'autoriser à encaisser des paiements.",
+          "Vous envoyer des notifications sur vos demandes et vos paiements, dans l'application et par e-mail, ainsi que les codes de réinitialisation de mot de passe.",
           "Prévenir la fraude et les abus (par exemple en limitant les tentatives de connexion ou de paiement).",
           "Respecter nos obligations légales, notamment comptables."
         ],
@@ -746,9 +748,10 @@
       {
         "title": "Avec qui nous les partageons",
         "items": [
-          "L'école à laquelle vous adressez une demande : elle voit uniquement les informations et documents liés à cette demande et les paiements qui lui sont destinés.",
-          "Notch Pay, MTN Mobile Money et Orange Money, pour exécuter les paiements que vous lancez.",
+          "L'école à laquelle vous adressez une demande : elle voit uniquement les informations et documents liés à cette demande et les paiements qui lui sont destinés, y compris l'état de règlement de la scolarité. Si l'école vérifie les matricules avec son propre système, le matricule saisi lui est transmis pour contrôle.",
+          "MTN Mobile Money et Orange Money, pour exécuter les paiements que vous lancez. L'argent est versé directement sur le compte marchand de l'école : SchoolGate ne détient jamais les fonds.",
           "Google Firebase Cloud Messaging, pour acheminer les notifications vers votre téléphone.",
+          "Mailjet, pour l'envoi des e-mails (notifications et codes de réinitialisation de mot de passe).",
           "Nos prestataires d'hébergement et de base de données, qui traitent les données pour notre compte uniquement.",
           "Les autorités, lorsque la loi nous y oblige."
         ]
@@ -756,7 +759,7 @@
       {
         "title": "Transferts hors du Cameroun",
         "paragraphs": [
-          "Certains de nos prestataires (hébergement, notifications) stockent ou traitent des données en dehors du Cameroun. Nous ne retenons que des prestataires offrant des garanties de sécurité et de confidentialité adaptées."
+          "Certains de nos prestataires (hébergement, notifications, e-mails) stockent ou traitent des données en dehors du Cameroun. Nous ne retenons que des prestataires offrant des garanties de sécurité et de confidentialité adaptées."
         ]
       },
       {
@@ -765,13 +768,14 @@
           "Les données du compte et des enfants : tant que votre compte est actif, puis supprimées ou anonymisées après sa clôture.",
           "Les demandes d'inscription et leurs documents : le temps de la scolarité concernée et du traitement d'éventuelles réclamations.",
           "Les paiements et factures : pendant la durée légale de conservation des pièces comptables (10 ans).",
-          "Les sessions de connexion : elles expirent automatiquement après quelques jours."
+          "Les documents légaux des établissements : tant que l'établissement encaisse des paiements via SchoolGate, puis le temps nécessaire au règlement d'éventuels litiges.",
+          "Les sessions de connexion et les codes de réinitialisation de mot de passe : ils expirent automatiquement."
         ]
       },
       {
         "title": "Sécurité",
         "paragraphs": [
-          "Les échanges sont chiffrés (HTTPS). Les mots de passe sont chiffrés de manière irréversible. Sur le web, le jeton d'accès reste en mémoire et la session repose sur un cookie sécurisé inaccessible aux scripts. L'accès aux données est limité selon le rôle : un parent ne voit que ses enfants, une école que ses propres dossiers."
+          "Les échanges sont chiffrés (HTTPS). Les mots de passe sont chiffrés de manière irréversible. Sur le web, le jeton d'accès reste en mémoire et la session repose sur un cookie sécurisé inaccessible aux scripts. L'accès aux données est limité selon le rôle : un parent ne voit que ses enfants, une école que ses propres dossiers. Les documents légaux d'un établissement ne sont visibles que par ses administrateurs et par les administrateurs de SchoolGate chargés de leur vérification."
         ]
       },
       {
