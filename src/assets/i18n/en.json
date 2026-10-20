@@ -708,7 +708,7 @@
     "LINK": "Privacy policy",
     "LINK_INLINE": "privacy policy",
     "TITLE": "Privacy policy",
-    "UPDATED": "Last updated: October 18, 2026",
+    "UPDATED": "Last updated: October 20, 2026",
     "INTRO": "SchoolGate lets parents apply for a place at a school, follow their children's enrollments and pay school fees with Mobile Money. This policy explains what data we process, why, who we share it with and how to exercise your rights. It covers both the SchoolGate mobile app and website, for parents and school staff alike.",
     "CONTACT_TITLE": "Contact us",
     "CONTACT_TEXT": "For any question about your data or to exercise your rights, write to us:",
@@ -776,7 +776,7 @@
       {
         "title": "Security",
         "paragraphs": [
-          "Traffic is encrypted (HTTPS). Passwords are hashed irreversibly. On the web, the access token stays in memory and the session relies on a secure cookie that scripts cannot read. Access is limited by role: a parent only sees their own children, a school only its own records. A school's legal documents are only visible to its administrators and to the SchoolGate administrators who review them."
+          "Traffic is encrypted (HTTPS). Passwords are hashed irreversibly. On the web, the access token stays in memory and the session relies on a secure cookie that scripts cannot read. Access is limited by role: a parent only sees their own children, a school only its own records. A school's legal documents are only visible to its administrators and to the SchoolGate administrators who review them. In the mobile app, the session is kept in the phone's encrypted storage. If you turn on fingerprint or face unlock, the check is done by your phone: SchoolGate never receives or stores your biometric data."
         ]
       },
       {

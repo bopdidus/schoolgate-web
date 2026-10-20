@@ -707,7 +707,7 @@
     "LINK": "Politique de confidentialité",
     "LINK_INLINE": "politique de confidentialité",
     "TITLE": "Politique de confidentialité",
-    "UPDATED": "Dernière mise à jour : 18 octobre 2026",
+    "UPDATED": "Dernière mise à jour : 20 octobre 2026",
     "INTRO": "SchoolGate permet aux parents de demander une place dans une école, de suivre les inscriptions de leurs enfants et de payer les frais scolaires par Mobile Money. Cette politique explique quelles données nous traitons, pourquoi, avec qui nous les partageons et comment exercer vos droits. Elle s'applique à l'application mobile et au site web SchoolGate, pour les parents comme pour le personnel des établissements.",
     "CONTACT_TITLE": "Nous contacter",
     "CONTACT_TEXT": "Pour toute question sur vos données ou pour exercer vos droits, écrivez-nous :",
@@ -775,7 +775,7 @@
       {
         "title": "Sécurité",
         "paragraphs": [
-          "Les échanges sont chiffrés (HTTPS). Les mots de passe sont chiffrés de manière irréversible. Sur le web, le jeton d'accès reste en mémoire et la session repose sur un cookie sécurisé inaccessible aux scripts. L'accès aux données est limité selon le rôle : un parent ne voit que ses enfants, une école que ses propres dossiers. Les documents légaux d'un établissement ne sont visibles que par ses administrateurs et par les administrateurs de SchoolGate chargés de leur vérification."
+          "Les échanges sont chiffrés (HTTPS). Les mots de passe sont chiffrés de manière irréversible. Sur le web, le jeton d'accès reste en mémoire et la session repose sur un cookie sécurisé inaccessible aux scripts. L'accès aux données est limité selon le rôle : un parent ne voit que ses enfants, une école que ses propres dossiers. Les documents légaux d'un établissement ne sont visibles que par ses administrateurs et par les administrateurs de SchoolGate chargés de leur vérification. Dans l'application mobile, la session est conservée dans le stockage chiffré du téléphone. Si vous activez le déverrouillage par empreinte digitale ou reconnaissance faciale, la vérification est faite par votre téléphone : SchoolGate ne reçoit ni ne conserve jamais vos données biométriques."
         ]
       },
       {
