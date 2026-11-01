@@ -1028,10 +1028,10 @@ export class SchoolsService extends BaseService {
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public schoolsIdPaymentChannelsMethodReviewPost(id: number, method: 'orange' | 'mtn', paymentChannelReviewRequestDto: PaymentChannelReviewRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentChannelEnvelopeDto>;
-    public schoolsIdPaymentChannelsMethodReviewPost(id: number, method: 'orange' | 'mtn', paymentChannelReviewRequestDto: PaymentChannelReviewRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentChannelEnvelopeDto>>;
-    public schoolsIdPaymentChannelsMethodReviewPost(id: number, method: 'orange' | 'mtn', paymentChannelReviewRequestDto: PaymentChannelReviewRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentChannelEnvelopeDto>>;
-    public schoolsIdPaymentChannelsMethodReviewPost(id: number, method: 'orange' | 'mtn', paymentChannelReviewRequestDto: PaymentChannelReviewRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public schoolsIdPaymentChannelsMethodReviewPost(id: number, method: 'orange' | 'mtn' | 'link', paymentChannelReviewRequestDto: PaymentChannelReviewRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentChannelEnvelopeDto>;
+    public schoolsIdPaymentChannelsMethodReviewPost(id: number, method: 'orange' | 'mtn' | 'link', paymentChannelReviewRequestDto: PaymentChannelReviewRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodReviewPost(id: number, method: 'orange' | 'mtn' | 'link', paymentChannelReviewRequestDto: PaymentChannelReviewRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodReviewPost(id: number, method: 'orange' | 'mtn' | 'link', paymentChannelReviewRequestDto: PaymentChannelReviewRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling schoolsIdPaymentChannelsMethodReviewPost.');
         }
@@ -1079,7 +1079,7 @@ export class SchoolsService extends BaseService {
             }
         }
 
-        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/payment-channels/${this.configuration.encodeParam({name: "method", value: method, in: "path", style: "simple", explode: false, dataType: "'orange' | 'mtn'", dataFormat: undefined})}/review`;
+        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/payment-channels/${this.configuration.encodeParam({name: "method", value: method, in: "path", style: "simple", explode: false, dataType: "'orange' | 'mtn' | 'link'", dataFormat: undefined})}/review`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<PaymentChannelEnvelopeDto>('post', `${basePath}${localVarPath}`,
             {
@@ -1105,10 +1105,10 @@ export class SchoolsService extends BaseService {
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public schoolsIdPaymentChannelsMethodSubmitPost(id: number, method: 'orange' | 'mtn', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentChannelEnvelopeDto>;
-    public schoolsIdPaymentChannelsMethodSubmitPost(id: number, method: 'orange' | 'mtn', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentChannelEnvelopeDto>>;
-    public schoolsIdPaymentChannelsMethodSubmitPost(id: number, method: 'orange' | 'mtn', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentChannelEnvelopeDto>>;
-    public schoolsIdPaymentChannelsMethodSubmitPost(id: number, method: 'orange' | 'mtn', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public schoolsIdPaymentChannelsMethodSubmitPost(id: number, method: 'orange' | 'mtn' | 'link', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentChannelEnvelopeDto>;
+    public schoolsIdPaymentChannelsMethodSubmitPost(id: number, method: 'orange' | 'mtn' | 'link', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodSubmitPost(id: number, method: 'orange' | 'mtn' | 'link', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodSubmitPost(id: number, method: 'orange' | 'mtn' | 'link', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling schoolsIdPaymentChannelsMethodSubmitPost.');
         }
@@ -1144,7 +1144,7 @@ export class SchoolsService extends BaseService {
             }
         }
 
-        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/payment-channels/${this.configuration.encodeParam({name: "method", value: method, in: "path", style: "simple", explode: false, dataType: "'orange' | 'mtn'", dataFormat: undefined})}/submit`;
+        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/payment-channels/${this.configuration.encodeParam({name: "method", value: method, in: "path", style: "simple", explode: false, dataType: "'orange' | 'mtn' | 'link'", dataFormat: undefined})}/submit`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<PaymentChannelEnvelopeDto>('post', `${basePath}${localVarPath}`,
             {
@@ -1170,10 +1170,10 @@ export class SchoolsService extends BaseService {
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public schoolsIdPaymentChannelsMethodTestPost(id: number, method: 'orange' | 'mtn', paymentChannelTestRequestDto: PaymentChannelTestRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentChannelEnvelopeDto>;
-    public schoolsIdPaymentChannelsMethodTestPost(id: number, method: 'orange' | 'mtn', paymentChannelTestRequestDto: PaymentChannelTestRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentChannelEnvelopeDto>>;
-    public schoolsIdPaymentChannelsMethodTestPost(id: number, method: 'orange' | 'mtn', paymentChannelTestRequestDto: PaymentChannelTestRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentChannelEnvelopeDto>>;
-    public schoolsIdPaymentChannelsMethodTestPost(id: number, method: 'orange' | 'mtn', paymentChannelTestRequestDto: PaymentChannelTestRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public schoolsIdPaymentChannelsMethodTestPost(id: number, method: 'orange' | 'mtn' | 'link', paymentChannelTestRequestDto: PaymentChannelTestRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentChannelEnvelopeDto>;
+    public schoolsIdPaymentChannelsMethodTestPost(id: number, method: 'orange' | 'mtn' | 'link', paymentChannelTestRequestDto: PaymentChannelTestRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodTestPost(id: number, method: 'orange' | 'mtn' | 'link', paymentChannelTestRequestDto: PaymentChannelTestRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodTestPost(id: number, method: 'orange' | 'mtn' | 'link', paymentChannelTestRequestDto: PaymentChannelTestRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling schoolsIdPaymentChannelsMethodTestPost.');
         }
@@ -1221,7 +1221,7 @@ export class SchoolsService extends BaseService {
             }
         }
 
-        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/payment-channels/${this.configuration.encodeParam({name: "method", value: method, in: "path", style: "simple", explode: false, dataType: "'orange' | 'mtn'", dataFormat: undefined})}/test`;
+        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/payment-channels/${this.configuration.encodeParam({name: "method", value: method, in: "path", style: "simple", explode: false, dataType: "'orange' | 'mtn' | 'link'", dataFormat: undefined})}/test`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<PaymentChannelEnvelopeDto>('post', `${basePath}${localVarPath}`,
             {
@@ -1247,10 +1247,10 @@ export class SchoolsService extends BaseService {
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public schoolsIdPaymentChannelsMethodTestSyncPost(id: number, method: 'orange' | 'mtn', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentChannelEnvelopeDto>;
-    public schoolsIdPaymentChannelsMethodTestSyncPost(id: number, method: 'orange' | 'mtn', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentChannelEnvelopeDto>>;
-    public schoolsIdPaymentChannelsMethodTestSyncPost(id: number, method: 'orange' | 'mtn', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentChannelEnvelopeDto>>;
-    public schoolsIdPaymentChannelsMethodTestSyncPost(id: number, method: 'orange' | 'mtn', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public schoolsIdPaymentChannelsMethodTestSyncPost(id: number, method: 'orange' | 'mtn' | 'link', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PaymentChannelEnvelopeDto>;
+    public schoolsIdPaymentChannelsMethodTestSyncPost(id: number, method: 'orange' | 'mtn' | 'link', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodTestSyncPost(id: number, method: 'orange' | 'mtn' | 'link', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PaymentChannelEnvelopeDto>>;
+    public schoolsIdPaymentChannelsMethodTestSyncPost(id: number, method: 'orange' | 'mtn' | 'link', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling schoolsIdPaymentChannelsMethodTestSyncPost.');
         }
@@ -1286,7 +1286,7 @@ export class SchoolsService extends BaseService {
             }
         }
 
-        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/payment-channels/${this.configuration.encodeParam({name: "method", value: method, in: "path", style: "simple", explode: false, dataType: "'orange' | 'mtn'", dataFormat: undefined})}/test/sync`;
+        let localVarPath = `/schools/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: undefined})}/payment-channels/${this.configuration.encodeParam({name: "method", value: method, in: "path", style: "simple", explode: false, dataType: "'orange' | 'mtn' | 'link'", dataFormat: undefined})}/test/sync`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<PaymentChannelEnvelopeDto>('post', `${basePath}${localVarPath}`,
             {

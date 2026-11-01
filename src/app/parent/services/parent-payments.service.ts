@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { DeclarePaymentRequestDto, PaymentsService } from '../../api';
 import { unwrapData } from '../../core/utils/openapi-helpers';
-import { MobileMoneyMethod, ParentPayment, PaymentLineItem } from '../domain/models';
+import { ChannelMethod, ParentPayment, PaymentLineItem } from '../domain/models';
 import { mapPayment, unwrapPayment } from './parent-mappers';
 
 /** Paying fees by Mobile Money and following the payments. */
@@ -29,7 +29,7 @@ export class ParentPaymentsService {
   declare(
     enrollmentId: string,
     item: PaymentLineItem,
-    method: MobileMoneyMethod,
+    method: ChannelMethod,
     payerMsisdn: string,
     transactionReference?: string,
   ): Observable<ParentPayment> {
@@ -39,10 +39,16 @@ export class ParentPaymentsService {
       installment_number: item.installmentNumber,
       amount_cents: item.amountCents,
       payment_method: method,
-      payer_msisdn: payerMsisdn,
+      // The school's own page needs no Mobile Money number.
+      payer_msisdn: payerMsisdn || undefined,
       transaction_reference: transactionReference,
     };
     return this.paymentsApi.paymentsPost(body).pipe(map(unwrapPayment));
+  }
+
+  /** Attaches the receipt of a payment the school still has to confirm. */
+  uploadProof(paymentId: string, file: File): Observable<ParentPayment> {
+    return this.paymentsApi.paymentsIdProofPost(+paymentId, file).pipe(map(unwrapPayment));
   }
 
   /** Asks the API to check the payment with the operator, and returns it. */

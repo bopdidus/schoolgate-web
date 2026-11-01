@@ -188,6 +188,9 @@ export class SchoolService {
         mtn_subscription_key: settings.mtnSubscriptionKey,
         paypal_enabled: settings.paypalEnabled,
         paypal_email: settings.paypalEmail,
+        payment_link_enabled: settings.paymentLinkEnabled,
+        payment_link_url: settings.paymentLinkUrl,
+        payment_link_label: settings.paymentLinkLabel,
         bank_transfer_enabled: settings.bankTransferEnabled,
         bank_name: settings.bankName,
         bank_account_holder: settings.bankAccountHolder,
@@ -483,7 +486,8 @@ export class SchoolService {
 
   private mapPaymentSettings(d: PaymentSettingsDto): PaymentSettings {
     return {
-      merchantCredentialsRequired: d.merchant_credentials_required ?? true,
+      // Parents are always charged into the school's own operator account.
+      merchantCredentialsRequired: true,
       orangeMoneyEnabled: d.orange_money_enabled ?? false,
       orangeMoneyNumber: d.orange_money_number ?? '',
       orangeMoneyAccountName: d.orange_money_account_name ?? '',
@@ -500,6 +504,9 @@ export class SchoolService {
       mtnSecretsSet: d.mtn_secrets_set ?? false,
       paypalEnabled: d.paypal_enabled ?? false,
       paypalEmail: d.paypal_email ?? '',
+      paymentLinkEnabled: d.payment_link_enabled ?? false,
+      paymentLinkUrl: d.payment_link_url ?? '',
+      paymentLinkLabel: d.payment_link_label ?? '',
       bankTransferEnabled: d.bank_transfer_enabled ?? false,
       bankName: d.bank_name ?? '',
       bankAccountHolder: d.bank_account_holder ?? '',

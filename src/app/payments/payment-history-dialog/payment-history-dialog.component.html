@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>{{ 'PAYMENTS.HISTORY' | translate }}</h2>
+<mat-dialog-content>
+  @if (loading()) {
+    <mat-spinner diameter="32" />
+  } @else if (failed()) {
+    <p>{{ 'COMMON.ERROR' | translate }}</p>
+  } @else if (events().length === 0) {
+    <p>{{ 'PAYMENTS.HISTORY_EMPTY' | translate }}</p>
+  } @else {
+    <ol class="timeline">
+      @for (e of events(); track e.id) {
+        <li>
+          <span class="what">{{ 'PAYMENTS.EVENT_' + e.kind | translate }}</span>
+          <span class="meta">
+            {{ e.createdAt | localeDate }} · {{ 'PAYMENTS.ACTOR_' + e.actorRole | translate }}
+          </span>
+          @if (e.detail) {
+            <span class="meta">{{ e.detail }}</span>
+          }
+        </li>
+      }
+    </ol>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" mat-dialog-close>{{ 'COMMON.CLOSE' | translate }}</button>
+</mat-dialog-actions>

@@ -8,6 +8,9 @@ import { AbilityService } from '../../core/services/ability.service';
 import { PaymentSettings, PaymentSettingsUpdate } from '../../schools/school.model';
 
 const EMPTY: PaymentSettings = {
+  paymentLinkEnabled: false,
+  paymentLinkUrl: '',
+  paymentLinkLabel: '',
   merchantCredentialsRequired: true,
   orangeMoneyEnabled: false,
   orangeMoneyNumber: '',
@@ -33,6 +36,9 @@ const EMPTY: PaymentSettings = {
 };
 
 const EMPTY_UPDATE: PaymentSettingsUpdate = {
+  paymentLinkEnabled: false,
+  paymentLinkUrl: '',
+  paymentLinkLabel: '',
   orangeMoneyEnabled: false,
   orangeMoneyNumber: '',
   orangeMoneyAccountName: '',

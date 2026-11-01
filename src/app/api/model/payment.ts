@@ -35,9 +35,13 @@ export interface PaymentDto {
     payer_msisdn?: string;
     external_reference?: string;
     /**
-     * Paid by hand to the school; its staff confirm or reject it.
+     * Paid by hand (or on the school\'s external page); its staff confirm or reject it.
      */
     manual?: boolean;
+    /**
+     * A receipt is attached (see /payments/{id}/proof).
+     */
+    has_proof?: boolean;
     /**
      * Staff member who confirmed or rejected a manual payment.
      */

@@ -59,6 +59,9 @@ describe('Parent services', () => {
             channels: [
               { method: 'mtn', mode: 'direct' },
               { method: 'orange', mode: 'manual', number: '690000000', account_name: 'Lycée X', merchant_code: '123456' },
+              { method: 'link', mode: 'link', link_url: 'https://paypal.me/lycee', link_label: 'PayPal' },
+              // A link channel without a page cannot be paid: it is not offered.
+              { method: 'link', mode: 'link' },
             ],
           },
         }) as never,
@@ -67,8 +70,9 @@ describe('Parent services', () => {
         .paymentMethods('3')
         .subscribe((channels) => {
           expect(channels).toEqual([
-            { method: 'mtn', manual: false, number: '', accountName: '', merchantCode: '' },
-            { method: 'orange', manual: true, number: '690000000', accountName: 'Lycée X', merchantCode: '123456' },
+            { method: 'mtn', manual: false, number: '', accountName: '', merchantCode: '', linkUrl: '', linkLabel: '' },
+            { method: 'orange', manual: true, number: '690000000', accountName: 'Lycée X', merchantCode: '123456', linkUrl: '', linkLabel: '' },
+            { method: 'link', manual: false, number: '', accountName: '', merchantCode: '', linkUrl: 'https://paypal.me/lycee', linkLabel: 'PayPal' },
           ]);
           done();
         });

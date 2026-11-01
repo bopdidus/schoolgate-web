@@ -124,3 +124,14 @@ a.disabled {
   margin: 0;
   font-weight: 600;
 }
+
+.proof {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+
+  &__name {
+    overflow-wrap: anywhere;
+  }
+}

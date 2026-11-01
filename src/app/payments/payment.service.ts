@@ -8,7 +8,7 @@ import {
   toPaginated,
   unwrapData,
 } from '../core/utils/openapi-helpers';
-import { Payment, PaymentFilters } from './payment.model';
+import { Payment, PaymentEvent, PaymentFilters } from './payment.model';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
@@ -73,6 +73,27 @@ export class PaymentService {
     return this.paymentsApi.paymentsIdRejectPost(+paymentId, { reason }).pipe(map(() => undefined));
   }
 
+  /** The receipt the parent attached to a manual payment. */
+  proof(paymentId: string): Observable<Blob> {
+    return this.paymentsApi.paymentsIdProofGet(+paymentId);
+  }
+
+  /** History of a payment, oldest first. */
+  events(paymentId: string): Observable<PaymentEvent[]> {
+    return this.paymentsApi.paymentsIdEventsGet(+paymentId).pipe(
+      map((envelope) =>
+        (envelope.data ?? []).map((e) => ({
+          id: String(e.id ?? ''),
+          kind: (e.kind ?? 'declared') as PaymentEvent['kind'],
+          actorRole: e.actor_role ?? '',
+          provider: e.provider ?? undefined,
+          detail: e.detail ?? undefined,
+          createdAt: String(e.created_at ?? ''),
+        })),
+      ),
+    );
+  }
+
   private mapPayment(dto: PaymentDto): Payment {
     const personName = [dto.person?.first_name, dto.person?.last_name]
       .filter((part) => part != null && String(part).trim() !== '')
@@ -113,6 +134,7 @@ export class PaymentService {
       method: (dto.payment_method as Payment['method']) ?? 'mtn',
       manual: dto.manual ?? false,
       mobileMoneyReference: dto.mobile_money_reference ?? '',
+      hasProof: dto.has_proof ?? false,
     };
   }
 }

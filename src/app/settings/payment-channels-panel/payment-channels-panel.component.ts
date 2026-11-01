@@ -76,9 +76,9 @@ export class PaymentChannelsPanelComponent implements OnInit {
 
   uploadType: KycDocumentType | null = null;
   /** Phone the school pays the test from, per method. */
-  readonly testPhone: Record<PaymentChannelMethod, string> = { orange: '', mtn: '' };
+  readonly testPhone: Record<PaymentChannelMethod, string> = { orange: '', mtn: '', link: '' };
   /** Admin note per method (required to reject or suspend). */
-  readonly reviewNote: Record<PaymentChannelMethod, string> = { orange: '', mtn: '' };
+  readonly reviewNote: Record<PaymentChannelMethod, string> = { orange: '', mtn: '', link: '' };
 
   private poll: Subscription | null = null;
 

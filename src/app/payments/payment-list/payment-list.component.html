@@ -116,6 +116,17 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let p" class="cell-actions">
+          @if (p.hasProof) {
+            <button mat-button type="button" (click)="viewProof(p)">
+              <mat-icon>receipt_long</mat-icon>
+              {{ 'PAYMENTS.VIEW_PROOF' | translate }}
+            </button>
+          }
+          @if (p.manual) {
+            <button mat-icon-button type="button" [attr.aria-label]="'PAYMENTS.HISTORY' | translate" [matTooltip]="'PAYMENTS.HISTORY' | translate" (click)="showHistory(p)">
+              <mat-icon>history</mat-icon>
+            </button>
+          }
           @if (canReview(p)) {
             <button mat-stroked-button type="button" [disabled]="isBusy(p)" (click)="confirm(p)">
               <mat-icon>check</mat-icon>

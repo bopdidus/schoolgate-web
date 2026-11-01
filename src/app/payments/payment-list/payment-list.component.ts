@@ -157,6 +157,14 @@ export class PaymentListComponent implements OnInit {
     this.review(p, this.manualReview.reject(p.id, () => this.setBusy(p.id, true)));
   }
 
+  viewProof(p: Payment): void {
+    this.manualReview.viewProof(p.id).subscribe();
+  }
+
+  showHistory(p: Payment): void {
+    this.manualReview.showHistory(p.id);
+  }
+
   private review(p: Payment, done: Observable<void>): void {
     done.pipe(finalize(() => this.setBusy(p.id, false))).subscribe(() => this.load());
   }

@@ -8,6 +8,7 @@ import {
 } from '../shared/components/confirm-dialog/confirm-dialog.component';
 import { NotificationService } from '../core/services/notification.service';
 import { PaymentService } from './payment.service';
+import { PaymentHistoryDialogComponent } from './payment-history-dialog/payment-history-dialog.component';
 
 /**
  * Staff review of a manual payment: ask, call the API, tell the outcome.
@@ -62,6 +63,25 @@ export class ManualPaymentReview {
       map(() => undefined),
       catchError(() => EMPTY),
     );
+  }
+
+  /** Opens the receipt in a new tab, to compare it with the school's own account. */
+  viewProof(paymentId: string): Observable<void> {
+    return this.payments.proof(paymentId).pipe(
+      tap((blob) => {
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank', 'noopener');
+        // The tab has loaded the blob by then; free the memory.
+        setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      }),
+      map(() => undefined),
+      catchError(() => EMPTY),
+    );
+  }
+
+  /** Shows who did what on this payment, and every operator notification. */
+  showHistory(paymentId: string): void {
+    this.dialog.open(PaymentHistoryDialogComponent, { data: { paymentId }, width: '520px' });
   }
 
   private ask(data: ConfirmDialogData): Observable<ConfirmDialogResult | undefined> {

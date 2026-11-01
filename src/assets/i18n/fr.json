@@ -356,7 +356,22 @@
     "REJECT_MANUAL_TITLE": "Rejeter ce paiement ?",
     "REJECT_MANUAL_MESSAGE": "Le parent verra votre motif et pourra déclarer à nouveau son paiement.",
     "REJECT_MANUAL_REASON": "Motif (obligatoire)",
-    "REJECT_MANUAL_REASON_REQUIRED": "Indiquez un motif de rejet."
+    "REJECT_MANUAL_REASON_REQUIRED": "Indiquez un motif de rejet.",
+    "METHOD_link": "Lien de paiement",
+    "VIEW_PROOF": "Voir la preuve",
+    "HISTORY": "Historique",
+    "HISTORY_EMPTY": "Aucun événement enregistré.",
+    "EVENT_declared": "Paiement déclaré par le parent",
+    "EVENT_proof_uploaded": "Preuve de paiement ajoutée",
+    "EVENT_confirmed": "Paiement confirmé",
+    "EVENT_rejected": "Paiement rejeté",
+    "EVENT_webhook_received": "Notification de l'opérateur reçue",
+    "EVENT_webhook_refused": "Notification de l'opérateur refusée (vérification manuelle nécessaire)",
+    "ACTOR_parent": "Parent",
+    "ACTOR_school_admin": "Administrateur de l'école",
+    "ACTOR_school_editor": "Éditeur de l'école",
+    "ACTOR_operator": "Opérateur",
+    "ACTOR_system": "Système"
   },
   "INVOICES": {
     "TITLE": "Factures",
@@ -454,7 +469,12 @@
     "PAYMENT_MERCHANT_CODE": "Code marchand (optionnel)",
     "PAYMENT_ORANGE_CODE_HINT": "Le code composé par le parent : #150*47*code#. Sans code, il paie sur le numéro.",
     "PAYMENT_MTN_CODE_HINT": "L'identifiant MoMo Pay du marchand. Sans code, le parent paie sur le numéro.",
-    "PAYMENT_MERCHANT_CODE_INVALID": "Chiffres uniquement (3 à 12)"
+    "PAYMENT_MERCHANT_CODE_INVALID": "Chiffres uniquement (3 à 12)",
+    "PAYMENT_LINK": "Page de paiement externe (PayPal, Stripe...)",
+    "PAYMENT_LINK_HINT": "Le parent est envoyé sur votre page de paiement, puis vous confirmez chaque paiement vous-même après l'avoir vu sur votre compte : SchoolGate ne peut pas le vérifier à votre place.",
+    "PAYMENT_LINK_URL": "Adresse de la page de paiement (https)",
+    "PAYMENT_LINK_LABEL": "Nom affiché au parent (ex. PayPal)",
+    "PAYMENT_LINK_INVALID": "Adresse invalide : https obligatoire, nom de domaine public, sans port ni adresse IP."
   },
   "STATUS": {
     "DECLARED": "Déclaré",
@@ -701,7 +721,16 @@
     "TRANSACTION_REFERENCE_INVALID": "Saisissez la référence du SMS (au moins 6 caractères).",
     "DECLARE_MANUAL": "J'ai payé, envoyer la référence",
     "MANUAL_DECLARED_TITLE": "Paiement déclaré",
-    "MANUAL_DECLARED_TEXT": "L'école va vérifier le transfert sur son compte puis confirmer votre paiement. Vous serez notifié."
+    "MANUAL_DECLARED_TEXT": "L'école va vérifier le transfert sur son compte puis confirmer votre paiement. Vous serez notifié.",
+    "METHOD_LINK": "Page de paiement",
+    "LINK_PAY_TITLE": "Payez {{amount}} sur la page {{name}} de l'école",
+    "LINK_OPEN": "Ouvrir la page {{name}}",
+    "LINK_KEEP_RECEIPT": "Gardez le reçu ou le numéro de transaction affiché après le paiement : vous le saisirez ci-dessous. L'école vérifie le paiement sur son propre compte avant de le confirmer ; d'ici là il reste en attente.",
+    "LINK_REFERENCE_HINT": "Numéro de transaction ou de reçu",
+    "PROOF_ATTACH": "Joindre un reçu (facultatif)",
+    "PROOF_REMOVE": "Retirer le reçu",
+    "PROOF_INVALID": "Fichier refusé : JPEG, PNG ou PDF, 5 Mo maximum.",
+    "PROOF_UPLOAD_FAILED": "Le paiement est déclaré, mais le reçu n'a pas pu être envoyé."
   },
   "PRIVACY": {
     "LINK": "Politique de confidentialité",
@@ -845,7 +874,8 @@
     "UPLOAD_ERROR": "Document refusé : formats acceptés PDF, JPEG ou PNG, 5 Mo maximum.",
     "FILE_TOO_BIG": "Le fichier dépasse 5 Mo.",
     "MODE_direct": "Automatique",
-    "MODE_manual": "Manuel : vous confirmez chaque paiement"
+    "MODE_manual": "Manuel : vous confirmez chaque paiement",
+    "METHOD_link": "Lien de paiement"
   },
   "KYC": {
     "TITLE": "Documents légaux",

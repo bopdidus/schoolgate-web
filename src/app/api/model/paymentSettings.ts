@@ -10,10 +10,6 @@
 
 
 export interface PaymentSettingsDto { 
-    /**
-     * True when parents are charged into the school\'s own operator account (COLLECTION_MODE=live), so each enabled Mobile Money channel needs the school\'s API credentials. False with an aggregator charging the platform\'s account: schools enter none.
-     */
-    merchant_credentials_required?: boolean;
     orange_money_enabled?: boolean;
     orange_money_number?: string;
     orange_money_account_name?: string;
@@ -36,6 +32,18 @@ export interface PaymentSettingsDto {
     mtn_secrets_set?: boolean;
     paypal_enabled?: boolean;
     paypal_email?: string;
+    /**
+     * The school accepts payments on its own external page.
+     */
+    payment_link_enabled?: boolean;
+    /**
+     * https URL of the school\'s payment page (PayPal.me, Stripe Payment Link...). A public host name only: no IP address, port, user info or localhost. Changing it sends the channel back to review.
+     */
+    payment_link_url?: string;
+    /**
+     * Name shown to the parent (for example PayPal).
+     */
+    payment_link_label?: string;
     bank_transfer_enabled?: boolean;
     bank_name?: string;
     bank_account_holder?: string;

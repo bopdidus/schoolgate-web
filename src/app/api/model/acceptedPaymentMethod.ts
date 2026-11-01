@@ -13,6 +13,14 @@ export interface AcceptedPaymentMethodDto {
     method: AcceptedPaymentMethodDto.MethodEnum;
     mode: AcceptedPaymentMethodDto.ModeEnum;
     /**
+     * Link mode only. https page of the school where the parent pays.
+     */
+    link_url?: string;
+    /**
+     * Link mode only. Name of that page (for example PayPal).
+     */
+    link_label?: string;
+    /**
      * Manual mode only. Number the parent sends money to.
      */
     number?: string;
@@ -28,12 +36,14 @@ export interface AcceptedPaymentMethodDto {
 export namespace AcceptedPaymentMethodDto {
     export const MethodEnum = {
         Mtn: 'mtn',
-        Orange: 'orange'
+        Orange: 'orange',
+        Link: 'link'
     } as const;
     export type MethodEnum = typeof MethodEnum[keyof typeof MethodEnum];
     export const ModeEnum = {
         Direct: 'direct',
-        Manual: 'manual'
+        Manual: 'manual',
+        Link: 'link'
     } as const;
     export type ModeEnum = typeof ModeEnum[keyof typeof ModeEnum];
 }

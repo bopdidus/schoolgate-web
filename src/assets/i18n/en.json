@@ -357,7 +357,22 @@
     "REJECT_MANUAL_TITLE": "Reject this payment?",
     "REJECT_MANUAL_MESSAGE": "The parent will see your reason and can declare the payment again.",
     "REJECT_MANUAL_REASON": "Reason (required)",
-    "REJECT_MANUAL_REASON_REQUIRED": "Give a reason for the rejection."
+    "REJECT_MANUAL_REASON_REQUIRED": "Give a reason for the rejection.",
+    "METHOD_link": "Payment link",
+    "VIEW_PROOF": "View proof",
+    "HISTORY": "History",
+    "HISTORY_EMPTY": "No event recorded.",
+    "EVENT_declared": "Payment declared by the parent",
+    "EVENT_proof_uploaded": "Proof of payment added",
+    "EVENT_confirmed": "Payment confirmed",
+    "EVENT_rejected": "Payment rejected",
+    "EVENT_webhook_received": "Operator notification received",
+    "EVENT_webhook_refused": "Operator notification refused (manual check needed)",
+    "ACTOR_parent": "Parent",
+    "ACTOR_school_admin": "School administrator",
+    "ACTOR_school_editor": "School editor",
+    "ACTOR_operator": "Operator",
+    "ACTOR_system": "System"
   },
   "INVOICES": {
     "TITLE": "Invoices",
@@ -455,7 +470,12 @@
     "PAYMENT_MERCHANT_CODE": "Merchant code (optional)",
     "PAYMENT_ORANGE_CODE_HINT": "The code parents dial: #150*47*code#. Without one they pay to the number.",
     "PAYMENT_MTN_CODE_HINT": "The merchant's MoMo Pay ID. Without one parents pay to the number.",
-    "PAYMENT_MERCHANT_CODE_INVALID": "Digits only (3 to 12)"
+    "PAYMENT_MERCHANT_CODE_INVALID": "Digits only (3 to 12)",
+    "PAYMENT_LINK": "External payment page (PayPal, Stripe...)",
+    "PAYMENT_LINK_HINT": "The parent is sent to your payment page, then you confirm each payment yourself once you see it on your account: SchoolGate cannot check it for you.",
+    "PAYMENT_LINK_URL": "Payment page address (https)",
+    "PAYMENT_LINK_LABEL": "Name shown to the parent (e.g. PayPal)",
+    "PAYMENT_LINK_INVALID": "Invalid address: https only, public domain name, no port or IP address."
   },
   "STATUS": {
     "DECLARED": "Declared",
@@ -702,7 +722,16 @@
     "TRANSACTION_REFERENCE_INVALID": "Enter the reference from the SMS (at least 6 characters).",
     "DECLARE_MANUAL": "I have paid, send the reference",
     "MANUAL_DECLARED_TITLE": "Payment declared",
-    "MANUAL_DECLARED_TEXT": "The school will check the transfer on its account, then confirm your payment. You will be notified."
+    "MANUAL_DECLARED_TEXT": "The school will check the transfer on its account, then confirm your payment. You will be notified.",
+    "METHOD_LINK": "Payment page",
+    "LINK_PAY_TITLE": "Pay {{amount}} on the school's {{name}} page",
+    "LINK_OPEN": "Open the {{name}} page",
+    "LINK_KEEP_RECEIPT": "Keep the receipt or transaction number shown after paying: you will enter it below. The school checks the payment on its own account before confirming it; until then it stays pending.",
+    "LINK_REFERENCE_HINT": "Transaction or receipt number",
+    "PROOF_ATTACH": "Attach a receipt (optional)",
+    "PROOF_REMOVE": "Remove the receipt",
+    "PROOF_INVALID": "File refused: JPEG, PNG or PDF, 5 MB maximum.",
+    "PROOF_UPLOAD_FAILED": "The payment is declared, but the receipt could not be uploaded."
   },
   "PRIVACY": {
     "LINK": "Privacy policy",
@@ -846,7 +875,8 @@
     "UPLOAD_ERROR": "Document refused: PDF, JPEG or PNG only, 5 MB maximum.",
     "FILE_TOO_BIG": "The file is larger than 5 MB.",
     "MODE_direct": "Automatic",
-    "MODE_manual": "Manual: you confirm every payment"
+    "MODE_manual": "Manual: you confirm every payment",
+    "METHOD_link": "Payment link"
   },
   "KYC": {
     "TITLE": "Legal documents",

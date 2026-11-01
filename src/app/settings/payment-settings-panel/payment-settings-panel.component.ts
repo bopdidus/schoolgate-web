@@ -20,7 +20,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { TranslateModule } from '@ngx-translate/core';
 import { SchoolService } from '../../schools/school.service';
-import { PaymentChannelMode, PaymentSettings } from '../../schools/school.model';
+import { OperatorChannelMode, PaymentSettings } from '../../schools/school.model';
 import { NotificationService } from '../../core/services/notification.service';
 import { AbilityService } from '../../core/services/ability.service';
 
@@ -54,6 +54,31 @@ const bankAccount: ValidatorFn = (control) =>
 
 const merchantCode: ValidatorFn = (control) =>
   !control.value || /^\d{3,12}$/.test(String(control.value).replace(/\s/g, '')) ? null : { merchantCode: true };
+
+/** Same rule as the API: https, a public host name, no port, user info or IP address. */
+export const paymentLink: ValidatorFn = (control) => {
+  const raw = String(control.value ?? '').trim();
+  if (!raw) return null;
+  try {
+    const url = new URL(raw);
+    const host = url.hostname.toLowerCase();
+    const isIp = /^[\d.]+$/.test(host) || host.includes(':');
+    const ok =
+      raw.length <= 500 &&
+      url.protocol === 'https:' &&
+      !url.username &&
+      !url.password &&
+      !url.port &&
+      host.includes('.') &&
+      host !== 'localhost' &&
+      !host.endsWith('.local') &&
+      !host.endsWith('.internal') &&
+      !isIp;
+    return ok ? null : { paymentLink: true };
+  } catch {
+    return { paymentLink: true };
+  }
+};
 
 const swiftCode: ValidatorFn = (control) =>
   !control.value || /^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(control.value.trim().toUpperCase())
@@ -105,7 +130,7 @@ export class PaymentSettingsPanelComponent implements OnInit {
       secretsSet: false,
       number: ['', [requiredWhenEnabled, cameroonMobile]],
       accountName: ['', [requiredWhenEnabled, Validators.maxLength(150)]],
-      mode: 'direct' as PaymentChannelMode,
+      mode: 'direct' as OperatorChannelMode,
       merchantCode: ['', merchantCode],
       clientId: ['', [requiredWhenEnabled, Validators.maxLength(255)]],
       clientSecret: ['', [requiredSecretWhenEnabled, Validators.maxLength(500)]],
@@ -117,7 +142,7 @@ export class PaymentSettingsPanelComponent implements OnInit {
       secretsSet: false,
       number: ['', [requiredWhenEnabled, cameroonMobile]],
       accountName: ['', [requiredWhenEnabled, Validators.maxLength(150)]],
-      mode: 'direct' as PaymentChannelMode,
+      mode: 'direct' as OperatorChannelMode,
       merchantCode: ['', merchantCode],
       apiUser: ['', [requiredWhenEnabled, Validators.maxLength(64)]],
       apiKey: ['', [requiredSecretWhenEnabled, Validators.maxLength(500)]],
@@ -126,6 +151,11 @@ export class PaymentSettingsPanelComponent implements OnInit {
     paypal: this.fb.nonNullable.group({
       enabled: false,
       email: ['', [requiredWhenEnabled, Validators.email, Validators.maxLength(255)]],
+    }),
+    link: this.fb.nonNullable.group({
+      enabled: false,
+      url: ['', [requiredWhenEnabled, paymentLink, Validators.maxLength(500)]],
+      label: ['', Validators.maxLength(80)],
     }),
     bank: this.fb.nonNullable.group({
       enabled: false,
@@ -235,6 +265,9 @@ export class PaymentSettingsPanelComponent implements OnInit {
         mtnSubscriptionKey: v.mtn.subscriptionKey,
         paypalEnabled: v.paypal.enabled,
         paypalEmail: v.paypal.email,
+        paymentLinkEnabled: v.link.enabled,
+        paymentLinkUrl: v.link.url.trim(),
+        paymentLinkLabel: v.link.label.trim(),
         bankTransferEnabled: v.bank.enabled,
         bankName: v.bank.name,
         bankAccountHolder: v.bank.holder,
@@ -286,6 +319,7 @@ export class PaymentSettingsPanelComponent implements OnInit {
         subscriptionKey: '',
       },
       paypal: { enabled: s.paypalEnabled, email: s.paypalEmail },
+      link: { enabled: s.paymentLinkEnabled, url: s.paymentLinkUrl, label: s.paymentLinkLabel },
       bank: {
         enabled: s.bankTransferEnabled,
         name: s.bankName,

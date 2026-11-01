@@ -238,6 +238,33 @@
 
         <mat-divider />
 
+        <!-- External payment page -->
+        <section class="channel" formGroupName="link">
+          <mat-slide-toggle formControlName="enabled">
+            {{ 'SETTINGS.PAYMENT_LINK' | translate }}
+          </mat-slide-toggle>
+          @if (form.controls.link.controls.enabled.value) {
+            <p class="hint">{{ 'SETTINGS.PAYMENT_LINK_HINT' | translate }}</p>
+            <div class="form-grid channel__fields">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_LINK_URL' | translate }}</mat-label>
+                <input matInput type="url" formControlName="url" autocomplete="off" placeholder="https://" />
+                @if (form.controls.link.controls.url.hasError('required')) {
+                  <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+                } @else if (form.controls.link.controls.url.hasError('paymentLink')) {
+                  <mat-error>{{ 'SETTINGS.PAYMENT_LINK_INVALID' | translate }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'SETTINGS.PAYMENT_LINK_LABEL' | translate }}</mat-label>
+                <input matInput formControlName="label" maxlength="80" />
+              </mat-form-field>
+            </div>
+          }
+        </section>
+
+        <mat-divider />
+
         <!-- Bank transfer -->
         <section class="channel" formGroupName="bank">
           <mat-slide-toggle formControlName="enabled">

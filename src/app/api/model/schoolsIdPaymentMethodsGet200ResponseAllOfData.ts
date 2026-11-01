@@ -17,7 +17,8 @@ export interface SchoolsIdPaymentMethodsGet200ResponseAllOfDataDto {
 export namespace SchoolsIdPaymentMethodsGet200ResponseAllOfDataDto {
     export const MethodsEnum = {
         Mtn: 'mtn',
-        Orange: 'orange'
+        Orange: 'orange',
+        Link: 'link'
     } as const;
     export type MethodsEnum = typeof MethodsEnum[keyof typeof MethodsEnum];
 }

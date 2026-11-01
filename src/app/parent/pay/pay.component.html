@@ -51,15 +51,29 @@
             <mat-button-toggle-group [value]="method()" (change)="method.set($event.value)" [disabled]="submitting()">
               @for (c of methods(); track c.method) {
                 <mat-button-toggle [value]="c.method">
-                  <mat-icon>phone_android</mat-icon>
-                  {{ (c.method === 'mtn' ? 'PARENT.METHOD_MTN' : 'PARENT.METHOD_ORANGE') | translate }}
+                  <mat-icon>{{ c.method === 'link' ? 'link' : 'phone_android' }}</mat-icon>
+                  {{ (c.method === 'mtn' ? 'PARENT.METHOD_MTN' : c.method === 'link' ? 'PARENT.METHOD_LINK' : 'PARENT.METHOD_ORANGE') | translate }}
                 </mat-button-toggle>
               }
             </mat-button-toggle-group>
           }
 
           @if (channel(); as c) {
-            @if (c.manual) {
+            @if (c.method === 'link') {
+              <div class="manual" role="note">
+                <p class="manual__title">
+                  {{ 'PARENT.LINK_PAY_TITLE' | translate: { amount: (schoolCents() + feeCents() | cents), name: (c.linkLabel || ('PARENT.METHOD_LINK' | translate)) } }}
+                </p>
+                @if (linkHost()) {
+                  <p class="text-muted">{{ linkHost() }}</p>
+                }
+                <a mat-stroked-button [href]="c.linkUrl" target="_blank" rel="noopener noreferrer">
+                  <mat-icon>open_in_new</mat-icon>
+                  {{ 'PARENT.LINK_OPEN' | translate: { name: (c.linkLabel || ('PARENT.METHOD_LINK' | translate)) } }}
+                </a>
+                <p class="text-muted">{{ 'PARENT.LINK_KEEP_RECEIPT' | translate }}</p>
+              </div>
+            } @else if (c.manual) {
               <div class="manual" role="note">
                 <p class="manual__title">
                   {{ 'PARENT.MANUAL_PAY_TITLE' | translate: { amount: (schoolCents() + feeCents() | cents), operator: ((c.method === 'mtn' ? 'PARENT.METHOD_MTN' : 'PARENT.METHOD_ORANGE') | translate) } }}
@@ -80,28 +94,49 @@
             }
           }
 
-          <mat-form-field appearance="outline" class="msisdn">
-            <mat-label>{{ (channel()?.manual ? 'PARENT.MANUAL_PAYER_NUMBER' : 'PARENT.PAYER_NUMBER') | translate }}</mat-label>
-            <mat-icon matPrefix>call</mat-icon>
-            <input matInput type="tel" [formControl]="msisdn" placeholder="6XX XX XX XX" autocomplete="tel" />
-            @if (!channel()?.manual) {
-              <mat-hint>{{ 'PARENT.PAYER_NUMBER_HINT' | translate }}</mat-hint>
-            }
-            @if (msisdn.hasError('msisdn') || msisdn.hasError('required')) {
-              <mat-error>{{ 'PARENT.PAYER_NUMBER_INVALID' | translate }}</mat-error>
-            }
-          </mat-form-field>
+          @if (!isLink()) {
+            <mat-form-field appearance="outline" class="msisdn">
+              <mat-label>{{ (channel()?.manual ? 'PARENT.MANUAL_PAYER_NUMBER' : 'PARENT.PAYER_NUMBER') | translate }}</mat-label>
+              <mat-icon matPrefix>call</mat-icon>
+              <input matInput type="tel" [formControl]="msisdn" placeholder="6XX XX XX XX" autocomplete="tel" />
+              @if (!channel()?.manual) {
+                <mat-hint>{{ 'PARENT.PAYER_NUMBER_HINT' | translate }}</mat-hint>
+              }
+              @if (msisdn.hasError('msisdn') || msisdn.hasError('required')) {
+                <mat-error>{{ 'PARENT.PAYER_NUMBER_INVALID' | translate }}</mat-error>
+              }
+            </mat-form-field>
+          }
 
-          @if (channel()?.manual) {
+          @if (byHand()) {
             <mat-form-field appearance="outline" class="msisdn">
               <mat-label>{{ 'PARENT.TRANSACTION_REFERENCE' | translate }}</mat-label>
               <mat-icon matPrefix>receipt_long</mat-icon>
               <input matInput [formControl]="reference" autocomplete="off" />
-              <mat-hint>{{ 'PARENT.TRANSACTION_REFERENCE_HINT' | translate }}</mat-hint>
+              <mat-hint>{{ (isLink() ? 'PARENT.LINK_REFERENCE_HINT' : 'PARENT.TRANSACTION_REFERENCE_HINT') | translate }}</mat-hint>
               @if (reference.hasError('reference')) {
                 <mat-error>{{ 'PARENT.TRANSACTION_REFERENCE_INVALID' | translate }}</mat-error>
               }
             </mat-form-field>
+
+            <div class="proof">
+              @if (proof(); as file) {
+                <mat-icon>receipt_long</mat-icon>
+                <span class="proof__name">{{ file.name }}</span>
+                <button mat-icon-button type="button" [attr.aria-label]="'PARENT.PROOF_REMOVE' | translate" (click)="clearProof()">
+                  <mat-icon>close</mat-icon>
+                </button>
+              } @else {
+                <button mat-stroked-button type="button" (click)="proofInput.click()">
+                  <mat-icon>attach_file</mat-icon>
+                  {{ 'PARENT.PROOF_ATTACH' | translate }}
+                </button>
+              }
+              <input #proofInput type="file" hidden accept="image/jpeg,image/png,application/pdf" (change)="onProofPicked($event)" />
+            </div>
+            @if (proofError()) {
+              <p class="error" role="alert">{{ 'PARENT.PROOF_INVALID' | translate }}</p>
+            }
           }
         </mat-card-content>
       </mat-card>
@@ -136,7 +171,7 @@
             @if (submitting()) {
               <mat-spinner diameter="20" />
             } @else {
-              <ng-container>{{ channel()?.manual ? ('PARENT.DECLARE_MANUAL' | translate) : ('PARENT.PAY_AMOUNT' | translate: { amount: (schoolCents() + feeCents() | cents) }) }}</ng-container>
+              <ng-container>{{ byHand() ? ('PARENT.DECLARE_MANUAL' | translate) : ('PARENT.PAY_AMOUNT' | translate: { amount: (schoolCents() + feeCents() | cents) }) }}</ng-container>
             }
           </button>
         </mat-card-content>

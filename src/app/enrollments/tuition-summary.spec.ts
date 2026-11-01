@@ -17,6 +17,7 @@ function payment(partial: Partial<Payment>): Payment {
     method: 'mtn',
     manual: false,
     mobileMoneyReference: '',
+    hasProof: false,
     ...partial,
   };
 }

@@ -10,17 +10,23 @@ export type ParentPaymentStatus = 'declared' | 'validated' | 'rejected' | 'refun
 
 export type MobileMoneyMethod = 'mtn' | 'orange';
 
+/** `link`: the school's own external payment page, confirmed by the school. */
+export type ChannelMethod = MobileMoneyMethod | 'link';
+
 /**
  * One way a school accepts payment. In manual mode the school has a merchant
  * account but no operator API: the parent pays by hand (USSD) to the number
  * or merchant code, then declares the SMS reference and the school confirms.
+ * In link mode the parent pays on `linkUrl` and gives the receipt number.
  */
 export interface AcceptedChannel {
-  method: MobileMoneyMethod;
+  method: ChannelMethod;
   manual: boolean;
   number: string;
   accountName: string;
   merchantCode: string;
+  linkUrl?: string;
+  linkLabel?: string;
 }
 
 export type Gender = 'male' | 'female';

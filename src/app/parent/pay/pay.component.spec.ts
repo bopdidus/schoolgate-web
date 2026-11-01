@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { PayComponent, normalizeMsisdn, normalizeReference } from './pay.component';
 import { provideTestDefaults } from '../../../testing/test-providers';
@@ -34,6 +34,7 @@ const ENROLLMENT: ParentEnrollment = {
 };
 
 const MANUAL_ORANGE: AcceptedChannel = { method: 'orange', manual: true, number: '690000000', accountName: 'Lycée X', merchantCode: '123456' };
+const LINK: AcceptedChannel = { method: 'link', manual: false, number: '', accountName: '', merchantCode: '', linkUrl: 'https://paypal.me/lycee', linkLabel: 'PayPal' };
 const DIRECT_MTN: AcceptedChannel = { method: 'mtn', manual: false, number: '', accountName: '', merchantCode: '' };
 
 function payment(status: ParentPayment['status']): ParentPayment {
@@ -47,11 +48,12 @@ describe('PayComponent', () => {
   let router: Router;
 
   async function setup(channels: AcceptedChannel[], school: Partial<ParentSchool> = {}): Promise<void> {
-    payments = jasmine.createSpyObj<ParentPaymentsService>('ParentPaymentsService', ['forEnrollment', 'feePercent', 'declare', 'sync']);
+    payments = jasmine.createSpyObj<ParentPaymentsService>('ParentPaymentsService', ['forEnrollment', 'feePercent', 'declare', 'sync', 'uploadProof']);
     payments.forEnrollment.and.returnValue(of([]));
     payments.feePercent.and.returnValue(of(0));
     payments.declare.and.returnValue(of(payment('declared')));
     payments.sync.and.returnValue(of(payment('validated')));
+    payments.uploadProof.and.returnValue(of(payment('declared')));
     schools = jasmine.createSpyObj<ParentSchoolsService>('ParentSchoolsService', ['paymentMethods', 'getById']);
     schools.paymentMethods.and.returnValue(of(channels));
     schools.getById.and.returnValue(of({ phone: '233 42 00 00', ...school } as ParentSchool));
@@ -136,6 +138,57 @@ describe('PayComponent', () => {
     ]);
     expect(payments.sync).not.toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/parent/confirmation', '3']);
+  });
+
+  it('link mode: links to the school page, declares without a phone number and never polls', async () => {
+    await setup([LINK]);
+    const c = fixture.componentInstance;
+    expect(c.isLink()).toBeTrue();
+    expect(c.linkHost()).toBe('paypal.me');
+    const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a[href="https://paypal.me/lycee"]');
+    expect(link).not.toBeNull();
+    expect(link.rel).toContain('noopener');
+    expect(fixture.nativeElement.querySelector('input[type="tel"]')).toBeNull();
+
+    c.reference.setValue('payid-123456');
+    await c.pay();
+
+    expect(payments.declare).toHaveBeenCalledTimes(2);
+    expect(payments.declare.calls.argsFor(0)).toEqual(['3', jasmine.objectContaining({ type: 'enrollment_fee' }), 'link', '', 'PAYID-123456']);
+    expect(payments.sync).not.toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith(['/parent/confirmation', '3']);
+  });
+
+  it('link mode: a reference is required', async () => {
+    await setup([LINK]);
+    const c = fixture.componentInstance;
+    c.reference.setValue('abc');
+    await c.pay();
+    expect(c.reference.hasError('reference')).toBeTrue();
+    expect(payments.declare).not.toHaveBeenCalled();
+  });
+
+  it('attaches the receipt to every declared payment, and still goes on if the upload fails', async () => {
+    await setup([LINK]);
+    const c = fixture.componentInstance;
+    c.proof.set(new File(['x'], 'recu.png', { type: 'image/png' }));
+    c.reference.setValue('PAYID-123456');
+    payments.uploadProof.and.returnValue(throwError(() => new Error('boom')));
+    await c.pay();
+    expect(payments.uploadProof).toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith(['/parent/confirmation', '3']);
+  });
+
+  it('refuses a receipt that is too large or not an image or PDF', async () => {
+    await setup([LINK]);
+    const c = fixture.componentInstance;
+    const pick = (file: File) => c.onProofPicked({ target: { files: [file], value: '' } } as unknown as Event);
+    pick(new File(['x'], 'malware.exe', { type: 'application/x-msdownload' }));
+    expect(c.proofError()).toBeTrue();
+    expect(c.proof()).toBeNull();
+    pick(new File(['x'], 'recu.png', { type: 'image/png' }));
+    expect(c.proofError()).toBeFalse();
+    expect(c.proof()?.name).toBe('recu.png');
   });
 
   it('manual mode: a reference is required', async () => {

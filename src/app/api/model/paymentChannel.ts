@@ -33,12 +33,14 @@ export interface PaymentChannelDto {
 export namespace PaymentChannelDto {
     export const MethodEnum = {
         Orange: 'orange',
-        Mtn: 'mtn'
+        Mtn: 'mtn',
+        Link: 'link'
     } as const;
     export type MethodEnum = typeof MethodEnum[keyof typeof MethodEnum];
     export const ModeEnum = {
         Direct: 'direct',
-        Manual: 'manual'
+        Manual: 'manual',
+        Link: 'link'
     } as const;
     export type ModeEnum = typeof ModeEnum[keyof typeof ModeEnum];
     export const TestStatusEnum = {

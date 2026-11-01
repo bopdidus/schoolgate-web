@@ -14,11 +14,14 @@ export interface DeclarePaymentRequestDto {
     type: DeclarePaymentRequestDto.TypeEnum;
     installment_number?: number;
     amount_cents: number;
+    /**
+     * `link` pays on the school\'s own external page (see link_url of /schools/{id}/payment-methods): it always waits for the school to confirm, and transaction_reference (the page\'s receipt or transaction id) is required.
+     */
     payment_method: DeclarePaymentRequestDto.PaymentMethodEnum;
     /**
-     * Mobile Money phone number (USSD push target, or the number that paid in manual mode)
+     * Mobile Money phone number (USSD push target, or the number that paid in manual mode). Required for mtn and orange, not for link.
      */
-    payer_msisdn: string;
+    payer_msisdn?: string;
     /**
      * Operator reference of a transfer the parent already made by hand. Required when the school collects the method manually (see /schools/{id}/payment-methods), ignored otherwise. A reference already declared for another payment is refused (PAYMENT_REFERENCE_USED).
      */
@@ -32,7 +35,8 @@ export namespace DeclarePaymentRequestDto {
     export type TypeEnum = typeof TypeEnum[keyof typeof TypeEnum];
     export const PaymentMethodEnum = {
         Mtn: 'mtn',
-        Orange: 'orange'
+        Orange: 'orange',
+        Link: 'link'
     } as const;
     export type PaymentMethodEnum = typeof PaymentMethodEnum[keyof typeof PaymentMethodEnum];
 }

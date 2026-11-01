@@ -168,7 +168,7 @@ export interface PaymentSettings {
   orangeMoneyNumber: string;
   orangeMoneyAccountName: string;
   /** direct: charged through the operator API; manual: parents pay by USSD and the school confirms. */
-  orangeMode: PaymentChannelMode;
+  orangeMode: OperatorChannelMode;
   /** Optional merchant code parents dial in manual mode. */
   orangeMerchantCode: string;
   /** Orange merchant API OAuth client id (not secret). */
@@ -178,7 +178,7 @@ export interface PaymentSettings {
   mtnMomoEnabled: boolean;
   mtnMomoNumber: string;
   mtnMomoAccountName: string;
-  mtnMode: PaymentChannelMode;
+  mtnMode: OperatorChannelMode;
   mtnMerchantCode: string;
   /** MTN MoMo Collection API user (not secret). */
   mtnApiUser: string;
@@ -186,6 +186,10 @@ export interface PaymentSettings {
   mtnSecretsSet: boolean;
   paypalEnabled: boolean;
   paypalEmail: string;
+  /** The school also takes payments on its own external page (PayPal.me, Stripe Payment Link...). */
+  paymentLinkEnabled: boolean;
+  paymentLinkUrl: string;
+  paymentLinkLabel: string;
   bankTransferEnabled: boolean;
   bankName: string;
   bankAccountHolder: string;
@@ -210,8 +214,10 @@ export type PaymentSettingsUpdate = Omit<
   mtnSubscriptionKey: string;
 };
 
-export type PaymentChannelMethod = 'orange' | 'mtn';
-export type PaymentChannelMode = 'direct' | 'manual';
+export type PaymentChannelMethod = 'orange' | 'mtn' | 'link';
+export type PaymentChannelMode = 'direct' | 'manual' | 'link';
+/** How Orange Money and MTN MoMo are collected (the link channel has no such choice). */
+export type OperatorChannelMode = Exclude<PaymentChannelMode, 'link'>;
 export type PaymentChannelStatus = 'draft' | 'submitted' | 'approved' | 'active' | 'rejected' | 'suspended';
 export type PaymentChannelReviewAction = 'approve' | 'reject' | 'suspend' | 'reinstate';
 export type KycDocumentType =

@@ -62,6 +62,18 @@ export interface PaymentSettingsRequestDto {
     mtn_subscription_key?: string;
     paypal_enabled?: boolean;
     paypal_email?: string;
+    /**
+     * The school accepts payments on its own external page.
+     */
+    payment_link_enabled?: boolean;
+    /**
+     * https URL of the school\'s payment page (PayPal.me, Stripe Payment Link...). A public host name only: no IP address, port, user info or localhost. Changing it sends the channel back to review.
+     */
+    payment_link_url?: string;
+    /**
+     * Name shown to the parent (for example PayPal).
+     */
+    payment_link_label?: string;
     bank_transfer_enabled?: boolean;
     bank_name?: string;
     bank_account_holder?: string;

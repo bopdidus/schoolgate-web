@@ -16,7 +16,8 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { SkeletonTableComponent } from '../../shared/components/skeleton-table/skeleton-table.component';
 import { CentsPipe } from '../shared/cents.pipe';
-import { AcceptedChannel, MobileMoneyMethod, ParentEnrollment, ParentPayment } from '../domain/models';
+import { AcceptedChannel, ChannelMethod, ParentEnrollment, ParentPayment } from '../domain/models';
+import { NotificationService } from '../../core/services/notification.service';
 import { serviceFeeCents } from '../domain/money';
 import { PayableLines, PaymentOption } from '../domain/payable-lines';
 import { ParentEnrollmentsService } from '../services/parent-enrollments.service';
@@ -44,6 +45,10 @@ export function normalizeReference(raw: string): string {
 }
 
 const REFERENCE_PATTERN = /^[A-Z0-9._-]{6,40}$/;
+
+/** Same limits as the API for a payment receipt. */
+export const MAX_PROOF_BYTES = 5 * 1024 * 1024;
+export const PROOF_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
 
 /**
  * Pay by Mobile Money (mobile merchant payment screen): the lines still owed
@@ -88,6 +93,7 @@ export class PayComponent implements OnInit {
   private readonly enrollmentsService = inject(ParentEnrollmentsService);
   private readonly paymentsService = inject(ParentPaymentsService);
   private readonly schoolsService = inject(ParentSchoolsService);
+  private readonly notification = inject(NotificationService);
   private destroyed = false;
 
   readonly loading = signal(true);
@@ -101,12 +107,30 @@ export class PayComponent implements OnInit {
 
   readonly option = signal<PaymentOption>('combined');
   readonly advance = signal(false);
-  readonly method = signal<MobileMoneyMethod | null>(null);
+  readonly method = signal<ChannelMethod | null>(null);
   readonly msisdn = new FormControl('', { nonNullable: true, validators: [Validators.required] });
   readonly reference = new FormControl('', { nonNullable: true });
 
   /** The picked channel: manual ones are paid by hand, then declared. */
   readonly channel = computed(() => this.methods().find((c) => c.method === this.method()) ?? null);
+  /** Paid outside the app (USSD or the school's page): the school confirms it. */
+  readonly byHand = computed(() => {
+    const c = this.channel();
+    return !!c && (c.manual || c.method === 'link');
+  });
+  readonly isLink = computed(() => this.channel()?.method === 'link');
+  /** Host of the school's payment page, shown so the parent sees where it leads. */
+  readonly linkHost = computed(() => {
+    try {
+      return new URL(this.channel()?.linkUrl ?? '').hostname;
+    } catch {
+      return '';
+    }
+  });
+
+  /** Optional receipt attached once the payment is declared. */
+  readonly proof = signal<File | null>(null);
+  readonly proofError = signal(false);
 
   readonly submitting = signal(false);
   readonly awaitingPhone = signal(false);
@@ -203,16 +227,32 @@ export class PayComponent implements OnInit {
     return this.advanceLines().reduce((sum, l) => sum + (l.advanceMinCents ?? 0), 0);
   }
 
+  onProofPicked(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    input.value = '';
+    if (!file) return;
+    const ok = file.size > 0 && file.size <= MAX_PROOF_BYTES && PROOF_TYPES.includes(file.type);
+    this.proofError.set(!ok);
+    this.proof.set(ok ? file : null);
+  }
+
+  clearProof(): void {
+    this.proof.set(null);
+    this.proofError.set(false);
+  }
+
   async pay(): Promise<void> {
-    const msisdn = normalizeMsisdn(this.msisdn.value);
     const method = this.method();
-    if (!MSISDN_PATTERN.test(msisdn)) {
+    // The school's own page takes no Mobile Money number.
+    const msisdn = this.isLink() ? '' : normalizeMsisdn(this.msisdn.value);
+    if (!this.isLink() && !MSISDN_PATTERN.test(msisdn)) {
       this.msisdn.setErrors({ msisdn: true });
       this.msisdn.markAsTouched();
       return;
     }
     if (!method || this.items().length === 0) return;
-    if (this.channel()?.manual) {
+    if (this.byHand()) {
       await this.declareManual(method, msisdn);
       return;
     }
@@ -240,11 +280,12 @@ export class PayComponent implements OnInit {
   }
 
   /**
-   * Manual mode: the parent already paid the school by USSD. Every selected
-   * line is declared with the same reference (one transfer); the school then
-   * confirms it, so there is nothing to follow.
+   * Manual or link mode: the parent already paid the school (by USSD, or on
+   * its own page). Every selected line is declared with the same reference
+   * (one transfer); the school then confirms it, so there is nothing to
+   * follow. A receipt, when given, is attached to each declared payment.
    */
-  private async declareManual(method: MobileMoneyMethod, msisdn: string): Promise<void> {
+  private async declareManual(method: ChannelMethod, msisdn: string): Promise<void> {
     const reference = normalizeReference(this.reference.value);
     if (!REFERENCE_PATTERN.test(reference)) {
       this.reference.setErrors({ reference: true });
@@ -254,15 +295,33 @@ export class PayComponent implements OnInit {
     this.submitting.set(true);
     this.error.set(null);
     try {
+      const declared: ParentPayment[] = [];
       for (const item of this.items()) {
-        await lastValueFrom(this.paymentsService.declare(this.id(), item, method, msisdn, reference));
+        declared.push(await lastValueFrom(this.paymentsService.declare(this.id(), item, method, msisdn, reference)));
       }
+      await this.attachProof(declared);
       void this.router.navigate(['/parent/confirmation', this.id()]);
     } catch (e) {
       if (this.destroyed) return;
       // API errors (e.g. a reference already used) come from the interceptor.
       this.error.set(e instanceof Error && !('status' in e) ? e.message : null);
       this.submitting.set(false);
+    }
+  }
+
+  /**
+   * The payments are declared whatever happens to the receipt: a failed upload
+   * is reported, not fatal (the parent can still tell the school).
+   */
+  private async attachProof(declared: ParentPayment[]): Promise<void> {
+    const file = this.proof();
+    if (!file) return;
+    try {
+      for (const payment of declared) {
+        await lastValueFrom(this.paymentsService.uploadProof(payment.id, file));
+      }
+    } catch {
+      this.notification.error('PARENT.PROOF_UPLOAD_FAILED');
     }
   }
 

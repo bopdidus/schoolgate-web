@@ -24,6 +24,7 @@ const MANUAL: Payment = {
   method: 'orange',
   manual: true,
   mobileMoneyReference: 'MP231017.1234',
+  hasProof: false,
   payerMsisdn: '690000000',
 };
 
