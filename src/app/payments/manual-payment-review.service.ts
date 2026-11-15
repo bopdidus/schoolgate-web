@@ -67,15 +67,27 @@ export class ManualPaymentReview {
 
   /** Opens the receipt in a new tab, to compare it with the school's own account. */
   viewProof(paymentId: string): Observable<void> {
+    // The tab is opened now, while the click still counts as a user gesture:
+    // browsers block a window opened after the download has finished.
+    const tab = window.open('', '_blank');
+    if (!tab) {
+      this.notification.error('PAYMENTS.PROOF_POPUP_BLOCKED');
+      return EMPTY;
+    }
+    tab.opener = null;
     return this.payments.proof(paymentId).pipe(
       tap((blob) => {
         const url = URL.createObjectURL(blob);
-        window.open(url, '_blank', 'noopener');
+        tab.location.replace(url);
         // The tab has loaded the blob by then; free the memory.
         setTimeout(() => URL.revokeObjectURL(url), 60_000);
       }),
       map(() => undefined),
-      catchError(() => EMPTY),
+      catchError(() => {
+        // The error interceptor has told the user why; do not leave a blank tab.
+        tab.close();
+        return EMPTY;
+      }),
     );
   }
 

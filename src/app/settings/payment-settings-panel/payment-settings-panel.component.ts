@@ -62,18 +62,20 @@ export const paymentLink: ValidatorFn = (control) => {
   try {
     const url = new URL(raw);
     const host = url.hostname.toLowerCase();
-    const isIp = /^[\d.]+$/.test(host) || host.includes(':');
+    // A trailing dot leaves an empty last label; IPv4 and IPv6 hosts end with
+    // a numeric or bracketed one.
+    const labels = host.split('.');
+    const tld = labels[labels.length - 1];
     const ok =
       raw.length <= 500 &&
       url.protocol === 'https:' &&
       !url.username &&
       !url.password &&
       !url.port &&
-      host.includes('.') &&
-      host !== 'localhost' &&
-      !host.endsWith('.local') &&
-      !host.endsWith('.internal') &&
-      !isIp;
+      labels.length >= 2 &&
+      labels.every((label) => /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/.test(label)) &&
+      !['local', 'internal', 'localhost'].includes(tld) &&
+      !/^\d/.test(tld);
     return ok ? null : { paymentLink: true };
   } catch {
     return { paymentLink: true };

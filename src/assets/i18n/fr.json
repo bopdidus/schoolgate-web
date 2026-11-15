@@ -370,6 +370,8 @@
     "ACTOR_parent": "Parent",
     "ACTOR_school_admin": "Administrateur de l'école",
     "ACTOR_school_editor": "Éditeur de l'école",
+    "ACTOR_school_staff": "Personnel de l'école",
+    "PROOF_POPUP_BLOCKED": "Votre navigateur a bloqué la fenêtre du reçu. Autorisez les fenêtres pop-up pour ce site, puis réessayez.",
     "ACTOR_operator": "Opérateur",
     "ACTOR_system": "Système"
   },
@@ -875,6 +877,7 @@
     "FILE_TOO_BIG": "Le fichier dépasse 5 Mo.",
     "MODE_direct": "Automatique",
     "MODE_manual": "Manuel : vous confirmez chaque paiement",
+    "MODE_link": "Page externe : vous confirmez chaque paiement",
     "METHOD_link": "Lien de paiement"
   },
   "KYC": {

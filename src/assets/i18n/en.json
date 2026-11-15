@@ -371,6 +371,8 @@
     "ACTOR_parent": "Parent",
     "ACTOR_school_admin": "School administrator",
     "ACTOR_school_editor": "School editor",
+    "ACTOR_school_staff": "School staff",
+    "PROOF_POPUP_BLOCKED": "Your browser blocked the receipt window. Allow pop-ups for this site and try again.",
     "ACTOR_operator": "Operator",
     "ACTOR_system": "System"
   },
@@ -876,6 +878,7 @@
     "FILE_TOO_BIG": "The file is larger than 5 MB.",
     "MODE_direct": "Automatic",
     "MODE_manual": "Manual: you confirm every payment",
+    "MODE_link": "External page: you confirm every payment",
     "METHOD_link": "Payment link"
   },
   "KYC": {
